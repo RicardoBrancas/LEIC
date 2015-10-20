@@ -15,10 +15,9 @@ partidos_nomes = ('Partido Democratico Republicano', 'CDU - Coligacao Democratic
                   'Partido Comunista dos Trabalhadores Portugueses', 'Partido Socialista', 'Bloco de Esquerda',
                   'Partido Unido dos Reformados e Pensionistas')
 
-
-# Esta funcao recebe o numero de votos de cada partido num determinado circulo eleitoral e devolve o numero de mandatos
-# aplicando o metodo D'Hondt
 def mandatos(nr_mandatos, nr_votacoes):
+    """ Esta funcao recebe o numero de votos de cada partido num determinado circulo
+        eleitoral e devolve o numero de mandatos aplicando o metodo D'Hondt."""
     lista_votacoes = list(nr_votacoes)
     # Cria uma lista com o mesmo numero de elementos que a lista de votos onde sera guardado o numero de mandatos por candidatura
     mandatos_candidatura = [0] * len(lista_votacoes)
@@ -47,9 +46,10 @@ def mandatos(nr_mandatos, nr_votacoes):
     return tuple(mandatos_candidatura)
 # Fim da funcao mandatos
 
-# Esta funcao recebe um tuplo de tuplos com o numero de votos por partido por circulo eleitoral e devolve um tuplo
-# contendo o numero total de mandatos atribuidos por partido.
 def assembleia(votacoes):
+    """ Esta funcao recebe um tuplo de tuplos com o numero de votos por partido
+        por circulo eleitoral e devolve um tuplo contendo o numero total de mandatos
+        atribuidos por partido."""
     total_mandatos = [0] * len(
         partidos_nomes)  # Cria uma lista com o mesmo numero de elementos que o numero de partidos
 
@@ -62,9 +62,11 @@ def assembleia(votacoes):
     return tuple(total_mandatos)
 # Fim da funcao assembleia
 
-# Esta funcao recebe um tuplo de tuplos com o numero de votos por partido por circulo eleitoral e devolve o nome do
-# partido com mais mandatos atribuidos ou "empate tecnico" caso haja dois ou mais partidos com o mesmo numero de mandatos.
 def max_mandatos(votacoes):
+    """ Esta funcao recebe um tuplo de tuplos com o numero de votos por partido
+        por circulo eleitoral e devolve o nome do partido com mais mandatos
+        atribuidos ou "empate tecnico" caso haja dois ou mais partidos com o
+        mesmo numero de mandatos."""
     total_mandatos = assembleia(votacoes)  # Vai buscar o valor da funcao assembleia
     mais_mandatos = max(total_mandatos)  # Encontra o numero maximo de mandatos atribuidos.
 
