@@ -6,20 +6,41 @@
 	SP_INICIAL                       FDFF         CONSTANT
 	DISPLAY_O_ADDR                   FFFE         CONSTANT
 	DISPLAY_C_ADDR                   FFFC         CONSTANT
+	INT_MASK_ADDR                    FFFA         CONSTANT
+	CONT_STEP_ADDR                   FFF6         CONSTANT
+	CONT_CTRL_ADDR                   FFF7         CONSTANT
+	INT_MASK                         8001         CONSTANT
 	COLUNAS                          004F         CONSTANT
 	LINHAS                           0018         CONSTANT
 	CHAR_TRACO                       002D         CONSTANT
 	CHAR_O                           004F         CONSTANT
 	CHAR_X                           0058         CONSTANT
 	CHAR_                            003E         CONSTANT
+	PHYSICS_STEP                     0005         CONSTANT
+	V_SUBIDA                         0001         CONSTANT
+	TEMPO_SUBIDA                     0003         CONSTANT
 	P_LINHA_ATUAL                    8000           STRING
 	P_COLUNA_ATUAL                   8001           STRING
-	AtualizaJanela                   0002            LABEL
-	DesenhaLimites                   0007            LABEL
-	DL1                              000F            LABEL
-	FimDL1                           001A            LABEL
-	DL2                              0021            LABEL
-	FimDL2                           002C            LABEL
-	DesenhaPassaro                   002E            LABEL
-	Inicio                           0046            LABEL
-	Fim                              004F            LABEL
+	N_SUBIDA                         8002           STRING
+	DEVE_SUBIR                       8003           STRING
+	INT0                             FE00         VARIABLE
+	INT15                            FE0F         VARIABLE
+	i0Premido                        0002            LABEL
+	tempAtivado                      000B            LABEL
+	FimTemporizador                  001F            LABEL
+	FimTempAtivado                   0021            LABEL
+	LimpaJanela                      0022            LABEL
+	CicloLinhas                      0024            LABEL
+	CicloColunas                     0027            LABEL
+	FimColunas                       0035            LABEL
+	FimAJ                            0038            LABEL
+	AtualizaJanela                   0039            LABEL
+	DesenhaLimites                   0040            LABEL
+	DL1                              0048            LABEL
+	FimDL1                           0053            LABEL
+	DL2                              005A            LABEL
+	FimDL2                           0065            LABEL
+	DesenhaPassaro                   0067            LABEL
+	SobePassaro                      007F            LABEL
+	Inicio                           0086            LABEL
+	Ciclo                            0094            LABEL
