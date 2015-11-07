@@ -1,0 +1,25 @@
+
+	            G L O B A L   R E F E R E N C E S
+
+	             Name               Value        Type
+	==============================|=======|===============
+	SP_INICIAL                       FDFF         CONSTANT
+	DISPLAY_O_ADDR                   FFFE         CONSTANT
+	DISPLAY_C_ADDR                   FFFC         CONSTANT
+	COLUNAS                          004F         CONSTANT
+	LINHAS                           0018         CONSTANT
+	CHAR_TRACO                       002D         CONSTANT
+	CHAR_O                           004F         CONSTANT
+	CHAR_X                           0058         CONSTANT
+	CHAR_                            003E         CONSTANT
+	P_LINHA_ATUAL                    8000           STRING
+	P_COLUNA_ATUAL                   8001           STRING
+	AtualizaJanela                   0002            LABEL
+	DesenhaLimites                   0007            LABEL
+	DL1                              000F            LABEL
+	FimDL1                           001A            LABEL
+	DL2                              0021            LABEL
+	FimDL2                           002C            LABEL
+	DesenhaPassaro                   002E            LABEL
+	Inicio                           0046            LABEL
+	Fim                              004F            LABEL
