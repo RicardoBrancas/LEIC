@@ -16,7 +16,7 @@
 	CHAR_O                           004F         CONSTANT
 	CHAR_X                           0058         CONSTANT
 	CHAR_                            003E         CONSTANT
-	PHYSICS_STEP                     0005         CONSTANT
+	PHYSICS_STEP                     0001         CONSTANT
 	V_SUBIDA                         0001         CONSTANT
 	TEMPO_SUBIDA                     0003         CONSTANT
 	P_LINHA_ATUAL                    8000           STRING
@@ -41,6 +41,7 @@
 	DL2                              005A            LABEL
 	FimDL2                           0065            LABEL
 	DesenhaPassaro                   0067            LABEL
-	SobePassaro                      007F            LABEL
-	Inicio                           0086            LABEL
-	Ciclo                            0094            LABEL
+	MudaPassaro                      007F            LABEL
+	SobePassaro                      00A1            LABEL
+	Inicio                           00AD            LABEL
+	Ciclo                            00BB            LABEL
