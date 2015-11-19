@@ -4,7 +4,6 @@
 	             Name               Value        Type
 	==============================|=======|===============
 	SP_INICIAL                       FDFF         CONSTANT
-	FIM_TEXTO                        0040         CONSTANT
 	DISPLAY_O_ADDR                   FFFE         CONSTANT
 	DISPLAY_C_ADDR                   FFFC         CONSTANT
 	INT_MASK_ADDR                    FFFA         CONSTANT
@@ -13,6 +12,7 @@
 	INT_MASK                         8003         CONSTANT
 	COLUNAS                          004F         CONSTANT
 	LINHAS                           0018         CONSTANT
+	FIM_TEXTO                        0040         CONSTANT
 	CHAR_TRACO                       002D         CONSTANT
 	CHAR_O                           004F         CONSTANT
 	CHAR_X                           0058         CONSTANT
