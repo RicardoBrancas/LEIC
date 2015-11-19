@@ -2,14 +2,14 @@
 
 ; CONSTANTES
 SP_INICIAL	EQU	FDFFh
-
+FIM_TEXTO	EQU 	'@'
 DISPLAY_O_ADDR	EQU	FFFEh
 DISPLAY_C_ADDR	EQU	FFFCh
 INT_MASK_ADDR	EQU	FFFAh
 CONT_STEP_ADDR	EQU	FFF6h
 CONT_CTRL_ADDR	EQU	FFF7h
 
-INT_MASK	EQU	1000000000000001b
+INT_MASK	EQU	1000000000000011b
 
 COLUNAS		EQU	79
 LINHAS		EQU	24
@@ -33,6 +33,9 @@ V_OBSTACULOS_6	EQU	1
 
 ; VARIAVEIS
 		ORIG	8000h
+Vartext1	STR 	'Prepare-se',FIM_TEXTO
+Vartext2	STR 	'Prima I1 para iniciar o jogo',FIM_TEXTO
+COMECAR_JOGO	STR 	1		
 P_LINHA_ATUAL	STR	11
 P_COLUNA_ATUAL	STR	19
 FALTA_SUBIR	STR	0
@@ -50,6 +53,8 @@ DEVE_MOVER_OBST	STR	0
 ; Tabela de interrupcoes
 		ORIG	FE00h
 INT0		WORD	i0Premido
+		ORIG 	FE01h
+INT1		WORD	i1Premido
 		ORIG	FE0Fh
 INT15		WORD	tempAtivado
 
@@ -59,6 +64,9 @@ INT15		WORD	tempAtivado
 i0Premido:	MOV	R1, LINHAS_SOBE
 		MOV	M[FALTA_SUBIR], R1
 		RTI
+
+i1Premido:	MOV 	M[COMECAR_JOGO], R0
+		RTI			
 
 tempAtivado:	CMP	M[FALTA_SUBIR], R0
 		BR.Z	tempAt1
@@ -75,6 +83,38 @@ tempAt2:	DEC	M[CONT_MOV_OBST]
 		MOV	M[CONT_CTRL_ADDR], R7
 FimTempAtivado:	RTI
 
+EscreveMsg:	MOV	R2, 34	
+		MOV 	R3, Vartext1
+CicloEscreveMsg:MOV	R1, 11
+		SHL	R1, 8
+		MOV	R4, M[R3]
+		ADD 	R1, R2
+		CMP	R4, FIM_TEXTO
+		BR.Z	Fim
+		MOV 	M[DISPLAY_C_ADDR], R1
+		MOV	M[DISPLAY_O_ADDR], R4
+		INC 	R2
+		INC 	R3
+		BR	CicloEscreveMsg
+Fim:		NOP
+EscreveMsg1:	MOV	R2, 25	
+		MOV 	R3, Vartext2
+CicloEscreveMsg1:MOV	R1, 13
+		SHL	R1, 8
+		MOV	R4, M[R3]
+		ADD 	R1, R2
+		CMP	R4, FIM_TEXTO
+		BR.Z	Fim1
+		MOV 	M[DISPLAY_C_ADDR], R1
+		MOV	M[DISPLAY_O_ADDR], R4
+		INC 	R2
+		INC 	R3
+		BR	CicloEscreveMsg1
+Fim1:		CMP 	M[COMECAR_JOGO], R0
+		JMP.Z	Comeca_jogo
+		BR	Fim1
+		RET
+		
 LimpaJanela:	MOV	R1, R0
 		MOV	R2, R0
 CicloLinhas:	CMP	R1, LINHAS
@@ -262,7 +302,8 @@ Inicio:		MOV	R7, SP_INICIAL
 
 		MOV	R1, V_OBSTACULOS_1
 		MOV	M[V_OBSTACULOS], R1
-		CALL	AtualizaJanela
+		CALL 	EscreveMsg
+Comeca_jogo:	CALL	AtualizaJanela
 
 		MOV	R7, PHYSICS_STEP
 		MOV	M[CONT_STEP_ADDR], R7
