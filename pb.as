@@ -13,14 +13,17 @@ INT_MASK	EQU	1000000000000011b
 COLUNAS		EQU	79
 LINHAS		EQU	24
 
+POS_OBST_MAX	EQU	15
+
 FIM_TEXTO	EQU	'@'
 CHAR_TRACO	EQU	2Dh
 CHAR_O		EQU	4Fh
 CHAR_X		EQU	58h
 CHAR_>		EQU	3Eh
 PHYSICS_STEP	EQU	1
+GRAV_POR_STEP	EQU	0000000000010000b ; Gravidade em virgula fixa - 8 casas decimais
 V_SUBIDA	EQU	1
-LINHAS_SOBE	EQU	3
+LINHAS_SOBE	EQU	4
 
 INTERV_OBSTAC	EQU	5
 
@@ -31,14 +34,22 @@ V_OBSTACULOS_4	EQU	4
 V_OBSTACULOS_5	EQU	2
 V_OBSTACULOS_6	EQU	1
 
+MASK_SEQUENCIA	EQU	1000000000010110b
+
 ; VARIAVEIS
 		ORIG	8000h
 Vartext1	STR	'Prepare-se', FIM_TEXTO
 Vartext2	STR	'Prima I1 para iniciar o jogo', FIM_TEXTO
 COMECAR_JOGO	STR	1
+
+N_SEQUENCIA	STR	0
+
 P_LINHA_ATUAL	STR	11
 P_COLUNA_ATUAL	STR	19
+LINHA_ATUAL	STR	0000101100000000b ; 11d em virgula fixa - 8 casas decimais
 FALTA_SUBIR	STR	0
+
+VELOCIDADE	STR	0
 
 V_OBSTACULOS	STR	0
 CONT_MOV_OBST	STR	0
@@ -49,6 +60,7 @@ OBSTACULOS	TAB	COLUNAS
 DEVE_SUBIR	STR	0
 DEVE_CRIAR_OSBT	STR	0
 DEVE_MOVER_OBST	STR	0
+DEVE_PYSC_STEP	STR	0
 
 ; Tabela de interrupcoes
 		ORIG	FE00h
@@ -62,17 +74,15 @@ INT15		WORD	tempAtivado
 		JMP	Inicio
 
 i0Premido:	MOV	R1, LINHAS_SOBE
-		MOV	M[FALTA_SUBIR], R1
+		MOV	M[DEVE_SUBIR], R1
 		RTI
 
 i1Premido:	MOV	M[COMECAR_JOGO], R0
 		RTI
 
-tempAtivado:	CMP	M[FALTA_SUBIR], R0
-		BR.Z	tempAt1
-		MOV	R1, 1
-		MOV	M[DEVE_SUBIR], R1
-tempAt1:	CMP	M[CONT_MOV_OBST], R0
+tempAtivado:	MOV	R1, 1
+		MOV	M[DEVE_PYSC_STEP], R1
+		CMP	M[CONT_MOV_OBST], R0
 		BR.P	tempAt2
 		MOV	R1, 1
 		MOV	M[DEVE_MOVER_OBST], R1
@@ -83,37 +93,58 @@ tempAt2:	DEC	M[CONT_MOV_OBST]
 		MOV	M[CONT_CTRL_ADDR], R7
 FimTempAtivado:	RTI
 
-EscreveMsg:	MOV	R2, 34	
-		MOV 	R3, Vartext1
-CicloEscreveMsg:MOV	R1, 11
-		SHL	R1, 8
-		MOV	R4, M[R3]
-		ADD 	R1, R2
-		CMP	R4, FIM_TEXTO
-		BR.Z	Fim
-		MOV 	M[DISPLAY_C_ADDR], R1
-		MOV	M[DISPLAY_O_ADDR], R4
-		INC 	R2
-		INC 	R3
-		BR	CicloEscreveMsg
-Fim:		NOP
-EscreveMsg1:	MOV	R2, 25	
-		MOV 	R3, Vartext2
-CicloEscreveMsg1:MOV	R1, 13
-		SHL	R1, 8
-		MOV	R4, M[R3]
-		ADD 	R1, R2
-		CMP	R4, FIM_TEXTO
-		BR.Z	Fim1
-		MOV 	M[DISPLAY_C_ADDR], R1
-		MOV	M[DISPLAY_O_ADDR], R4
-		INC 	R2
-		INC 	R3
-		BR	CicloEscreveMsg1
-Fim1:		CMP 	M[COMECAR_JOGO], R0
-		JMP.Z	Comeca_jogo
-		BR	Fim1
+Random:		MOV	R1, M[N_SEQUENCIA]
+		SHR	R1, 1
+		BR.C	Random2
+		MOV	M[N_SEQUENCIA], R1
+		BR	RandomFim
+Random2:	MOV	R1, M[N_SEQUENCIA]
+		XOR	R1, MASK_SEQUENCIA
+		SHR	R1, 1
+		MOV	M[N_SEQUENCIA], R1
+RandomFim:	MOV	R2, POS_OBST_MAX
+		DIV	R1, R2
+		INC	R2
+		MOV	M[SP+2], R2
 		RET
+
+EscreveChar:	PUSH 	R1
+		PUSH 	R2
+		PUSH 	R3
+		MOV 	R1, M[SP+7] ;Linha
+		MOV 	R2, M[SP+6] ;Coluna
+		MOV 	R3, M[SP+5] ;Caracter
+		SHL	R1, 8
+		ADD	R1, R2
+		MOV	M[DISPLAY_C_ADDR], R1
+		MOV	M[DISPLAY_O_ADDR], R3
+		POP	R3
+		POP	R2
+		POP	R1
+		RETN	3
+
+EscreveStr:	PUSH	R1
+		PUSH	R2
+		PUSH	R3
+		PUSH	R4
+		MOV	R1, M[SP+8] ;Endereço Inicial
+		MOV	R2, M[SP+7] ;Linha Inicial
+		MOV	R3, M[SP+6] ;Coluna Inicial
+CicloEscreveStr:MOV	R4, M[R1]
+		CMP	R4, FIM_TEXTO
+		BR.Z	FimEscreveStr
+		PUSH	R2
+		PUSH	R3
+		PUSH	R4
+		CALL	EscreveChar
+		INC	R1
+		INC	R3
+		BR	CicloEscreveStr
+FimEscreveStr:	POP	R4
+		POP	R3
+		POP	R2
+		POP	R1
+		RETN	3
 
 LimpaJanela:	MOV	R1, R0
 		MOV	R2, R0
@@ -121,12 +152,10 @@ CicloLinhas:	CMP	R1, LINHAS
 		BR.NN	FimAJ
 CicloColunas:	CMP	R2, COLUNAS
 		BR.NN	FimColunas
-		MOV	R4, R1
-		SHL	R4, 8
-		ADD	R4, R2
-		MOV	M[DISPLAY_C_ADDR], R4
-		MOV	R5, 20h
-		MOV	M[DISPLAY_O_ADDR], R5
+		PUSH	R1
+		PUSH	R2
+		PUSH	20h
+		CALL	EscreveChar
 		INC	R2
 		BR	CicloColunas
 FimColunas:	MOV	R2, R0
@@ -177,59 +206,61 @@ FimDL2:		NOP
 ; DesenhaPassaro: 
 DesenhaPassaro:	MOV	R1, M[P_LINHA_ATUAL]
 		MOV	R2, M[P_COLUNA_ATUAL]
-		MOV	R3, R1
-		SHL	R3, 8
-		ADD	R3, R2
-		MOV	M[DISPLAY_C_ADDR], R3
-		MOV	R4, CHAR_O
-		MOV	M[DISPLAY_O_ADDR], R4
+		PUSH	R1
+		PUSH	R2
+		PUSH	CHAR_O
+		CALL	EscreveChar
 		INC	R2
-		MOV	R3, R1
-		SHL	R3, 8
-		ADD	R3, R2
-		MOV	M[DISPLAY_C_ADDR], R3
-		MOV	R4, CHAR_>
-		MOV	M[DISPLAY_O_ADDR], R4
+		PUSH	R1
+		PUSH	R2
+		PUSH	CHAR_>
+		CALL	EscreveChar
 		RET
 
 ; LimpaPassaro:
 LimpaPassaro:	MOV	R1, M[P_LINHA_ATUAL]
 		MOV	R2, M[P_COLUNA_ATUAL]
-		MOV	R3, R1
-		SHL	R3, 8
-		ADD	R3, R2
-		MOV	M[DISPLAY_C_ADDR], R3
-		MOV	R4, 20h
-		MOV	M[DISPLAY_O_ADDR], R4
+		PUSH	R1
+		PUSH	R2
+		PUSH	20h
+		CALL	EscreveChar
 		INC	R2
-		MOV	R3, R1
-		SHL	R3, 8
-		ADD	R3, R2
-		MOV	M[DISPLAY_C_ADDR], R3
-		MOV	R4, 20h
-		MOV	M[DISPLAY_O_ADDR], R4
+		PUSH	R1
+		PUSH	R2
+		PUSH	20h
+		CALL	EscreveChar
 		RET
 
-DesenhaObst:	MOV	R1, R0
+AtualizaObst:	CMP	M[SP+2], R0
+		BR.NZ	DesenhaObst
+		MOV	R7, 20h
+		BR	InicioAO
+DesenhaObst:	MOV	R7, CHAR_X
+InicioAO:	MOV	R1, R0
 		MOV	R2, OBSTACULOS
-		DEC	R2
-CicloDeseObst:	CMP	R1, COLUNAS
-		BR.P	FimDesenhaOb
+CicloColAO:	CMP	R1, COLUNAS
+		JMP.NN	FimAtualzObst
 		CMP	M[R2], R0
-		BR.Z	FimCicloDO
+		JMP.Z	FimCicloAO
+		MOV	R4, LINHAS
+		SUB	R4, 2
+		SUB	R4, M[R2]
 		MOV	R3, LINHAS
 		SUB	R3, 2
-		MOV	R4, R1
-		MOV	R5, R3
-		SHL	R5, 8
-		ADD	R5, R4
-		MOV	M[DISPLAY_C_ADDR], R5
-		MOV	R6, CHAR_X
-		MOV	M[DISPLAY_O_ADDR], R6
-FimCicloDO:	INC	R1
+CicloLinhaAO:	CMP	R3, R4
+		BR.NZ	SaltaCicloAO
+		SUB	R3, 5
+SaltaCicloAO:	PUSH	R3
+		PUSH	R1
+		PUSH	R7
+		CALL	EscreveChar
+		DEC	R3
+		CMP	R3, R0
+		BR.NZ	CicloLinhaAO
+FimCicloAO:	INC	R1
 		INC	R2
-		BR	CicloDeseObst
-FimDesenhaOb:	RET
+		JMP	CicloColAO
+FimAtualzObst:	RETN	1
 
 ; MudaPassaro:
 ;		R1 = novaLinha
@@ -243,15 +274,6 @@ MudaPassaro:	CALL	LimpaPassaro
 		CALL	DesenhaPassaro
 		RETN	2
 
-SobePassaro:	MOV	R1, M[P_LINHA_ATUAL]
-		SUB	R1, V_SUBIDA
-		PUSH	R1
-		PUSH	M[P_COLUNA_ATUAL]
-		CALL	MudaPassaro
-		DEC	M[FALTA_SUBIR]
-		MOV	M[DEVE_SUBIR], R0
-		RET
-
 CriaObstaculo:	MOV	R1, OBSTACULOS
 		ADD	R1, COLUNAS
 		DEC	R1
@@ -259,15 +281,24 @@ CriaObstaculo:	MOV	R1, OBSTACULOS
 		MOV	M[CONT_STEP_ADDR], R7
 		MOV	R7, 1
 		MOV	M[CONT_CTRL_ADDR], R7
-		MOV	R2, 1
+		PUSH	R1
+		PUSH	R0
+		CALL	Random
+		POP	R2
+		POP	R1
 		MOV	M[R1], R2
 		MOV	M[DEVE_CRIAR_OSBT], R0
 		MOV	R1, INTERV_OBSTAC
 		MOV	M[CONTADOR_OBST], R1
-		CALL	DesenhaObst
+		PUSH	R0
+		CALL	AtualizaObst
+		PUSH	1
+		CALL	AtualizaObst
 		RET
 
-MoveObstaculos:	MOV	R1, COLUNAS
+MoveObstaculos:	PUSH	R0
+		CALL	AtualizaObst
+		MOV	R1, COLUNAS
 		DEC	R1
 		MOV	R2, OBSTACULOS
 		ADD	R2, R1
@@ -288,9 +319,27 @@ tempAt3:	DEC	M[CONTADOR_OBST]
 		MOV	M[DEVE_MOVER_OBST], R0
 		MOV	R1, M[V_OBSTACULOS]
 		MOV	M[CONT_MOV_OBST], R1
-		CALL	AtualizaJanela
-		CALL	DesenhaObst
+		PUSH	1
+		CALL	AtualizaObst
 FimMoveObst:	RET
+
+SobePassaro:	MOV	R1, 0000000010010000b
+		MOV	M[VELOCIDADE], R1
+		MOV	M[DEVE_SUBIR], R0
+		RET
+
+PhysicsStep:	MOV	R1, M[VELOCIDADE]
+		SUB	R1, GRAV_POR_STEP
+		MOV	M[VELOCIDADE], R1
+		MOV	R2, M[LINHA_ATUAL]
+		SUB	R2, R1
+		MOV	M[LINHA_ATUAL], R2
+		SHR	R2, 8
+		PUSH	R2
+		PUSH	M[P_COLUNA_ATUAL]
+		CALL	MudaPassaro
+		MOV	M[DEVE_PYSC_STEP], R0
+		RET
 
 Inicio:		MOV	R7, SP_INICIAL
 		MOV	SP, R7
@@ -299,27 +348,42 @@ Inicio:		MOV	R7, SP_INICIAL
 		ENI
 		MOV	R7, FFFFh
 		MOV	M[DISPLAY_C_ADDR], R7
-
 		MOV	R1, V_OBSTACULOS_1
 		MOV	M[V_OBSTACULOS], R1
-		CALL 	EscreveMsg
-Comeca_jogo:	CALL	AtualizaJanela
+		PUSH	Vartext1
+		PUSH	11
+		PUSH	34
+		CALL	EscreveStr
+		PUSH	Vartext2
+		PUSH	13
+		PUSH	25
+		CALL	EscreveStr
+EsperaInicio:	CMP 	M[COMECAR_JOGO], R0
+		BR.Z	ComecaJogo
+		INC	M[N_SEQUENCIA]
+		BR	EsperaInicio
 
+ComecaJogo:	CALL	AtualizaJanela
 		MOV	R7, PHYSICS_STEP
 		MOV	M[CONT_STEP_ADDR], R7
 		MOV	R7, 1
 		MOV	M[CONT_CTRL_ADDR], R7
-Ciclo1:		CMP	M[DEVE_SUBIR], R0
+Ciclo1:		CMP	M[DEVE_PYSC_STEP], R0
 		BR.Z	Ciclo2
+		DSI
+		CALL	PhysicsStep
+		ENI
+Ciclo2:		CMP	M[DEVE_SUBIR], R0
+		BR.Z	Ciclo3
 		DSI
 		CALL	SobePassaro
 		ENI
-Ciclo2:		CMP	M[DEVE_CRIAR_OSBT], R0
-		BR.Z	Ciclo3
+Ciclo3:		CMP	M[DEVE_CRIAR_OSBT], R0
+		BR.Z	Ciclo4
 		DSI
 		CALL	CriaObstaculo
 		ENI
-Ciclo3:		CMP	M[DEVE_MOVER_OBST], R0
+Ciclo4:		CMP	M[DEVE_MOVER_OBST], R0
 		BR.Z	Ciclo1
 		DSI
 		CALL	MoveObstaculos

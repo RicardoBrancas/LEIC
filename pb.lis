@@ -12,14 +12,16 @@
 	INT_MASK                         8003         CONSTANT
 	COLUNAS                          004F         CONSTANT
 	LINHAS                           0018         CONSTANT
+	POS_OBST_MAX                     000F         CONSTANT
 	FIM_TEXTO                        0040         CONSTANT
 	CHAR_TRACO                       002D         CONSTANT
 	CHAR_O                           004F         CONSTANT
 	CHAR_X                           0058         CONSTANT
 	CHAR_                            003E         CONSTANT
 	PHYSICS_STEP                     0001         CONSTANT
+	GRAV_POR_STEP                    0010         CONSTANT
 	V_SUBIDA                         0001         CONSTANT
-	LINHAS_SOBE                      0003         CONSTANT
+	LINHAS_SOBE                      0004         CONSTANT
 	INTERV_OBSTAC                    0005         CONSTANT
 	V_OBSTACULOS_1                   000A         CONSTANT
 	V_OBSTACULOS_2                   0008         CONSTANT
@@ -27,61 +29,73 @@
 	V_OBSTACULOS_4                   0004         CONSTANT
 	V_OBSTACULOS_5                   0002         CONSTANT
 	V_OBSTACULOS_6                   0001         CONSTANT
+	MASK_SEQUENCIA                   8016         CONSTANT
 	Vartext1                         8000           STRING
 	Vartext2                         800B           STRING
 	COMECAR_JOGO                     8028           STRING
-	P_LINHA_ATUAL                    8029           STRING
-	P_COLUNA_ATUAL                   802A           STRING
-	FALTA_SUBIR                      802B           STRING
-	V_OBSTACULOS                     802C           STRING
-	CONT_MOV_OBST                    802D           STRING
-	CONTADOR_OBST                    802E           STRING
-	OBSTACULOS                       802F            TABLE
-	DEVE_SUBIR                       807E           STRING
-	DEVE_CRIAR_OSBT                  807F           STRING
-	DEVE_MOVER_OBST                  8080           STRING
+	N_SEQUENCIA                      8029           STRING
+	P_LINHA_ATUAL                    802A           STRING
+	P_COLUNA_ATUAL                   802B           STRING
+	LINHA_ATUAL                      802C           STRING
+	FALTA_SUBIR                      802D           STRING
+	VELOCIDADE                       802E           STRING
+	V_OBSTACULOS                     802F           STRING
+	CONT_MOV_OBST                    8030           STRING
+	CONTADOR_OBST                    8031           STRING
+	OBSTACULOS                       8032            TABLE
+	DEVE_SUBIR                       8081           STRING
+	DEVE_CRIAR_OSBT                  8082           STRING
+	DEVE_MOVER_OBST                  8083           STRING
+	DEVE_PYSC_STEP                   8084           STRING
 	INT0                             FE00         VARIABLE
 	INT1                             FE01         VARIABLE
 	INT15                            FE0F         VARIABLE
 	i0Premido                        0002            LABEL
 	i1Premido                        0007            LABEL
 	tempAtivado                      000A            LABEL
-	tempAt1                          0011            LABEL
-	tempAt2                          0018            LABEL
-	FimTempAtivado                   0022            LABEL
-	EscreveMsg                       0023            LABEL
-	CicloEscreveMsg                  0027            LABEL
-	Fim                              0036            LABEL
-	EscreveMsg1                      0037            LABEL
-	CicloEscreveMsg1                 003B            LABEL
-	Fim1                             004A            LABEL
-	LimpaJanela                      0050            LABEL
-	CicloLinhas                      0052            LABEL
-	CicloColunas                     0055            LABEL
-	FimColunas                       0063            LABEL
-	FimAJ                            0066            LABEL
-	AtualizaJanela                   0067            LABEL
-	DesenhaLimites                   006E            LABEL
-	DL1                              0076            LABEL
-	FimDL1                           0081            LABEL
-	DL2                              0088            LABEL
-	FimDL2                           0093            LABEL
-	DesenhaPassaro                   0095            LABEL
-	LimpaPassaro                     00AD            LABEL
-	DesenhaObst                      00C5            LABEL
-	CicloDeseObst                    00C9            LABEL
-	FimCicloDO                       00DC            LABEL
-	FimDesenhaOb                     00DF            LABEL
-	MudaPassaro                      00E0            LABEL
-	SobePassaro                      00ED            LABEL
-	CriaObstaculo                    00FB            LABEL
-	MoveObstaculos                   0114            LABEL
-	CicloMoveObst                    011B            LABEL
-	FimCicloMO                       0123            LABEL
-	tempAt3                          012A            LABEL
-	FimMoveObst                      0136            LABEL
-	Inicio                           0137            LABEL
-	Comeca_jogo                      0149            LABEL
-	Ciclo1                           0153            LABEL
-	Ciclo2                           015A            LABEL
-	Ciclo3                           0161            LABEL
+	tempAt2                          0015            LABEL
+	FimTempAtivado                   001F            LABEL
+	Random                           0020            LABEL
+	Random2                          0027            LABEL
+	RandomFim                        002E            LABEL
+	EscreveChar                      0035            LABEL
+	EscreveStr                       0048            LABEL
+	CicloEscreveStr                  0052            LABEL
+	FimEscreveStr                    005E            LABEL
+	LimpaJanela                      0063            LABEL
+	CicloLinhas                      0065            LABEL
+	CicloColunas                     0068            LABEL
+	FimColunas                       0073            LABEL
+	FimAJ                            0076            LABEL
+	AtualizaJanela                   0077            LABEL
+	DesenhaLimites                   007E            LABEL
+	DL1                              0086            LABEL
+	FimDL1                           0091            LABEL
+	DL2                              0098            LABEL
+	FimDL2                           00A3            LABEL
+	DesenhaPassaro                   00A5            LABEL
+	LimpaPassaro                     00B7            LABEL
+	AtualizaObst                     00C9            LABEL
+	DesenhaObst                      00CF            LABEL
+	InicioAO                         00D1            LABEL
+	CicloColAO                       00D4            LABEL
+	CicloLinhaAO                     00E4            LABEL
+	SaltaCicloAO                     00E8            LABEL
+	FimCicloAO                       00F0            LABEL
+	FimAtualzObst                    00F4            LABEL
+	MudaPassaro                      00F5            LABEL
+	CriaObstaculo                    0102            LABEL
+	MoveObstaculos                   0124            LABEL
+	CicloMoveObst                    012E            LABEL
+	FimCicloMO                       0136            LABEL
+	tempAt3                          013D            LABEL
+	FimMoveObst                      0149            LABEL
+	SobePassaro                      014A            LABEL
+	PhysicsStep                      0151            LABEL
+	Inicio                           0165            LABEL
+	EsperaInicio                     0185            LABEL
+	ComecaJogo                       018B            LABEL
+	Ciclo1                           0195            LABEL
+	Ciclo2                           019C            LABEL
+	Ciclo3                           01A3            LABEL
+	Ciclo4                           01AA            LABEL
