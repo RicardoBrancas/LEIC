@@ -26,7 +26,7 @@ As operações básicas associadas a este TAD são:
 
 ### TAD tabuleiro
 O TAD tabuleiro será utilizado para representar o tabuleiro. Este TAD deverá permitir:
-1. representar um tabuleiro de P icross (uma grelha de n × n células);
+1. representar um tabuleiro de Picross (uma grelha de n × n células);
 2. aceder a cada uma das células do tabuleiro;
 3. modificar o conteúdo de cada uma das células.
 #### Tabuleiro inicial.
