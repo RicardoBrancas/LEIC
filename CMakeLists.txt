@@ -3,3 +3,5 @@ project(Projeto1)
 
 set(CMAKE_CXX_FLAGS "-g -Wall")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "../out")
+
+add_executable(projeto1 main.c)
