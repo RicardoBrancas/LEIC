@@ -1,19 +1,19 @@
-#Distribuição de Tarefas
+# Distribuição de Tarefas
 
-##Ricardo
-A
-F
-R
-N
-Q
-C
-L
+## Ricardo
+- A
+- F
+- R
+- N
+- Q
+- C
+- L
 
-##Mihail
-I
-G
-S
-P
-V
-O
-X
+## Mihail
+- I
+- G
+- S
+- P
+- V
+- O
+- X
