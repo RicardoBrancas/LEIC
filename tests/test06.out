@@ -1,0 +1,106 @@
+*Impossivel remover voo RT HMT MQJ
+*Impossivel remover voo RT SWI MQJ
+*Impossivel remover voo RT JLE MQJ
+*Impossivel adicionar voo RT MQJ HMT
+Voos entre cidades MQJ:JLE:0:0
+MQJ:2:0:1
+JLE:7:0:0
+HMT:16:1:0
+IQQ:12:0:0
+SWI:8:0:0
+*Impossivel remover voo RT SWI JLE
+*Impossivel adicionar voo RT SWI IQQ
+*Impossivel remover voo MQJ IQQ
+*Impossivel adicionar voo SWI MQJ
+*Impossivel adicionar voo MQJ SWI
+*Impossivel remover voo JLE MQJ
+*Impossivel remover voo IQQ SWI
+HMT:16:0:0
+IQQ:12:0:1
+JLE:7:1:0
+MQJ:2:0:0
+SWI:8:0:0
+Voo mais popular JLE:IQQ:1
+*Impossivel remover voo RT SWI JLE
+*Impossivel adicionar voo RT MQJ SWI
+*Impossivel remover voo SWI JLE
+*Impossivel remover voo RT JLE MQJ
+*Impossivel adicionar voo JLE HMT
+*Impossivel adicionar voo IQQ SWI
+Aeroporto com mais rotas IQQ:1:3
+*Impossivel adicionar voo SWI JLE
+*Impossivel remover voo RT MQJ SWI
+Voos entre cidades SWI:HMT:0:0
+Aeroporto com mais rotas IQQ:2:4
+*Impossivel adicionar voo JLE HMT
+Voos entre cidades JLE:SWI:0:0
+*Impossivel adicionar voo JLE SWI
+*Impossivel adicionar voo MQJ IQQ
+*Impossivel adicionar voo HMT JLE
+*Impossivel adicionar voo RT HMT ZHZ
+HMT:16:0:0
+IQQ:12:0:0
+JLE:7:0:1
+MQJ:19:1:0
+SWI:8:0:0
+ZHZ:14:0:0
+0:4
+1:2
+*Impossivel adicionar voo RT HMT MQJ
+*Impossivel adicionar voo RT JLE IQQ
+*Impossivel remover voo ZHZ JLE
+*Impossivel remover voo RT MQJ JLE
+*Impossivel adicionar voo IQQ HMT
+*Impossivel adicionar voo SWI HMT
+*Impossivel adicionar voo RT HMT IQQ
+*Impossivel adicionar voo ZHZ IQQ
+*Impossivel remover voo JLE MQJ
+*Impossivel remover voo RT SWI IQQ
+*Impossivel remover voo ZHZ SWI
+*Impossivel adicionar voo RT FZB MRO
+0:5
+1:1
+3:2
+5:1
+*Capacidade de HMT inalterada
+*Impossivel adicionar voo SWI HMT
+*Impossivel adicionar voo RT SWI HMT
+*Impossivel adicionar voo RT MRO ZHZ
+*Impossivel remover voo RT IQQ FZB
+Aeroporto com mais ligacoes JLE:3
+*Impossivel adicionar voo RT SWI IQQ
+*Impossivel adicionar voo RT FZB IQQ
+*Impossivel adicionar voo RT HMT SWI
+*Impossivel remover voo FZB TKS
+Voos entre cidades JLE:MQJ:0:2
+Aeroporto com mais ligacoes JLE:3
+0:6
+1:1
+2:1
+3:2
+5:1
+Aeroporto com mais rotas JLE:2:3
+*Impossivel adicionar voo RT HMT IQQ
+0:4
+1:4
+2:1
+3:1
+4:1
+5:1
+*Impossivel remover voo RT FZB SWI
+DIW:1:0:0
+FZB:15:2:1
+GVW:16:0:0
+HMT:16:0:0
+IQQ:12:0:0
+JLE:7:3:4
+MQJ:19:2:1
+MRO:2:0:2
+MTV:1:1:0
+SWI:8:0:0
+TKS:15:1:0
+UCG:8:0:1
+ZHZ:14:2:2
+*Impossivel remover voo RT SWI UCG
+Aeroporto com mais ligacoes JLE:4
+8:13

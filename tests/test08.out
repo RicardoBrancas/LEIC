@@ -1,0 +1,882 @@
+Voos entre cidades RHH:GZU:0:0
+*Impossivel remover voo RHH PVO
+Aeroporto com mais rotas GZU:1:0
+*Impossivel remover voo RT IHW QPV
+ARF:2:0:0
+BTJ:7:1:0
+CLY:18:0:0
+GZU:16:1:0
+IHW:6:0:0
+OXL:1:1:0
+PVO:18:0:2
+QPV:10:0:0
+RHH:15:0:1
+ZTQ:2:0:0
+Aeroporto com mais rotas PVO:0:3
+Aeroporto com mais rotas PVO:0:3
+Voo mais popular BTJ:PVO:2
+*Impossivel remover voo CLY IHW
+*Impossivel adicionar voo RT OXL BTJ
+*Impossivel remover voo IHW CLY
+*Impossivel adicionar voo RT HUX ZTQ
+Aeroporto com mais rotas RHH:2:2
+Voos entre cidades HUX:BTJ:0:0
+*Impossivel remover voo RT QPV GZU
+Aeroporto com mais rotas RHH:2:3
+*Impossivel adicionar voo RT PVO HUX
+Voo mais popular GZU:RHH:1
+*Impossivel adicionar voo RT OXL BTJ
+Voo mais popular GZU:RHH:1
+*Impossivel adicionar voo SFM PVO
+*Impossivel remover voo RT PVO QPV
+*Impossivel adicionar voo RT ZTQ HUX
+*Impossivel adicionar voo RT ZTQ ARF
+Voos entre cidades BTJ:RHH:0:0
+*Impossivel adicionar voo RT HUX ARF
+*Impossivel adicionar voo OXL CLY
+Aeroporto com mais ligacoes RHH:3
+Voo mais popular HUX:IHW:2
+*Impossivel remover voo RHH BTJ
+Aeroporto com mais rotas IHW:3:2
+*Impossivel adicionar voo CLY PVO
+Aeroporto com mais rotas IHW:3:2
+*Impossivel remover voo PVO CLY
+*Impossivel adicionar voo RT OXL SFM
+Voo mais popular HUX:IHW:2
+*Impossivel adicionar voo GZU QPV
+*Impossivel adicionar voo RT ARF HUX
+*Impossivel remover voo RT PVO CLY
+Voos entre cidades QPV:OXL:0:0
+*Impossivel adicionar voo RT HUX ZTQ
+*Capacidade de ARF inalterada
+*Impossivel remover voo ARF SFM
+Aeroporto com mais rotas IHW:4:2
+GZU:16:3:2
+CLY:18:1:1
+PVO:18:0:0
+RHH:15:1:2
+IHW:6:4:2
+ARF:2:0:0
+OXL:1:0:1
+QPV:10:0:0
+ZTQ:2:1:1
+BTJ:7:1:1
+HUX:6:2:2
+SFM:20:2:3
+SAD:8:0:0
+*Impossivel adicionar voo PVO IHW
+*Impossivel adicionar voo RT ZTQ SAD
+*Impossivel adicionar voo RT ZTQ CLY
+*Impossivel adicionar voo RT CLY ARF
+*Impossivel adicionar voo RT HUX ZTQ
+*Impossivel adicionar voo RHH IHW
+Voos entre cidades OXL:ARF:0:0
+Voo mais popular IHW:HUX:2
+*Impossivel adicionar voo RT HUX GZU
+*Impossivel adicionar voo QPV BTJ
+GZU:16:3:3
+CLY:18:1:1
+PVO:18:0:0
+RHH:15:1:4
+IHW:6:4:2
+ARF:2:0:0
+OXL:1:0:1
+QPV:10:0:0
+ZTQ:2:1:1
+BTJ:7:3:1
+HUX:6:3:3
+SFM:20:3:3
+SAD:8:1:1
+*Impossivel adicionar voo HUX SFM
+*Impossivel remover voo HUX SFM
+Aeroporto com mais rotas GZU:3:3
+*Impossivel adicionar voo IHW ZTQ
+*Impossivel adicionar voo RT QPV ZTQ
+*Impossivel adicionar voo PVO ARF
+*Impossivel remover voo RT ZTQ HLY
+Voos entre cidades ARF:ZTQ:0:0
+*Impossivel adicionar voo RT ARF IHW
+*Impossivel adicionar voo RHH OXL
+*Impossivel adicionar voo RT OXL SFM
+*Impossivel adicionar voo RHH IHW
+*Impossivel adicionar voo RT SFM OXL
+Aeroporto com mais rotas GZU:3:3
+Aeroporto com mais ligacoes GZU:4
+Aeroporto com mais ligacoes GZU:4
+*Impossivel adicionar voo RT HLY QPV
+ARF:2:0:0
+BTJ:7:4:2
+CLY:18:0:2
+GZU:16:3:3
+HLY:2:1:0
+HUX:6:3:3
+IHW:6:4:2
+OXL:1:0:0
+PVO:18:0:0
+QPV:10:0:0
+RHH:15:2:4
+SAD:8:2:2
+SFM:20:3:4
+ZTQ:2:1:1
+*Impossivel adicionar voo RT SFM HUX
+GZU:16:3:3
+CLY:18:0:2
+PVO:18:0:0
+RHH:15:2:4
+IHW:6:4:2
+ARF:2:0:0
+OXL:1:0:0
+QPV:10:0:0
+ZTQ:2:1:1
+BTJ:7:4:2
+HUX:6:3:3
+SFM:20:3:4
+SAD:8:2:2
+HLY:2:1:0
+*Impossivel adicionar voo RT ZTQ OXL
+*Impossivel adicionar voo HUX SAD
+Voo mais popular IHW:HUX:2
+*Impossivel adicionar voo IHW HLY
+*Impossivel adicionar voo RT OXL QPV
+*Impossivel adicionar voo ZTQ HUX
+*Impossivel adicionar voo CLY IHW
+*Impossivel adicionar voo RT HLY RHH
+*Impossivel adicionar voo CLY IHW
+*Impossivel adicionar voo PVO BTJ
+0:5
+1:1
+2:2
+4:1
+6:5
+7:1
+*Impossivel adicionar voo RT SFM PVO
+*Impossivel adicionar voo RT SAD QPV
+*Impossivel remover voo RT PVO TFL
+*Impossivel adicionar voo RT CLY QPV
+*Impossivel remover voo GZU BTJ
+*Impossivel remover voo RT BTJ HLY
+GZU:16:3:3
+CLY:18:0:2
+PVO:18:0:0
+RHH:15:2:4
+IHW:6:4:2
+ARF:2:0:0
+OXL:1:0:0
+QPV:10:0:0
+ZTQ:2:1:1
+BTJ:9:4:2
+HUX:6:3:3
+SFM:20:3:4
+SAD:8:2:2
+HLY:2:1:0
+LAM:5:0:0
+TFL:10:0:0
+*Impossivel adicionar voo RT GZU IHW
+*Impossivel adicionar voo ARF IHW
+*Impossivel adicionar voo RT ARF QPV
+Aeroporto com mais ligacoes GZU:4
+*Impossivel remover voo PVO SFM
+*Capacidade de IHW inalterada
+Aeroporto com mais rotas SFM:3:4
+*Impossivel remover voo TFL HUX
+*Impossivel remover voo QPV SAD
+*Impossivel adicionar voo RT HLY TFL
+*Impossivel adicionar voo IHW OXL
+*Impossivel adicionar voo QPV HLY
+*Impossivel adicionar voo RT CLY QPV
+*Impossivel adicionar voo HLY RHH
+*Capacidade de PVO inalterada
+*Impossivel remover voo SAD ARF
+*Impossivel remover voo RT SAD RHH
+*Impossivel adicionar voo RT OXL PVO
+*Impossivel adicionar voo PVO HLY
+ARF:2:0:0
+BTJ:9:2:2
+CLY:18:1:2
+GZU:16:2:3
+HLY:2:2:0
+HUX:6:3:3
+IHW:6:4:2
+JJU:16:0:0
+LAM:5:0:0
+OXL:1:0:0
+PVO:18:0:0
+QPV:10:0:0
+RHH:15:0:0
+SAD:8:3:4
+SFM:20:3:4
+TFL:10:0:0
+ZTQ:2:0:0
+*Impossivel adicionar voo RT OXL CLY
+*Impossivel adicionar voo JJU PVO
+*Impossivel adicionar voo RT RHH SFM
+*Impossivel adicionar voo RT CLY QPV
+*Impossivel adicionar voo HLY QPV
+*Impossivel adicionar voo RT QPV SFM
+*Impossivel adicionar voo IHW SAD
+*Impossivel remover voo QPV IHW
+*Impossivel adicionar voo RHH TFL
+*Impossivel remover voo HLY IHW
+*Impossivel adicionar voo RT BTJ IHW
+*Impossivel remover voo RT ARF GZU
+*Impossivel adicionar voo RT RHH SFM
+*Impossivel remover voo RT NOM SAD
+*Impossivel adicionar voo RT LAM PVO
+Aeroporto com mais ligacoes GZU:4
+*Impossivel adicionar voo RT HUX QEZ
+*Impossivel adicionar voo IHW SFM
+Aeroporto com mais ligacoes GZU:4
+*Impossivel remover voo CLY PVO
+*Impossivel adicionar voo HLY PVO
+*Impossivel remover voo RT JJU QEZ
+Voo mais popular IHW:HUX:2
+*Capacidade de RHE inalterada
+*Impossivel remover voo RT BTJ GZU
+*Impossivel adicionar voo ARF HUX
+Voo mais popular IHW:HUX:2
+*Impossivel remover voo SAD RHE
+*Impossivel remover voo CNQ JJU
+*Impossivel remover voo CLY HLY
+Aeroporto com mais ligacoes GZU:4
+*Impossivel adicionar voo PVO RHE
+GZU:16:3:3
+CLY:18:1:2
+PVO:18:0:0
+RHH:15:0:0
+IHW:6:4:2
+ARF:2:0:0
+OXL:1:0:0
+QPV:10:0:0
+ZTQ:2:0:0
+BTJ:4:2:2
+HUX:6:3:3
+SFM:20:3:4
+SAD:8:3:4
+HLY:7:2:0
+LAM:5:0:0
+TFL:10:0:1
+JJU:16:0:0
+NOM:7:0:0
+RHE:5:0:0
+CNQ:11:0:0
+QEZ:18:0:0
+IRG:6:1:1
+MTA:4:1:1
+JFM:19:0:0
+*Impossivel adicionar voo RT RHH PVO
+*Impossivel remover voo CNQ PVO
+*Impossivel adicionar voo RT RHE PVO
+*Impossivel adicionar voo RT JJU OXL
+*Impossivel adicionar voo RHE PVO
+Aeroporto com mais rotas SFM:3:4
+*Impossivel adicionar voo XTN IHW
+Voo mais popular IHW:HUX:2
+*Impossivel adicionar voo RT TFL RHH
+0:11
+1:1
+2:7
+3:1
+4:2
+6:3
+7:2
+*Impossivel adicionar voo ARF RHE
+*Impossivel adicionar voo SFM IHW
+*Impossivel adicionar voo RT QPV TFL
+GZU:16:3:3
+CLY:18:1:2
+PVO:18:0:0
+RHH:15:0:0
+IHW:6:4:2
+ARF:2:0:0
+OXL:1:0:0
+QPV:10:0:0
+ZTQ:2:1:1
+BTJ:4:2:2
+HUX:6:3:3
+SFM:20:3:4
+SAD:8:3:5
+HLY:7:3:0
+LAM:5:0:0
+TFL:10:0:1
+JJU:16:0:0
+NOM:7:1:1
+RHE:5:1:1
+CNQ:11:1:1
+QEZ:4:2:0
+IRG:6:2:2
+MTA:4:1:1
+JFM:19:1:2
+ELI:19:0:1
+XTN:19:0:0
+HOL:14:0:0
+*Impossivel remover voo NOM XTN
+Aeroporto com mais ligacoes SAD:5
+ARF:2:0:0
+BTJ:4:2:2
+CLY:18:1:2
+CNQ:11:1:1
+ELI:19:0:1
+GZU:16:3:3
+HLY:7:3:0
+HOL:14:0:0
+HUX:6:3:3
+IHW:6:4:2
+IRG:6:2:2
+JFM:19:1:2
+JJU:16:0:0
+LAM:5:0:0
+MTA:4:1:1
+NOM:7:1:1
+OXL:1:0:0
+PVO:18:0:0
+QEZ:4:2:0
+QPV:10:0:0
+RHE:5:1:1
+RHH:15:0:0
+SAD:8:3:5
+SFM:20:3:4
+TFL:10:0:1
+XTN:19:0:0
+ZTQ:2:1:1
+*Impossivel adicionar voo RT JFM ZTQ
+*Impossivel adicionar voo RT BTJ ZTQ
+*Impossivel remover voo ZTQ ARF
+Voo mais popular IHW:HUX:2
+*Impossivel adicionar voo RT TFL PVO
+*Impossivel remover voo CNQ HLY
+*Impossivel adicionar voo OXL CLY
+Aeroporto com mais ligacoes SAD:5
+*Impossivel adicionar voo CNQ RHH
+*Impossivel adicionar voo RT MTA CLY
+*Impossivel remover voo RT IRG TFL
+ARF:2:0:0
+BTJ:4:2:2
+CLY:18:1:2
+CNQ:11:2:2
+ELI:19:0:1
+GZU:16:3:3
+HLF:15:0:0
+HLY:7:3:0
+HOL:14:0:0
+HUX:6:3:3
+IHW:6:4:2
+IRG:6:2:2
+JFM:19:2:3
+JJU:16:0:0
+LAM:5:1:2
+MTA:4:2:1
+NOM:7:2:2
+OKJ:16:0:0
+OXL:1:0:0
+PNA:13:0:0
+PVO:18:0:0
+QEZ:4:2:0
+QPV:10:0:0
+RHE:5:1:1
+RHH:15:0:0
+SAD:8:3:5
+SFM:20:3:4
+TFL:10:0:1
+XTN:19:0:0
+ZTQ:2:1:1
+*Impossivel remover voo CLY XTN
+*Impossivel remover voo RT PVO IRG
+Voos entre cidades PVO:ZTQ:0:0
+Aeroporto com mais ligacoes SAD:5
+*Impossivel adicionar voo PNA OXL
+*Impossivel adicionar voo RT PNA HUX
+*Impossivel adicionar voo RT HOL RHH
+*Impossivel adicionar voo RT ARF MTA
+*Impossivel adicionar voo RT QPV OXL
+*Impossivel adicionar voo RT SAD BTJ
+Aeroporto com mais rotas SAD:3:5
+Aeroporto com mais rotas SAD:3:5
+Voos entre cidades IHW:FGP:0:0
+ARF:2:0:0
+BTJ:4:2:2
+CLY:18:1:2
+CNQ:11:3:3
+ELI:19:0:1
+FGP:18:0:0
+GZU:16:3:3
+HLF:15:0:0
+HLY:7:3:0
+HOL:14:1:1
+HUX:6:3:3
+IHW:6:4:2
+IRG:6:2:2
+JFM:19:3:4
+JJU:16:0:0
+LAM:5:1:2
+MTA:4:2:1
+NOM:7:2:2
+OKJ:16:0:0
+OXL:1:0:0
+PNA:13:1:1
+PVO:18:0:0
+QEZ:4:3:1
+QPV:10:0:0
+RHE:5:1:1
+RHH:15:0:0
+SAD:8:3:5
+SFM:20:3:4
+TFL:10:0:1
+XTN:19:1:1
+ZTQ:2:1:1
+*Impossivel adicionar voo RT BTJ ELI
+Voos entre cidades FGP:GZU:0:0
+Voos entre cidades MTA:OXL:0:0
+*Impossivel adicionar voo RT MTA GZU
+*Impossivel remover voo RHE PVO
+*Impossivel adicionar voo RT SAD SFM
+*Impossivel adicionar voo RT RHE ZTQ
+*Impossivel adicionar voo QEZ QPV
+*Impossivel adicionar voo XTN HUX
+*Impossivel adicionar voo RT BTJ HLF
+GZU:16:6:5
+CLY:18:1:2
+PVO:18:0:0
+RHH:15:0:0
+IHW:6:4:2
+ARF:2:0:0
+OXL:1:0:0
+QPV:10:0:0
+ZTQ:2:1:1
+BTJ:4:2:2
+HUX:6:3:3
+SFM:20:3:4
+SAD:8:3:5
+HLY:7:3:1
+LAM:5:1:2
+TFL:10:1:2
+JJU:16:0:0
+NOM:7:2:2
+RHE:5:1:1
+CNQ:11:3:3
+QEZ:4:3:1
+IRG:6:2:2
+MTA:4:2:1
+JFM:19:3:4
+ELI:19:0:2
+XTN:19:1:1
+HOL:14:3:3
+HLF:15:0:1
+PNA:13:1:1
+OKJ:16:0:0
+FGP:18:2:0
+*Impossivel adicionar voo RT JFM ZTQ
+*Impossivel adicionar voo RT NOM OXL
+*Impossivel remover voo RT RHE RHH
+0:8
+1:1
+2:6
+3:6
+4:3
+5:1
+6:2
+7:2
+8:2
+*Impossivel adicionar voo SFM TFL
+*Impossivel adicionar voo RT SAD ELI
+*Impossivel adicionar voo IHW HOL
+Voos entre cidades HUX:ZTQ:0:0
+Aeroporto com mais ligacoes GZU:5
+*Impossivel adicionar voo RT XTN ARF
+Aeroporto com mais ligacoes GZU:5
+Voo mais popular GZU:TFL:2
+*Impossivel adicionar voo RT MTA ARF
+*Impossivel adicionar voo SFM IRG
+Aeroporto com mais rotas GZU:6:3
+Voos entre cidades XTN:IHW:0:0
+Aeroporto com mais ligacoes GZU:5
+Aeroporto com mais ligacoes GZU:5
+*Impossivel adicionar voo RT SAD HLY
+*Impossivel adicionar voo JFM ZTQ
+*Impossivel adicionar voo RHE ZTQ
+*Impossivel adicionar voo RT SFM ELI
+*Impossivel remover voo RT OXL HLY
+*Impossivel adicionar voo RT PVO ELI
+*Impossivel remover voo RT OKJ QEZ
+*Impossivel adicionar voo RT PVO HUX
+GZU:16:6:4
+CLY:18:1:3
+PVO:18:0:0
+RHH:15:0:0
+IHW:6:3:3
+ARF:2:0:0
+OXL:1:0:0
+QPV:10:0:0
+ZTQ:2:1:0
+BTJ:4:1:1
+HUX:6:3:3
+SFM:20:0:0
+SAD:8:3:5
+HLY:7:2:1
+LAM:17:2:2
+TFL:10:1:2
+JJU:16:0:0
+NOM:7:0:0
+RHE:5:1:1
+CNQ:11:4:4
+QEZ:4:3:1
+IRG:6:3:3
+MTA:4:2:2
+JFM:19:5:4
+ELI:19:1:2
+XTN:19:2:2
+HOL:14:4:4
+HLF:15:0:0
+PNA:13:1:2
+OKJ:16:0:0
+FGP:18:2:0
+LWK:3:0:1
+LCH:2:0:0
+BVM:16:0:1
+TRE:8:0:0
+*Impossivel adicionar voo RT JFM NOM
+*Impossivel adicionar voo RHH PNA
+*Impossivel adicionar voo NOM PVO
+*Impossivel remover voo RT NOM ARF
+*Impossivel remover voo RT RHE MTA
+*Impossivel adicionar voo RT IHW XTN
+*Impossivel adicionar voo RT HLY OXL
+Aeroporto com mais rotas GZU:6:4
+*Impossivel remover voo RT CLY FGP
+Aeroporto com mais ligacoes JFM:6
+Aeroporto com mais rotas GZU:6:4
+*Impossivel remover voo CLY QPV
+*Impossivel adicionar voo RT PVO XTN
+*Impossivel remover voo LCH MXW
+*Impossivel remover voo LAM MTA
+*Capacidade de PVO inalterada
+*Impossivel adicionar voo ELI TRE
+GZU:16:6:4
+CLY:18:2:3
+PVO:18:0:0
+RHH:15:0:0
+IHW:6:3:3
+ARF:2:0:0
+OXL:1:0:0
+QPV:10:0:0
+ZTQ:2:1:0
+BTJ:4:1:1
+HUX:6:3:3
+SFM:20:0:0
+SAD:8:3:5
+HLY:7:2:2
+LAM:17:2:2
+TFL:10:1:2
+JJU:16:0:1
+NOM:7:0:0
+RHE:5:1:1
+CNQ:11:5:4
+QEZ:4:2:1
+IRG:6:3:3
+MTA:4:2:2
+JFM:19:5:4
+ELI:19:0:0
+XTN:19:3:3
+HOL:14:4:4
+HLF:15:0:0
+PNA:13:1:2
+OKJ:16:0:0
+FGP:18:1:0
+LWK:3:1:1
+LCH:2:0:0
+BVM:16:0:1
+TRE:8:0:0
+MXW:10:0:0
+*Impossivel remover voo RT HLF HUX
+*Capacidade de GZU inalterada
+*Impossivel adicionar voo RT IRG GZU
+Voos entre cidades TRE:IHW:0:0
+*Impossivel adicionar voo IHW ARF
+Voos entre cidades JFM:JMW:0:0
+Aeroporto com mais rotas GZU:6:4
+*Impossivel adicionar voo ARF JMW
+Voos entre cidades PVO:TFL:0:0
+Aeroporto com mais ligacoes JFM:6
+*Impossivel adicionar voo RT HLY SAD
+*Impossivel adicionar voo QEZ OXL
+Voo mais popular GZU:TFL:2
+*Capacidade de LWK inalterada
+Aeroporto com mais rotas GZU:6:4
+*Impossivel adicionar voo RT ARF IRG
+GZU:16:6:5
+CLY:18:1:2
+PVO:18:0:0
+RHH:15:0:0
+IHW:6:3:3
+ARF:2:0:0
+OXL:1:0:0
+QPV:10:0:0
+ZTQ:2:1:0
+BTJ:4:1:1
+HUX:6:2:2
+SFM:20:0:0
+SAD:8:0:0
+HLY:7:1:2
+LAM:17:2:2
+TFL:10:1:2
+JJU:16:0:1
+NOM:7:0:0
+RHE:5:1:1
+CNQ:11:5:4
+QEZ:4:1:1
+IRG:6:3:3
+MTA:4:2:2
+JFM:19:5:4
+ELI:19:0:0
+XTN:19:3:3
+HOL:14:4:4
+HLF:15:0:0
+PNA:13:2:2
+OKJ:16:1:1
+FGP:18:1:0
+LWK:3:1:1
+LCH:2:0:0
+BVM:16:0:1
+TRE:8:0:0
+MXW:10:0:0
+TYM:10:0:1
+JMW:8:1:0
+*Impossivel adicionar voo RT NOM HOL
+Aeroporto com mais ligacoes JFM:6
+Aeroporto com mais rotas GZU:6:5
+*Impossivel adicionar voo OKJ RHH
+*Impossivel adicionar voo RT IRG TRE
+*Impossivel adicionar voo RT ELI ZTQ
+*Impossivel adicionar voo IRG OKJ
+*Impossivel adicionar voo PVO QEZ
+*Impossivel remover voo ELI IRG
+*Impossivel remover voo RT OKJ JFM
+GZU:16:6:5
+CLY:18:1:2
+PVO:18:0:0
+RHH:15:0:0
+IHW:20:3:3
+ARF:2:0:0
+OXL:1:0:0
+QPV:10:0:0
+ZTQ:2:1:0
+BTJ:4:1:1
+HUX:6:2:2
+SFM:20:0:0
+SAD:8:0:0
+HLY:7:1:2
+LAM:17:3:2
+TFL:10:1:3
+JJU:16:0:1
+NOM:7:0:0
+RHE:5:1:1
+CNQ:11:5:4
+QEZ:4:2:1
+IRG:6:3:3
+MTA:4:2:2
+JFM:19:5:4
+ELI:19:0:0
+XTN:19:3:3
+HOL:14:4:4
+HLF:15:0:0
+PNA:13:2:2
+OKJ:16:1:1
+FGP:18:2:0
+LWK:3:1:1
+LCH:2:0:0
+BVM:16:0:2
+TRE:8:1:0
+MXW:10:0:1
+TYM:10:0:1
+JMW:8:1:1
+*Impossivel adicionar voo RT HLF IHW
+*Impossivel adicionar voo RT RHH HLY
+*Impossivel adicionar voo RT HUX SAD
+*Impossivel adicionar voo RT OKJ MTA
+*Impossivel adicionar voo RT HLF HLY
+Voo mais popular GZU:TFL:2
+*Impossivel adicionar voo RT SFM CLY
+Voos entre cidades QPV:RHE:0:0
+*Impossivel adicionar voo RT SAD TRE
+Aeroporto com mais rotas GZU:6:5
+*Impossivel adicionar voo RT HLF BVM
+0:11
+1:2
+2:10
+3:1
+4:4
+5:2
+6:4
+8:1
+9:2
+11:1
+Voo mais popular GZU:TFL:2
+Aeroporto com mais rotas GZU:6:5
+*Impossivel adicionar voo RT ARF PVO
+*Impossivel adicionar voo RT HUX QEZ
+*Impossivel remover voo RT CLY TRE
+*Impossivel adicionar voo RT RHH HLY
+*Impossivel remover voo RT BVM HUX
+*Impossivel remover voo PNA RHE
+*Impossivel adicionar voo RT CLY LWK
+*Impossivel remover voo ARF HLY
+*Impossivel adicionar voo RT EQH TYM
+*Impossivel remover voo RT FGP CNQ
+*Impossivel adicionar voo HLF ELI
+Aeroporto com mais rotas GZU:7:6
+*Impossivel adicionar voo OXL ARF
+ARF:2:0:0
+BTJ:4:2:2
+BVM:31:0:2
+CLY:18:3:4
+CNQ:11:5:4
+EDY:19:1:0
+ELI:19:0:0
+EQH:1:0:0
+ETL:11:0:0
+FGP:18:4:1
+GZU:16:7:6
+HLF:15:0:0
+HLY:7:1:3
+HOL:14:5:4
+HUX:6:3:3
+IHW:20:3:3
+IRG:6:3:3
+JFM:19:5:5
+JJU:16:2:2
+JMW:8:2:1
+LAM:17:3:2
+LCH:2:0:1
+LTF:3:0:0
+LWK:3:1:1
+MTA:4:2:2
+MXW:10:0:2
+NOM:7:0:0
+OKJ:16:1:3
+ONN:3:1:1
+OXL:1:0:0
+PNA:13:3:2
+PVO:18:0:0
+QEZ:4:2:1
+QPV:10:0:0
+RHE:5:1:1
+RHH:15:0:0
+SAD:8:0:0
+SFM:20:0:0
+TFL:10:1:3
+TRE:8:1:0
+TYM:10:1:1
+XTN:19:3:5
+ZTQ:2:2:0
+*Impossivel remover voo MXW EQH
+Voos entre cidades JMW:IHW:0:0
+*Impossivel remover voo RT PNA ELI
+Aeroporto com mais ligacoes JFM:6
+Voos entre cidades IHW:HLY:0:0
+*Impossivel adicionar voo RHH PVO
+*Impossivel adicionar voo QPV GZU
+0:16
+1:3
+2:7
+3:1
+4:6
+5:3
+6:5
+8:1
+9:1
+10:1
+*Impossivel remover voo JMW TYM
+*Impossivel adicionar voo RT ARF FGP
+*Impossivel adicionar voo RT PNA SFM
+*Impossivel remover voo CNQ NGL
+*Impossivel adicionar voo RT FGP HLF
+*Impossivel adicionar voo NGL PVO
+*Impossivel adicionar voo BVM ELI
+*Impossivel remover voo RT SFM GZU
+*Impossivel adicionar voo RHE ARF
+*Impossivel remover voo RT IHW RHH
+*Impossivel remover voo RT OXL HUX
+*Impossivel adicionar voo RT PVO PNA
+*Impossivel remover voo PNA EQH
+*Impossivel remover voo RT NGL SAD
+ARF:2:0:0
+BTJ:4:2:2
+BVM:31:0:2
+CLY:18:3:3
+CNQ:11:5:4
+EDY:19:1:0
+ELI:19:0:0
+EQH:1:0:0
+ETL:11:3:1
+FGP:18:3:0
+FNI:11:0:0
+GZU:16:0:0
+HLF:15:0:0
+HLY:7:1:3
+HOL:14:3:3
+HUX:6:3:3
+IHW:20:3:2
+IRG:6:3:3
+JFM:19:4:4
+JJU:16:2:3
+JMW:8:2:3
+LAM:17:3:2
+LCH:2:0:1
+LTF:3:0:0
+LWK:3:1:1
+MTA:4:2:2
+MXW:10:0:2
+NGL:2:0:0
+NOM:7:0:0
+OKJ:16:2:4
+ONN:3:1:1
+OXL:1:0:0
+PNA:13:3:2
+PVO:18:0:0
+QEZ:4:0:0
+QPV:10:0:0
+RHE:5:1:1
+RHH:15:0:0
+SAD:8:0:0
+SFM:20:0:0
+TFL:10:0:0
+TRE:8:2:1
+TYM:10:1:1
+XTN:19:4:6
+ZTQ:2:2:0
+*Impossivel adicionar voo RT LCH SFM
+Aeroporto com mais ligacoes JFM:6
+*Impossivel adicionar voo RT YUU ELI
+*Impossivel adicionar voo RT IRG BVM
+0:18
+1:3
+2:6
+3:2
+4:4
+5:6
+6:5
+9:1
+10:2
+*Impossivel adicionar voo RT HOL HUX
+Aeroporto com mais rotas JFM:5:5
+*Impossivel adicionar voo RT IRG GZU
+Voo mais popular IHW:HUX:2
+*Impossivel remover voo RT TFL EDY
+Aeroporto com mais rotas JFM:5:5
+*Impossivel adicionar voo RT TRE OXL
+*Impossivel adicionar voo HUX ZTQ
+*Capacidade de NOM inalterada
+*Impossivel adicionar voo JJU BTJ
+*Capacidade de QPV inalterada
+*Impossivel adicionar voo FNI ARF
+*Impossivel remover voo RT GRI MXW
+0:17
+1:3
+2:7
+3:4
+4:5
+5:5
+6:5
+7:1
+10:2
+11:1
+71:50
