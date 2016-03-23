@@ -2,6 +2,7 @@ execute_process(
  COMMAND ${test_cmd}
  INPUT_FILE ${input_test}
  OUTPUT_FILE ${output_test}
+ TIMEOUT 10
 )
 execute_process(
   COMMAND diff ${output_blessed} ${output_test}
