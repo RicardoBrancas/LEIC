@@ -12,17 +12,31 @@ typedef struct {
 
 void func_A(Aeroporto[], int);
 
+void func_I(Aeroporto[],int[][MAXAEROPORTO], int);
+
 void func_F(Aeroporto[], int[][MAXAEROPORTO], int);
+
+void func_G(Aeroporto[], int[][MAXAEROPORTO], int);
 
 void func_R(Aeroporto[], int[][MAXAEROPORTO], int);
 
+void func_S(Aeroporto[], int[][MAXAEROPORTO], int);
+
 void func_N(Aeroporto[], int[][MAXAEROPORTO], int);
+
+void func_P(Aeroporto[], int[][MAXAEROPORTO], int);
 
 void func_Q(Aeroporto[], int[][MAXAEROPORTO], int);
 
+void func_V(Aeroporto[], int[][MAXAEROPORTO], int);
+
 void func_C(Aeroporto[], int[][MAXAEROPORTO], int);
 
+void func_O(Aeroporto[], int[][MAXAEROPORTO], int);
+
 void func_L(Aeroporto[], int[][MAXAEROPORTO], int);
+
+void func_X(Aeroporto[], int[][MAXAEROPORTO], int);
 
 int main() {
 	Aeroporto aeroportos[MAXAEROPORTO];
@@ -71,6 +85,7 @@ int procuraAeroporto(Aeroporto aeroportos[], int pos, char nome[]) {
 	return -1;
 }
 
+
 int voosPartida(Aeroporto aeroportos[], int voos[][MAXAEROPORTO], int aeroporto, int posMax) {
 	int i, partidas = 0;
 	for (i = 0; i < posMax; i++) {
@@ -112,6 +127,17 @@ void func_A(Aeroporto aeroportos[], int pos) {
 	aeroportos[pos] = aero;
 }
 
+void func_I(Aeroporto aeroportos[],int voos[][MAXAEROPORTO], int posMax){
+	int capacidade, pos;
+	char nome[NOMEAEROPORTO + 1];
+	scanf("%s %d", nome, &capacidade);
+	pos = procuraAeroporto(aeroportos, posMax, nome);
+	if ((pos==-1) || (aeroportos[pos].estado==0) || (voosTotais(aeroportos, voos, pos, posMax)>(aeroportos[pos].capacidade+capacidade)))
+		printf("Capacidade de %s inalterada",nome);
+	else {(aeroportos[pos].capacidade=aeroportos[pos].capacidade+capacidade);
+	}
+}
+
 void func_F(Aeroporto aeroportos[], int voos[][MAXAEROPORTO], int posMax) {
 	char nome1[NOMEAEROPORTO + 1], nome2[NOMEAEROPORTO + 1];
 	scanf("%s %s", nome1, nome2);
@@ -127,6 +153,21 @@ void func_F(Aeroporto aeroportos[], int voos[][MAXAEROPORTO], int posMax) {
 	}
 }
 
+void func_G(Aeroporto aeroportos[], int voos[][MAXAEROPORTO], int posMax){
+	char nome1[NOMEAEROPORTO + 1], nome2[NOMEAEROPORTO + 1];
+	scanf("%s %s", nome1, nome2);
+	int pos1 = procuraAeroporto(aeroportos, posMax, nome1);
+	int pos2 = procuraAeroporto(aeroportos, posMax, nome2);
+	if (pos1 >= 0 && pos2 >= 0 &&
+	    voosTotais(aeroportos, voos, pos1, posMax) + 1 <= aeroportos[pos1].capacidade &&
+	    voosTotais(aeroportos, voos, pos2, posMax) + 1 <= aeroportos[pos2].capacidade)
+		voos[pos1][pos2]++;
+		else {
+		printf("*Impossivel adicionar voo %s %s\n", nome1, nome2);
+	}
+}
+
+
 void func_R(Aeroporto aeroportos[], int voos[][MAXAEROPORTO], int posMax) {
 	char nome1[NOMEAEROPORTO + 1], nome2[NOMEAEROPORTO + 1];
 	scanf("%s %s", nome1, nome2);
@@ -134,6 +175,19 @@ void func_R(Aeroporto aeroportos[], int voos[][MAXAEROPORTO], int posMax) {
 	int pos2 = procuraAeroporto(aeroportos, posMax, nome2);
 	if (pos1 >= 0 && pos2 >= 0 && voos[pos1][pos2] > 0) {
 		voos[pos1][pos2]--;
+	} else {
+		printf("*Impossivel remover voo %s %s\n", nome1, nome2);
+	}
+}
+
+void func_S(Aeroporto aeroportos[], int voos[][MAXAEROPORTO], int posMax){
+	char nome1[NOMEAEROPORTO + 1], nome2[NOMEAEROPORTO + 1];
+	scanf("%s %s", nome1, nome2);
+	int pos1 = procuraAeroporto(aeroportos, posMax, nome1);
+	int pos2 = procuraAeroporto(aeroportos, posMax, nome2);
+	if (pos1 >= 0 && pos2 >= 0 && voos[pos1][pos2] > 0 && voos[pos2][pos1]>0) {
+		voos[pos1][pos2]--;
+		voos[pos2][pos1]--;
 	} else {
 		printf("*Impossivel remover voo %s %s\n", nome1, nome2);
 	}
@@ -157,6 +211,17 @@ void func_N(Aeroporto aeroportos[], int voos[][MAXAEROPORTO], int posMax) {
 	}
 }
 
+void func_P(Aeroporto aeroportos[], int voos[][MAXAEROPORTO], int posMax){
+	Aeroporto maxrotas;
+	int i;
+	maxrotas=aeroportos[0];
+	for (i=1; i<posMax; i++){
+		if ((voosTotais(aeroportos, voos, i, posMax)) > (voosTotais(aeroportos,voos,(i-1),posMax)))
+		maxrotas=aeroportos[i];
+	}
+printf("Aeroporto com mais rotas %s",maxrotas.nome);
+	}
+
 void func_Q(Aeroporto aeroportos[], int voos[][MAXAEROPORTO], int posMax) {
 	int i = 0, aeroporto = 0, conex = 0;
 	for (i = 0; i < posMax; i++) {
@@ -167,6 +232,22 @@ void func_Q(Aeroporto aeroportos[], int voos[][MAXAEROPORTO], int posMax) {
 		}
 	}
 	printf("Aeroporto com mais ligacoes %s:%d\n", aeroportos[aeroporto].nome, conex);
+}
+
+void func_V(Aeroporto aeroportos[], int voos[][MAXAEROPORTO],int posMax){
+	int i,j,nrmaxvoos=voos[0][0];
+	Aeroporto partida, chegada;
+
+	for (i=0; i<posMax; i++) {
+		for (j=0; j<posMax; i++){
+			if (voos[i][j]>nrmaxvoos) {
+				nrmaxvoos=voos[i][j];
+				partida=aeroportos[i];
+				chegada=aeroportos[j];
+			}
+		}
+	}
+	printf("Voo mais popular %s %s",partida.nome, chegada.nome);
 }
 
 void func_C(Aeroporto aeroportos[], int voos[][MAXAEROPORTO], int posMax) {
@@ -183,6 +264,17 @@ void func_C(Aeroporto aeroportos[], int voos[][MAXAEROPORTO], int posMax) {
 	} else {
 		printf("*Aeroporto %s inexistente\n", nome);
 	}
+}
+
+void func_O(Aeroporto aeroportos[], int voos[][MAXAEROPORTO], int posMax) {
+	char nome[NOMEAEROPORTO+1];
+	scanf("%s", nome);
+	int pos = procuraAeroporto(aeroportos, posMax, nome);
+	if (pos>=0)
+		aeroportos[pos].estado = 0;
+	else
+		printf("*Aeroporto %s inexistente",nome);
+
 }
 
 void func_L(Aeroporto aeroportos[], int voos[][MAXAEROPORTO], int posMax) {
@@ -219,4 +311,15 @@ void func_L(Aeroporto aeroportos[], int voos[][MAXAEROPORTO], int posMax) {
 		break;
 	}
 	}
+}
+
+void func_X(Aeroporto aeroportos[], int voos[][MAXAEROPORTO], int posMax) {
+	int i,j,nraeroportos, totalvoos;
+	nraeroportos=sizeof(aeroportos)/sizeof(int);
+	for (i=0; i<posMax; i++){
+		for (j=0; j<posMax; j++){
+			totalvoos=totalvoos+voos[i][j];
+		}
+	}
+	printf("%d:%d",nraeroportos,totalvoos);
 }
