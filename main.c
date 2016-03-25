@@ -13,7 +13,7 @@ typedef struct {
 	short estado;
 } Aeroporto;
 
-void func_A(Aeroporto[], int);
+int func_A(Aeroporto[], int);
 void func_I(Aeroporto[],int[][MAXAEROPORTO], int);
 void func_F(Aeroporto[], int[][MAXAEROPORTO], int);
 void func_G(Aeroporto[], int[][MAXAEROPORTO], int);
@@ -46,8 +46,8 @@ int main() {
 		option = getchar();
 		switch (option) {
 		case 'A':
-			func_A(aeroportos, posAeroporto);
-			posAeroporto++;
+			//utiliza o valor de retorno de func_A para incrementar (ou não) a posicao do ultimo aeroporto adicionado
+			posAeroporto += func_A(aeroportos, posAeroporto);
 			break;
 		case 'I':
 			func_I(aeroportos, voos, posAeroporto);
@@ -141,11 +141,25 @@ int conexoes(Aeroporto aeroportos[], int voos[][MAXAEROPORTO], int aeroporto, in
 	return conexoes;
 }
 
-void func_A(Aeroporto aeroportos[], int pos) {
+/* Le do stdin o NOME e a CAPACIDADE do novo aeroporto.
+ * Caso haja espaco no vetor aeroportos e a capacidade seja valida, o novo
+ * aeroporto e adicionado e o valor 1 e devolvido. Caso contrario, nada
+ * acontece e o valor 0 e devolvido.
+ *
+ * INPUT: Aeroporto[] - vetor de Aeroporto ao qual o novo aeroporto vai ser adicionado
+ *        int         - indice onde o novo aeroporto vai ser colocado
+ * OUTPUT: 1 se o aeroporto foi adicionado com sucesso
+ *         0 caso contrario
+ */
+int func_A(Aeroporto aeroportos[], int pos) {
 	Aeroporto aero;
 	scanf("%s %d", aero.nome, &aero.capacidade);
-	aero.estado = 1;
-	aeroportos[pos] = aero;
+	if(pos < MAXAEROPORTO && aero.capacidade > 0) {
+		aero.estado = 1;
+		aeroportos[pos] = aero;
+		return 1;
+	}
+	return 0;
 }
 
 void func_I(Aeroporto aeroportos[],int voos[][MAXAEROPORTO], int posMax){
