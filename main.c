@@ -3,6 +3,7 @@
 #include <string.h>
 
 #define MAXAEROPORTO 1000
+#define MAXVOOS 1001
 #define NOMEAEROPORTO 3
 
 #define AEROPORTO_ABERTO 1
@@ -335,11 +336,11 @@ void func_L() {
             break;
         }
         case 2: {
-            int hist[MAXAEROPORTO + 1] = {0}, i; //Nota do enunciado
+            int hist[MAXVOOS] = {0}, i; //Nota do enunciado
             for (i = 0; i < nAeroportos; i++) {
                 hist[voosTotais(i)] += 1;
             }
-            for (i = 0; i <= MAXAEROPORTO; i++) {
+            for (i = 0; i < MAXVOOS; i++) {
                 if (hist[i] != 0) {
                     printf("%d:%d\n", i, hist[i]);
                 }
