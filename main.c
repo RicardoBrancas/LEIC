@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 #define MAXAEROPORTO 1000
@@ -14,7 +15,7 @@ typedef struct {
 } Aeroporto;
 
 int func_A(Aeroporto[], int);
-void func_I(Aeroporto[],int[][MAXAEROPORTO], int);
+void func_I(Aeroporto[], int[][MAXAEROPORTO], int);
 void func_F(Aeroporto[], int[][MAXAEROPORTO], int);
 void func_G(Aeroporto[], int[][MAXAEROPORTO], int);
 void func_R(Aeroporto[], int[][MAXAEROPORTO], int);
@@ -34,15 +35,14 @@ int main() {
 	int posAeroporto = 0;
 
 	int i, j;
-	for (int i = 0; i < MAXAEROPORTO; i++) {
-		for (int j = 0; j < MAXAEROPORTO; j++) {
+	for (i = 0; i < MAXAEROPORTO; i++) {
+		for (j = 0; j < MAXAEROPORTO; j++) {
 			voos[i][j] = 0;
 		}
 	}
 
 	int option;
-	short continua = 1;
-	while (continua) {
+	while (1) {
 		option = getchar();
 		switch (option) {
 		case 'A':
@@ -87,13 +87,13 @@ int main() {
 			break;
 		case 'X':
 			func_X(aeroportos, voos, posAeroporto);
-			continua = 0;
-			break;
+			return EXIT_SUCCESS;
+		default:
+			printf("ERRO: Comando desconhecido\n");
 		}
+		getchar(); //Le o '\n' introduzido pelo utilizador
 	}
-
-
-	return 0;
+	return EXIT_FAILURE;
 }
 
 int procuraAeroporto(Aeroporto aeroportos[], int pos, char nome[]) {
@@ -167,9 +167,12 @@ void func_I(Aeroporto aeroportos[],int voos[][MAXAEROPORTO], int posMax){
 	char nome[NOMEAEROPORTO + 1];
 	scanf("%s %d", nome, &capacidade);
 	pos = procuraAeroporto(aeroportos, posMax, nome);
-	if ((pos==-1) || (aeroportos[pos].estado==0) || (voosTotais(aeroportos, voos, pos, posMax)>(aeroportos[pos].capacidade+capacidade)))
+	if(pos >= 0 && aeroportos[pos].estado == AEROPORTO_ABERTO &&
+	   voosTotais(aeroportos, voos, pos, posMax) <= (aeroportos[pos].capacidade + capacidade)) {
+		aeroportos[pos].capacidade += capacidade;
+	} else {
 		printf("*Capacidade de %s inalterada\n",nome);
-	else {(aeroportos[pos].capacidade=aeroportos[pos].capacidade+capacidade); }
+	}
 }
 
 void func_F(Aeroporto aeroportos[], int voos[][MAXAEROPORTO], int posMax) {
@@ -196,9 +199,9 @@ void func_G(Aeroporto aeroportos[], int voos[][MAXAEROPORTO], int posMax){
 	if (pos1 >= 0 && pos2 >= 0 &&
 	    voosTotais(aeroportos, voos, pos1, posMax) + 1 <= aeroportos[pos1].capacidade &&
 	    voosTotais(aeroportos, voos, pos2, posMax) + 1 <= aeroportos[pos2].capacidade &&
-	    aeroportos[pos1].estado == AEROPORTO_ABERTO && aeroportos[pos2].estado == AEROPORTO_ABERTO)
+	    aeroportos[pos1].estado == AEROPORTO_ABERTO && aeroportos[pos2].estado == AEROPORTO_ABERTO) {
 		voos[pos1][pos2]++;
-	else {
+	} else {
 		printf("*Impossivel adicionar voo %s %s\n", nome1, nome2);
 	}
 }
@@ -221,7 +224,7 @@ void func_S(Aeroporto aeroportos[], int voos[][MAXAEROPORTO], int posMax){
 	scanf("%s %s", nome1, nome2);
 	int pos1 = procuraAeroporto(aeroportos, posMax, nome1);
 	int pos2 = procuraAeroporto(aeroportos, posMax, nome2);
-	if (pos1 >= 0 && pos2 >= 0 && voos[pos1][pos2] > 0 && voos[pos2][pos1]>0) {
+	if (pos1 >= 0 && pos2 >= 0 && voos[pos1][pos2] > 0 && voos[pos2][pos1] > 0) {
 		voos[pos1][pos2]--;
 		voos[pos2][pos1]--;
 	} else {
@@ -251,7 +254,7 @@ void func_P(Aeroporto aeroportos[], int voos[][MAXAEROPORTO], int posMax){
 	int aeroMaxRotas = 0;
 	int i;
 	for (i = 0; i < posMax; i++) {
-		if ((voosTotais(aeroportos, voos, i, posMax)) > (voosTotais(aeroportos, voos, aeroMaxRotas, posMax)))
+		if (voosTotais(aeroportos, voos, i, posMax) > voosTotais(aeroportos, voos, aeroMaxRotas, posMax))
 			aeroMaxRotas = i;
 	}
 	printf("Aeroporto com mais rotas %s:%d:%d\n", aeroportos[aeroMaxRotas].nome,
@@ -272,19 +275,19 @@ void func_Q(Aeroporto aeroportos[], int voos[][MAXAEROPORTO], int posMax) {
 }
 
 void func_V(Aeroporto aeroportos[], int voos[][MAXAEROPORTO],int posMax){
-	int i,j,nrmaxvoos=voos[0][0];
+	int i, j, nMaxVoos = voos[0][0];
 	Aeroporto partida, chegada;
 
 	for (i = 0; i < posMax; i++) {
 		for (j = 0; j < posMax; j++) {
-			if (voos[i][j]>nrmaxvoos) {
-				nrmaxvoos=voos[i][j];
-				partida=aeroportos[i];
-				chegada=aeroportos[j];
+			if (voos[i][j] > nMaxVoos) {
+				nMaxVoos = voos[i][j];
+				partida = aeroportos[i];
+				chegada = aeroportos[j];
 			}
 		}
 	}
-	printf("Voo mais popular %s:%s:%d\n", partida.nome, chegada.nome, nrmaxvoos);
+	printf("Voo mais popular %s:%s:%d\n", partida.nome, chegada.nome, nMaxVoos);
 }
 
 void func_C(Aeroporto aeroportos[], int voos[][MAXAEROPORTO], int posMax) {
@@ -307,7 +310,7 @@ void func_O(Aeroporto aeroportos[], int voos[][MAXAEROPORTO], int posMax) {
 	char nome[NOMEAEROPORTO+1];
 	scanf("%s", nome);
 	int pos = procuraAeroporto(aeroportos, posMax, nome);
-	if (pos>=0)
+	if (pos >= 0)
 		aeroportos[pos].estado = AEROPORTO_ABERTO;
 	else
 		printf("*Aeroporto %s inexistente\n",nome);
@@ -344,11 +347,11 @@ void func_L(Aeroporto aeroportos[], int voos[][MAXAEROPORTO], int posMax) {
 		break;
 	}
 	case 2: {
-		int hist[MAXAEROPORTO] = {0}, i; //Nota do enunciado
+		int hist[MAXAEROPORTO+1] = {0}, i; //Nota do enunciado
 		for(i = 0; i < posMax; i++) {
 			hist[voosTotais(aeroportos, voos, i, posMax)] += 1;
 		}
-		for(i = 0; i < MAXAEROPORTO; i++) {
+		for(i = 0; i <= MAXAEROPORTO; i++) {
 			if(hist[i] != 0) {
 				printf("%d:%d\n", i, hist[i]);
 			}
