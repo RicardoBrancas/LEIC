@@ -162,6 +162,11 @@ void func_I() {
     }
 }
 
+/* Le do STDIN o nome dos dois aeroportos. Caso ambos os aeroportos estejam
+ * definidos, abertos e tenham 2 voos livres (ida e volta para cada um dos
+ * aeroportos), os voos são adicionados na matriz voos.
+ * Caso contra'rio uma messagem de erro e' mostrada.
+ */
 void func_F() {
     char nome1[NOMEAEROPORTO + 1], nome2[NOMEAEROPORTO + 1];
     scanf("%s %s", nome1, nome2);
@@ -193,7 +198,12 @@ void func_G() {
     }
 }
 
-
+/* Le do STDIN o nome dos dois aeroportos. Caso ambos os aeroportos estejam
+ * definidos e exista pelo menos um voo do 1o para o 2o aeroporto, e removido
+ * um voo da matriz voos. (Nao e necessario verificar se o aeroporto esta'
+ * aberto, porque um aeroporto fechado nunca tem nenhum voo associado)
+ * Caso contra'rio uma messagem de erro e' mostrada.
+ */
 void func_R() {
     char nome1[NOMEAEROPORTO + 1], nome2[NOMEAEROPORTO + 1];
     scanf("%s %s", nome1, nome2);
@@ -219,6 +229,10 @@ void func_S() {
     }
 }
 
+/* Le do STDIN o nome dos dois aeroportos. Caso ambos os aeroportos estejam
+ * definidos e' mostrado o numero de voos de/para entre os dois aeroportos.
+ * Caso contra'rio uma messagem de erro e' mostrada.
+ */
 void func_N() {
     char nome1[NOMEAEROPORTO + 1], nome2[NOMEAEROPORTO + 1];
     scanf("%s %s", nome1, nome2);
@@ -249,6 +263,10 @@ void func_P() {
            voosChegada(aeroMaxRotas));
 }
 
+/* Percorre o vetor aeroportos e identifica o aeroporto com mais conexoes
+ * (utilizando a funcao auxiliar conexoes()) e mostra o nome e o numero de
+ * conexoes desse aeroporto.
+ */
 void func_Q() {
     int i = 0, aeroporto = 0, conex = 0;
     for (i = 0; i < nAeroportos; i++) {
@@ -277,6 +295,11 @@ void func_V() {
     printf("Voo mais popular %s:%s:%d\n", partida.nome, chegada.nome, nMaxVoos);
 }
 
+/* Le do STDIN o nome do aeroporto. Caso o aeroporto esteja definido todos
+ * os voos de e para esse aeroporto sao removidos e o estado e colocado a
+ * AEROPORTO_FECHADO.
+ * Caso contra'rio uma messagem de erro e' mostrada.
+ */
 void func_C() {
     char nome[NOMEAEROPORTO + 1];
     scanf("%s", nome);
