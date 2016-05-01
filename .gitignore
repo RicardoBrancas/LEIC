@@ -30,3 +30,8 @@
 
 # Debug files
 *.dSYM/
+
+build/
+out/
+.idea/
+.directory
