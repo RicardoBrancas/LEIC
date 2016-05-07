@@ -13,6 +13,8 @@ Item itemInit(Key);
 /* int itemCmp(Item, Item); */
 void itemPrint(Item);
 Key key(Item);
+int hashfunc(Key, int);
 void itemFree(Item);
+
 
 #endif

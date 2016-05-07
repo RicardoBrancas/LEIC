@@ -10,21 +10,29 @@
 
 Item itemInit(Key k) {
 	Hashtag h = (Hashtag) malloc(sizeof(struct hashtag));
-    h->nome = (char*) malloc(strlen(k));
+	h->nome = (char*) malloc(strlen(k));
 	strcpy(k, h->nome);
-    h->n = 1;
-    return h;
+	h->n = 1;
+	return h;
 }
 
 Key key(Item i) {
-    return i->nome;
+	return i->nome;
+}
+
+int hashfunc(Key k, int M) {
+	int h = 0, a = 127;
+
+	for (; *k != '\0'; k++)
+		h = (a*h + *k) % M;
+	return h;
 }
 
 void itemPrint(Item i) {
-    printf("%s %d", i->nome, i->n);
+	printf("%s %d", i->nome, i->n);
 }
 
 void itemFree(Item i) {
-    free(i->nome);
-    free(i);
+	free(i->nome);
+	free(i);
 }
