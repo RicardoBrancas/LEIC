@@ -3,7 +3,8 @@
 ## TADs
 
 ### list.h
-- struct node
+- struct listnode
+- type listlink
 - struct list
 - listInit()
 - newListNode(Item)
@@ -39,3 +40,4 @@
 - itemInit(Key)
 - itemcmp(Item, Item)
 - itemfree(Item)
+- hashfunc(Key)
