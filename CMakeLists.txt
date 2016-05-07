@@ -34,14 +34,6 @@ add_test(Exemplo3
   -D input_test=${TESTS_FOLDER}/exemplo03.in
   -P ${CMAKE_SOURCE_DIR}/test.cmake
 )
-add_test(Exemplo4
-  ${CMAKE_COMMAND}
-  -D test_cmd=${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/projeto2
-  -D output_blessed=${TESTS_FOLDER}/exemplo04.out
-  -D output_test=${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/exemplo04.out
-  -D input_test=${TESTS_FOLDER}/exemplo04.in
-  -P ${CMAKE_SOURCE_DIR}/test.cmake
-)
 
 add_test(Test1
   ${CMAKE_COMMAND}
