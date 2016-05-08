@@ -11,7 +11,7 @@
 - listInsert(List, Item)
 - listSearch(List, Key)
 - listDelete(List, Item)
-- listFree(List)
+- listFree(List, void(\*)(Item))
 
 ### hash.h
 - struct SThash
@@ -29,7 +29,7 @@
 - btreeInsert(BTree, Item)
 - btreeMax(BTree)
 - btreeHeight(BTree)
-- btreeTraverse(BTree, void (\*visit)(Item))
+- btreeTraverse(BTree, void (\*)(Item))
 - btreeFree(BTree)
 
 

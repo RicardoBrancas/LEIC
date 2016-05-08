@@ -10,7 +10,7 @@ typedef Hashtag Item;
 typedef char *Key;
 
 Item itemInit(Key);
-/* int itemCmp(Item, Item); */
+int itemCmp(Item, Item);
 void itemPrint(Item);
 Key key(Item);
 int hashfunc(Key, int);

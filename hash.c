@@ -7,7 +7,6 @@
 #include <string.h>
 
 #include "hash.h"
-
 /* Lista de primos auxiliar, deve ser aumentada se precisarmos de
  * guardar mais elementos. */
 #define PRIMES 9
@@ -79,13 +78,13 @@ static void HTableExpand(Htable h) {
 	h->lists = (List*) malloc((h->p) * sizeof(List));
 
 	for(i = 0; i < oldP; i++) {
-		if((l = (oldlists[i]->head)) != NULL) {
+		if((l = (oldlists[i]->cabeca)) != NULL) {
 			HTableInsert(h, l->item);
 			while ((l = l->next) != NULL) {
 				HTableInsert(h, l->item);
 			}
 		}
-		listFree(oldlists[i]);
+		listFree(oldlists[i], NULL);
 	}
 	free(oldlists);
 }
@@ -107,10 +106,10 @@ void HTableInsert(Htable h, Item i) {
 /**
  * Esta funcao nao liberta a memoria dos Item contidos!
  */
-void HTableFree(Htable h) {
+void HTableFree(Htable h, void (*elemFree)(Item)) {
 	int i;
 	for(i = 0; i < h->p; i++) {
-		listFree(h->lists[i]);
+		listFree(h->lists[i], elemFree);
 	}
 	free(h->lists);
 	free(h);
