@@ -26,10 +26,9 @@ void listInsert(List l, Item m){
 }
 
 Item listSearch(List l, Key k){
-	listlink node;
-	node = l->head;
+	listlink node = l->head;
 	while(node != NULL)
-		if(key(node->item) == k)
+		if(itemCmpKey(key(node->item), k) == 0)
 			return node->item;
 		else
 			node = node->next;

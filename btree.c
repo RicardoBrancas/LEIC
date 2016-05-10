@@ -113,6 +113,10 @@ static btreelink AVLbalance(btreelink h) {
         int height_r = height(h->right);
         h->height = height_l > height_r ? height_l + 1 : height_r + 1;
     }
+    
+    if (h->left != NULL) AVLbalance(h->left);
+    if (h->right != NULL) AVLbalance(h->right);
+
     return h;
 }
 
