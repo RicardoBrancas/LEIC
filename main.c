@@ -28,11 +28,11 @@ int main() {
 			func_A();
 			break;
 		case 's':
-			//func_S();
+			func_S();
 			getchar(); //Le o '\n' introduzido pelo utilizador no final de cada linha
 			break;
 		case 'm':
-			//func_M();
+			func_M();
 			getchar(); //Le o '\n' introduzido pelo utilizador no final de cada linha
 			break;
 		case 'l':
@@ -40,7 +40,7 @@ int main() {
 			getchar();
 			break;
 		case 'x':
-			//func_X();
+			// func_X();
 			//'X' termina o programa, return do main()
 			return 0;
 			break;
@@ -73,8 +73,12 @@ void func_A() {
 	split(str);
 }
 
-void func_S() {
-	printf("%d", maxHashtag(htst)->n);
+void func_S(){
+	printf("%d %d\n", totalCount(htst), elementCount(htst));
+}
+
+void func_M() {
+	itemPrint(maxHashtag(htst));
 }
 
 void func_L() {

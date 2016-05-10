@@ -14,7 +14,7 @@
 static int primes[PRIMES] = {1031, 4099, 16127, 34651, 68111, 131071, 260999,
 	                     524287, 999983};
 
-#define MAX_LOAD 0.8
+#define MAX_LOAD 1.3
 
 /**
  * n e o numero atual de elementos na tabela.
@@ -67,7 +67,7 @@ static void HTableExpand(Htable h) {
 	List *oldlists;
 	listlink l;
 
-	if((h->p)+1 >= PRIMES)
+	if((h->m)+1 >= PRIMES)
 		return;
 
 	oldlists = h->lists;
@@ -77,6 +77,9 @@ static void HTableExpand(Htable h) {
 	(h->m)++;
 	h->p = primes[++(h->m)];
 	h->lists = (List*) malloc((h->p) * sizeof(List));
+	for(i = 0; i < h->p; i++) {
+		h->lists[i] = listInit();
+	}
 
 	for(i = 0; i < oldP; i++) {
 		if((l = (oldlists[i]->head)) != NULL) {
@@ -98,10 +101,15 @@ static void HTableExpand(Htable h) {
 void HTableInsert(Htable h, Item i) {
 	int index = hashfunc(key(i), h->p);
 	listInsert(h->lists[index], i);
+        (h->n)++;
 
 	if(loadfactor(h) > MAX_LOAD) {
 		HTableExpand(h);
 	}
+}
+
+int HtableMax(Htable h){
+	return(h->n);
 }
 
 void HTableFree(Htable h, void (*elemFree)(Item)) {

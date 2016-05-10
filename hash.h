@@ -16,6 +16,8 @@ Item HTableSearch(Htable, Key);
 void HTableDelete(Htable, Item);
 void HTableInsert(Htable, Item);
 
+int HtableMax(Htable h);
+
 void HTableFree(Htable, void (*)(Item));
 
 #endif
