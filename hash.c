@@ -4,6 +4,7 @@
  *        externo.
  */
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 
 #include "hash.h"
@@ -52,6 +53,7 @@ static float loadfactor(Htable h) {
  */
 Item HTableSearch(Htable h, Key key) {
 	int index = hashfunc(key, h->p);
+	printf("%d\n", listSearch(h->lists[index], key));
 	return listSearch(h->lists[index], key);
 }
 

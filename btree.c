@@ -122,7 +122,7 @@ static void btreeBalanceAux(btreelink h, Item i) {
         return btreeBalanceAux(h->left, i);
     } else if (itemCmp(h->item, i) < 0) {
         return btreeBalanceAux(h->right, i);
-    } else if (itemCmpKey(h->item, i) != 0) {
+    } else if (itemCmpKey(key(h->item), key(i)) != 0) {
         return btreeBalanceAux(h->left, i);
     } else {
         AVLbalance(h);

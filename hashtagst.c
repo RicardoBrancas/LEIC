@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <stdio.h>
 
 #include "hashtagst.h"
 #include "btree.h"
@@ -34,9 +35,13 @@ void htstShow(HTST htst) {
     btreeTraverse(htst->tree, itemPrint);
 }
 
+void htstTraverse(HTST htst, void (*visit)(Hashtag)) {
+  btreeTraverse(htst->tree, visit);
+}
+
 void incrementHashtagCounter(HTST htst, char *k) {
     Hashtag h = searchHashtag(htst, k);
-    (h->n)++;
+    h->n = h->n+1;
     btreeBalance(htst->tree, h);
 }
 

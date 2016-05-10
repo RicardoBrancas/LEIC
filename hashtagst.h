@@ -10,6 +10,7 @@ HTST htstInit();
 void insertNewHashtag(HTST, char*);
 Hashtag searchHashtag(HTST, char*);
 Hashtag maxHashtag(HTST);
+void htstShow(HTST);
 void htstTraverse(HTST, void (*)(Hashtag));
 
 void incrementHashtagCounter(HTST, char*);
