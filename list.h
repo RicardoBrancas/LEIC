@@ -11,6 +11,7 @@ typedef struct node {
 typedef struct list {
   listlink head;
   listlink tail;
+  int size;
 } *List;
 
 List listInit();
