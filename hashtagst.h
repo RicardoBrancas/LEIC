@@ -11,7 +11,7 @@ void insertNewHashtag(HTST, char*);
 void insertOrIncrementHashtag(HTST, char*);
 Hashtag searchHashtag(HTST, char*);
 Hashtag maxHashtag(HTST);
-void htstShow(HTST);
+void htstSort(HTST);
 void htstTraverse(HTST, void (*)(Hashtag));
 
 void htstFree(HTST);

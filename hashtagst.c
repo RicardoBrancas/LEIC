@@ -8,18 +8,24 @@
 struct hashtagstruct {
     BTree tree;
     Htable hashtable;
+    Hashtag *hashtags;
+    int n;
+    Hashtag max;
 };
 
 HTST htstInit() {
     HTST htst = (HTST) malloc(sizeof(struct hashtagstruct));
     // htst->tree = btreeInit();
     htst->hashtable = HTableInit();
+    htst->hashtags = (Hashtag*) malloc(4099 * sizeof(Hashtag));
+    htst->n = 0;
     return htst;
 }
 
 void insertNewHashtag(HTST htst, char *k) {
     Item i = itemInit(k);
     HTableInsert(htst->hashtable, i);
+    htst->hashtags[(htst->n)++] = i;
     // btreeInsert(htst->tree, i);
 }
 
@@ -41,16 +47,24 @@ Item maxHashtag(HTST htst) {
     return NULL;
 }
 
-void htstShow(HTST htst) {
-    // btreeTraverse(htst->tree, itemPrint);
+int listCompare(const void* a,const void* b) {
+    return itemCmp(a, b);
+}
+
+void htstSort(HTST htst) {
+    qsort(htst->hashtags, htst->n, sizeof(Hashtag), listCompare);
 }
 
 void htstTraverse(HTST htst, void (*visit)(Hashtag)) {
-    // btreeTraverse(htst->tree, visit);
+    Hashtag* h = htst->hashtags;
+    while(h != NULL) {
+        visit(*(h++));
+    }
 }
 
 void htstFree(HTST htst) {
     HTableFree(htst->hashtable, itemFree);
     // btreeFree(htst->tree, itemFree);
+    free(htst->hashtags);
     free(htst);
 }

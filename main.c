@@ -12,7 +12,6 @@ static HTST htst;
 
 void func_A();
 void func_S();
-void func_S();
 void func_M();
 void func_L();
 void func_X();
@@ -79,5 +78,6 @@ void func_S() {
 }
 
 void func_L() {
-	htstShow(htst);
+	htstSort(htst);
+	htstTraverse(htst, itemPrint);
 }
