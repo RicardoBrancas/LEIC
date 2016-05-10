@@ -104,9 +104,6 @@ void HTableInsert(Htable h, Item i) {
 	}
 }
 
-/**
- * Esta funcao nao liberta a memoria dos Item contidos!
- */
 void HTableFree(Htable h, void (*elemFree)(Item)) {
 	int i;
 	for(i = 0; i < h->p; i++) {

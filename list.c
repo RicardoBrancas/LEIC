@@ -12,7 +12,7 @@ List listInit(){
 
 listlink newListNode(Item m){
 	listlink newnode;
-	newnode = (listlink)malloc(sizeof(struct node));
+	newnode = (listlink) malloc(sizeof(struct node));
 	newnode->item = m;
 	newnode->next = NULL;
 	return newnode;
@@ -22,7 +22,9 @@ void listInsert(List l, Item m){
 	listlink new_node;
 	new_node = newListNode(m);
 	l->size++;
+	new_node->next = l->head;
 	l->head = new_node;
+
 }
 
 Item listSearch(List l, Key k){
@@ -32,9 +34,8 @@ Item listSearch(List l, Key k){
 			return node->item;
 		else
 			node = node->next;
-    return NULL;
+	return NULL;
 }
-
 
 void listFree(List l, void (*elemFree)(Item)) {
 	listlink curr, head=l->head;
@@ -42,7 +43,7 @@ void listFree(List l, void (*elemFree)(Item)) {
 		head = head->next;
 		if(elemFree != NULL)
 			elemFree(curr->item);
-		free (curr);
+		free(curr);
 	}
 	free(l);
 }

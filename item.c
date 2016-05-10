@@ -20,7 +20,7 @@ Key key(Item i) {
 }
 
 int itemCmp(Item a, Item b) {
-  return a->n - b->n;
+  return b->n - a->n;
 }
 
 int itemCmpKey(Key a, Key b) {
