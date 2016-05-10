@@ -8,7 +8,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/out")
 set(TESTS_FOLDER "${CMAKE_SOURCE_DIR}/tests")
 SET(CMAKE_BUILD_TYPE Debug)
 
-add_executable(projeto2 main.c)
+add_executable(projeto2 item.c list.c hash.c btree.c hashtagst.c main.c)
 
 add_test(Exemplo1
   ${CMAKE_COMMAND}

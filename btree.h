@@ -13,9 +13,10 @@ int btreeHeight(BTree);
 Item btreeMax(BTree);
 
 void btreeInsert(BTree, Item);
-Item btreeSearch(BTree, Key);
 
 void btreeTraverse(BTree, void (*)(Item));
+
+void btreeBalance(BTree, Item);
 
 void btreeFree(BTree, void (*)(Item));
 

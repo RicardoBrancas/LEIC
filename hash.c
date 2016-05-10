@@ -56,10 +56,10 @@ Item HTableSearch(Htable h, Key key) {
 }
 
 
-void HTableDelete(Htable h, Item i) {
-	int index = hashfunc(key(i), h->p);
-	listDelete(h->lists[index], i);
-}
+//void HTableDelete(Htable h, Item i) {
+//	int index = hashfunc(key(i), h->p);
+//	listDelete(h->lists[index], i);
+//}
 
 static void HTableExpand(Htable h) {
 	int i, oldP;
@@ -78,7 +78,7 @@ static void HTableExpand(Htable h) {
 	h->lists = (List*) malloc((h->p) * sizeof(List));
 
 	for(i = 0; i < oldP; i++) {
-		if((l = (oldlists[i]->cabeca)) != NULL) {
+		if((l = (oldlists[i]->head)) != NULL) {
 			HTableInsert(h, l->item);
 			while ((l = l->next) != NULL) {
 				HTableInsert(h, l->item);

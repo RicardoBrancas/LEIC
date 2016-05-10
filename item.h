@@ -11,6 +11,7 @@ typedef char *Key;
 
 Item itemInit(Key);
 int itemCmp(Item, Item);
+int itemCmpKey(Item, Item);
 void itemPrint(Item);
 Key key(Item);
 int hashfunc(Key, int);
