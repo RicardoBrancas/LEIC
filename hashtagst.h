@@ -7,9 +7,8 @@ typedef struct hashtagstruct *HTST;
 
 HTST htstInit();
 
-void insertNewHashtag(HTST, char*);
-void insertOrIncrementHashtag(HTST, char*);
-Hashtag searchHashtag(HTST, char*);
+void insertOrIncrementHashtag(HTST, char *);
+Hashtag searchHashtag(HTST, char *);
 Hashtag maxHashtag(HTST);
 int totalCount(HTST);
 int elementCount(HTST);

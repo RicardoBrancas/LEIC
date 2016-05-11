@@ -13,10 +13,7 @@ typedef struct hashtable *Htable;
 Htable HTableInit();
 
 Item HTableSearch(Htable, Key);
-void HTableDelete(Htable, Item);
-void HTableInsert(Htable, Item);
-
-int HtableMax(Htable h);
+void htableInsert(Htable, Item);
 
 void HTableFree(Htable, void (*)(Item));
 

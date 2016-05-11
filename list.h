@@ -3,21 +3,15 @@
 
 #include "item.h"
 
-typedef struct node {
-        Item item;
-        struct node *next;
-} *listlink;
+typedef struct node *listlink;
 
-typedef struct list {
-  listlink head;
-  int size;
-} *List;
+typedef struct list *List;
 
 List listInit();
-listlink newNode(Item);
 
 void listInsert(List, Item);
 Item listSearch(List, Key);
+Item listPop(List);
 void listFree(List, void(*)(Item));
 
 #endif

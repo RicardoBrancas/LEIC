@@ -1,20 +1,19 @@
 #ifndef ITEM_H
 #define ITEM_H
 
-typedef struct hashtag {
-    char *nome;
-    int n;
-} *Hashtag;
+typedef struct hashtag *Hashtag;
 
 typedef Hashtag Item;
 typedef char *Key;
 
 Item itemInit(Key);
-int itemCmp(Item, Item);
-int itemCmpKey(Key, Key);
-void itemPrint(Item);
 Key key(Item);
+void incrementValue(Item);
+int itemCmp(Item, Item);
+int itemCmpValue(Item, Item);
+int itemCmpKey(Key, Key);
 int hashfunc(Key, int);
+void itemPrint(Item);
 void itemFree(Item);
 
 
