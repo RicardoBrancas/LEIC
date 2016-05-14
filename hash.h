@@ -1,6 +1,7 @@
 /**
  * @file hash.h
- * @brief Implementacao de tabela de dispersao com encadeamento externo
+ * @brief Implementacao de tabelas de dispersao com resolucao por encadeamento
+ *        externo.
  */
 #ifndef HASH_H
 #define HASH_H
@@ -10,11 +11,11 @@
 
 typedef struct hashtable *Htable;
 
-Htable HTableInit();
+Htable htableInit();
 
-Item HTableSearch(Htable, Key);
+Item htableSearch(Htable, Key);
 void htableInsert(Htable, Item);
 
-void HTableFree(Htable, void (*)(Item));
+void htableFree(Htable, void (*)(Item));
 
 #endif

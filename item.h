@@ -1,3 +1,7 @@
+/**
+ * @file item.h
+ * @brief Implementacao de um item generico
+ */
 #ifndef ITEM_H
 #define ITEM_H
 

@@ -67,7 +67,7 @@ void func_A() {
 }
 
 void func_S() {
-    printf("%d %d\n", totalCount(htst), elementCount(htst));
+    printf("%d %d\n", elementCount(htst), totalCount(htst));
 }
 
 void func_M() {
@@ -75,6 +75,5 @@ void func_M() {
 }
 
 void func_L() {
-    htstSort(htst);
     htstTraverse(htst, itemPrint);
 }

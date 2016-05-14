@@ -1,3 +1,7 @@
+/**
+ * @file hashtagst.h
+ * @brief Implementacao da estrutura utilizada para guardar hashtags.
+ */
 #ifndef HASHTAGST_H
 #define HASHTAGST_H
 
