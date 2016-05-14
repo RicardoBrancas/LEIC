@@ -96,8 +96,10 @@ Item listSearch(List l, Key k) {
  */
 Item listPop(List l) {
     if (l->head == NULL) return NULL;
-    Item i = l->head->item;
-    l->head = l->head->next;
+    listlink t = l->head;
+    Item i = t->item;
+    l->head = t->next;
+    free(t);
     return i;
 }
 
