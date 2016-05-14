@@ -14,6 +14,7 @@ typedef struct hashtable *Htable;
 Htable htableInit();
 
 Item htableSearch(Htable, Key);
+
 void htableInsert(Htable, Item);
 
 void htableFree(Htable, void (*)(Item));

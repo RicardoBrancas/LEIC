@@ -5,7 +5,7 @@ execute_process(
  TIMEOUT 10
 )
 execute_process(
-  COMMAND diff ${output_blessed} ${output_test}
+  COMMAND ${CMAKE_COMMAND} -E compare_files ${output_blessed} ${output_test}
   RESULT_VARIABLE test_not_successful
 )
 
