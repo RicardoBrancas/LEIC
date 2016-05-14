@@ -3,7 +3,7 @@ project(Projeto2)
 
 enable_testing(TRUE)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -Wall -O1")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -Wall -pedantic -std=c89 -O1")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/out")
 set(TESTS_FOLDER "${CMAKE_SOURCE_DIR}/tests")
 SET(CMAKE_BUILD_TYPE Debug)

@@ -66,7 +66,6 @@ static float loadfactor(Htable h) {
 static void htableExpand(Htable h) {
     int i, oldP;
     List *oldlists;
-    listlink l;
 
     if ((h->m) + 1 >= PRIMES)
         return;
