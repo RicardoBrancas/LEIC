@@ -13,13 +13,18 @@
 #include <errno.h>
 #include <sys/wait.h>
 #include <pthread.h>
+#include <semaphore.h>
 
-#define COMANDO_DEBITAR "debitar"
-#define COMANDO_CREDITAR "creditar"
+#define COMANDO_DEBITAR   "debitar"
+#define COMANDO_CREDITAR  "creditar"
 #define COMANDO_LER_SALDO "lerSaldo"
-#define COMANDO_SIMULAR "simular"
-#define COMANDO_SAIR "sair"
-#define COMANDO_AGORA "agora"
+#define COMANDO_SIMULAR   "simular"
+#define COMANDO_SAIR      "sair"
+#define COMANDO_AGORA     "agora"
+
+#define ID_DEBITAR   1
+#define ID_CREDITAR  2
+#define ID_LER_SALDO 3
 
 #define MAXARGS 3
 #define BUFFER_SIZE 100
@@ -28,6 +33,8 @@
 
 #define NUM_TRABALHADORAS 3
 #define CMD_BUFFER_DIM (NUM_TRABALHADORAS * 2)
+
+#pragma GCC diagnostic ignored "-Wunused-parameter" //TODO remove
 
 typedef struct {
 	int operacao;
@@ -49,15 +56,23 @@ int main(int argc, char **argv) {
     int nChildren = 0;
 
 	pthread_t tarefas[NUM_TRABALHADORAS];
+	pthread_mutex_t mutex_p, mutex_c;
+	sem_t sem_prod, sem_cons;
+
+	comando_t cmd_buffer[CMD_BUFFER_DIM];
+	int buff_write_idx = 0, buff_read_idx = 0;
+
+	pthread_mutex_init(&mutex_p, NULL); //FIXME test return value
+	pthread_mutex_init(&mutex_c, NULL); //FIXME test return value
+
+	sem_init(&sem_prod, 0, NUM_TRABALHADORAS); //FIXME test return value
+	sem_init(&sem_cons, 0, 0); //FIXME test return value
 
 	for(i = 0; i < NUM_TRABALHADORAS; i++) {
 		if(pthread_create(&tarefas[i], NULL, test, NULL) != 0) {
 				perror("Erro ao criar nova tarefa!");
 		}
 	}
-
-	comando_t cmd_buffer[CMD_BUFFER_DIM];
-	int buff_write_idx = 0, buff_read_idx = 0;
 
     inicializarContas();
 
@@ -115,10 +130,22 @@ int main(int argc, char **argv) {
             idConta = atoi(args[1]);
             valor = atoi(args[2]);
 
-            if (debitar(idConta, valor) < 0)
-                printf("%s(%d, %d): Erro\n\n", COMANDO_DEBITAR, idConta, valor);
-            else
-                printf("%s(%d, %d): OK\n\n", COMANDO_DEBITAR, idConta, valor);
+			comando_t comando;
+			comando.operacao = ID_DEBITAR;
+			comando.idConta = idConta;
+			comando.valor = valor;
+
+			sem_wait(&sem_prod);
+			pthread_mutex_lock(&mutex_p);
+			cmd_buffer[buff_write_idx] = comando;
+			buff_write_idx = (buff_write_idx + 1) % NUM_TRABALHADORAS;
+			pthread_mutex_unlock(&mutex_p);
+			sem_post(&sem_cons);
+
+            // if (debitar(idConta, valor) < 0)
+            //     printf("%s(%d, %d): Erro\n\n", COMANDO_DEBITAR, idConta, valor);
+            // else
+            //     printf("%s(%d, %d): OK\n\n", COMANDO_DEBITAR, idConta, valor);
         }
 
             /* Creditar */
@@ -132,26 +159,52 @@ int main(int argc, char **argv) {
             idConta = atoi(args[1]);
             valor = atoi(args[2]);
 
-            if (creditar(idConta, valor) < 0)
-                printf("%s(%d, %d): Erro\n\n", COMANDO_CREDITAR, idConta, valor);
-            else
-                printf("%s(%d, %d): OK\n\n", COMANDO_CREDITAR, idConta, valor);
+			comando_t comando;
+			comando.operacao = ID_CREDITAR;
+			comando.idConta = idConta;
+			comando.valor = valor;
+
+			sem_wait(&sem_prod);
+			pthread_mutex_lock(&mutex_p);
+			cmd_buffer[buff_write_idx] = comando;
+			buff_write_idx = (buff_write_idx + 1) % NUM_TRABALHADORAS;
+			pthread_mutex_unlock(&mutex_p);
+			sem_post(&sem_cons);
+
+            // if (creditar(idConta, valor) < 0)
+            //     printf("%s(%d, %d): Erro\n\n", COMANDO_CREDITAR, idConta, valor);
+            // else
+            //     printf("%s(%d, %d): OK\n\n", COMANDO_CREDITAR, idConta, valor);
         }
 
             /* Ler Saldo */
         else if (strcmp(args[0], COMANDO_LER_SALDO) == 0) {
-            int idConta, saldo;
+            int idConta;
 
             if (numargs < 2) {
                 printf("%s: Sintaxe inválida, tente de novo.\n", COMANDO_LER_SALDO);
                 continue;
             }
+
             idConta = atoi(args[1]);
-            saldo = lerSaldo(idConta);
-            if (saldo < 0)
-                printf("%s(%d): Erro.\n\n", COMANDO_LER_SALDO, idConta);
-            else
-                printf("%s(%d): O saldo da conta é %d.\n\n", COMANDO_LER_SALDO, idConta, saldo);
+
+			comando_t comando;
+			comando.operacao = ID_LER_SALDO;
+			comando.idConta = idConta;
+			comando.valor = 0;
+
+			sem_wait(&sem_prod);
+			pthread_mutex_lock(&mutex_p);
+			cmd_buffer[buff_write_idx] = comando;
+			buff_write_idx = (buff_write_idx + 1) % NUM_TRABALHADORAS;
+			pthread_mutex_unlock(&mutex_p);
+			sem_post(&sem_cons);
+
+            // saldo = lerSaldo(idConta);
+            // if (saldo < 0)
+            //     printf("%s(%d): Erro.\n\n", COMANDO_LER_SALDO, idConta);
+            // else
+            //     printf("%s(%d): O saldo da conta é %d.\n\n", COMANDO_LER_SALDO, idConta, saldo);
         }
 
             /* Simular */
