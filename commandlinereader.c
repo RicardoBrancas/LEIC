@@ -23,36 +23,37 @@ Arguments:
 Return value:
  The number of arguments that were read, or -1 if some error occurred.
 */
-int readLineArguments(char **argVector, int vectorSize, char *buffer, int buffersize) {
-    int numtokens = 0;
-    char *s = " \r\n\t";
+int readLineArguments(char **argVector, int vectorSize, char *buffer, int buffersize)
+{
+  int numtokens = 0;
+  char *s = " \r\n\t";
 
-    int i;
+  int i;
 
-    char *token;
+  char *token;
 
-    if (argVector == NULL || buffer == NULL || vectorSize <= 0 || buffersize <= 0)
-        return 0;
-
-    if (fgets(buffer, buffersize, stdin) == NULL) {
-        return -1;
-    }
-
-    /* get the first token */
-    token = strtok(buffer, s);
-
-    /* walk through other tokens */
-    while (numtokens < vectorSize - 1 && token != NULL) {
-        argVector[numtokens] = token;
-        numtokens++;
-
-        token = strtok(NULL, s);
-    }
-
-    for (i = numtokens; i < vectorSize; i++) {
-        argVector[i] = NULL;
-    }
-
-    return numtokens;
+  if (argVector == NULL || buffer == NULL || vectorSize <= 0 || buffersize <= 0)
+     return 0;
+     
+  if (fgets(buffer, buffersize, stdin) == NULL) {
+    return -1;
+  }
+   
+  /* get the first token */
+  token = strtok(buffer, s);
+   
+  /* walk through other tokens */
+  while( numtokens < vectorSize-1 && token != NULL ) {
+    argVector[numtokens] = token;
+    numtokens ++;
+    
+    token = strtok(NULL, s);
+  }
+   
+  for (i = numtokens; i<vectorSize; i++) {
+    argVector[i] = NULL;
+  }
+   
+  return numtokens;
 }
 

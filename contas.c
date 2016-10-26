@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <signal.h>
 #include <errno.h>
+#include <pthread.h>
 
 #define atrasar() sleep(ATRASO)
 
@@ -12,6 +13,7 @@
 
 int contasSaldos[NUM_CONTAS];
 
+pthread_mutex_t mutex_contas[NUM_CONTAS];
 
 int contaExiste(int idConta) {
     return (idConta > 0 && idConta <= NUM_CONTAS);
@@ -27,10 +29,14 @@ int debitar(int idConta, int valor) {
     atrasar();
     if (!contaExiste(idConta))
         return -1;
-    if (contasSaldos[idConta - 1] < valor)
+    pthread_mutex_lock(&mutex_contas[idConta-1]);
+    if (contasSaldos[idConta - 1] < valor) {
+        pthread_mutex_unlock(&mutex_contas[idConta-1]);
         return -1;
-    atrasar();
+    }
+    atrasar(); //FIXME
     contasSaldos[idConta - 1] -= valor;
+    pthread_mutex_unlock(&mutex_contas[idConta-1]);
     return 0;
 }
 
@@ -38,15 +44,21 @@ int creditar(int idConta, int valor) {
     atrasar();
     if (!contaExiste(idConta))
         return -1;
+    pthread_mutex_lock(&mutex_contas[idConta-1]);
     contasSaldos[idConta - 1] += valor;
+    pthread_mutex_unlock(&mutex_contas[idConta-1]);
     return 0;
 }
 
 int lerSaldo(int idConta) {
+    int s;
     atrasar();
     if (!contaExiste(idConta))
         return -1;
-    return contasSaldos[idConta - 1];
+    pthread_mutex_lock(&mutex_contas[idConta-1]);
+    s = contasSaldos[idConta - 1];
+    pthread_mutex_unlock(&mutex_contas[idConta-1]);
+    return s;
 }
 
 int interrupted = CONTINUE;
