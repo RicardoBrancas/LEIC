@@ -39,7 +39,7 @@ int debitar(int idConta, int valor) {
         pthread_mutex_unlock(&mutex_contas[idConta-1]); /* Nenhum dos erros do pthread_mutex_unlock e aplicavel. Safe to ignore */
         return -1;
     }
-    atrasar(); //FIXME
+    atrasar(); /* FIXME */
     contasSaldos[idConta - 1] -= valor;
     pthread_mutex_unlock(&mutex_contas[idConta-1]); /* Nenhum dos erros do pthread_mutex_unlock e aplicavel. Safe to ignore */
     return 0;
@@ -90,7 +90,7 @@ void simular(int numAnos) {
             }
             saldo = lerSaldo(i);
 
-            //A funcao printf pode ser interrompida por um signal que ocorra durante a sua execucao
+            /* A funcao printf pode ser interrompida por um signal que ocorra durante a sua execucao */
             while (printf("Conta %d, Saldo %d\n", i, saldo) < 0) {
                 if (errno == EINTR)
                     continue;
