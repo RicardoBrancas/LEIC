@@ -76,12 +76,12 @@ void *consumidor(void *arg) {
 	while(1) {
 		comando_t comando;
 
-		sem_wait(&sem_podeConsumir);
-		pthread_mutex_lock(&mutex_c);
+		if (sem_wait(&sem_podeConsumir) != 0) { perror("Erro ao esperar pelo semaforo!"); exit(3); }
+		if (pthread_mutex_lock(&mutex_c) != 0) {perror("Erro ao obter trinco!"); exit(4); }
 		comando = cmd_buffer[buff_read_idx];
 		buff_read_idx = (buff_read_idx + 1) % CMD_BUFFER_DIM;
-		pthread_mutex_unlock(&mutex_c);
-		sem_post(&sem_podeProduzir);
+		pthread_mutex_unlock(&mutex_c); /* Nenhum dos erros do pthread_mutex_unlock e aplicavel. Safe to ignore */
+		sem_post(&sem_podeProduzir);  /* Nenhum dos erros do sem_post e aplicavel. Safe to ignore */
 
 		if (comando.operacao != ID_SAIR)
 			consumir(comando);
@@ -89,33 +89,45 @@ void *consumidor(void *arg) {
 			break;
 	}
 
-	printf("Tarefa vai terminar!\n");
 	pthread_exit(NULL);
 }
 
-void produzir(comando_t c) {
-	sem_wait(&sem_podeProduzir);
-	cmd_buffer[buff_write_idx] = c;
+comando_t temp_c;
+void produzir(int op, int id, int val) {
+	temp_c.operacao = op;
+	temp_c.idConta = id;
+	temp_c.valor = val;
+
+	if (sem_wait(&sem_podeProduzir) != 0) { perror("Erro ao esperar pelo semaforo!"); exit(3); }
+	cmd_buffer[buff_write_idx] = temp_c;
 	buff_write_idx = (buff_write_idx + 1) % CMD_BUFFER_DIM;
-	sem_post(&sem_podeConsumir);
+	sem_post(&sem_podeConsumir); /* Nenhum dos erros do sem_post e aplicavel. Safe to ignore */
 }
 
 int main(int argc, char **argv) {
 
-	int i;
     char *args[MAXARGS + 1];
     char buffer[BUFFER_SIZE];
     int nChildren = 0;
+	int i;
 
-	pthread_mutex_init(&mutex_c, NULL); //FIXME test return value
+	if (pthread_mutex_init(&mutex_c, NULL) != 0) {
+		perror("Error while creating mutex!");
+		exit(1);
+	}
 
-	sem_init(&sem_podeProduzir, 0, CMD_BUFFER_DIM); //FIXME test return value
-	sem_init(&sem_podeConsumir, 0, 0); //FIXME test return value
+	if ((sem_init(&sem_podeProduzir, 0, CMD_BUFFER_DIM) != 0) ||
+		(sem_init(&sem_podeConsumir, 0, 0) != 0)) {
+		if (errno == ENOSYS)
+			perror("Semaphores not supported!");
+		else
+			perror("Error while creating semaphore");
+		exit(2);
+	}
 
 	for(i = 0; i < NUM_TRABALHADORAS; i++) {
-		if(pthread_create(&tarefas[i], NULL, consumidor, NULL) != 0) {
+		if(pthread_create(&tarefas[i], NULL, consumidor, NULL) != 0)
 				perror("Erro ao criar nova tarefa!");
-		}
 	}
 
     inicializarContas();
@@ -132,21 +144,21 @@ int main(int argc, char **argv) {
             int wpid, status;
 
         	if (numargs > 1 && (strcmp(args[1], COMANDO_AGORA) == 0)) {
-            	//ignorar o signal no processo-pai
+            	/* ignorar o signal no processo-pai */
             	if (signal(SIGUSR2, SIG_IGN) == SIG_ERR)
                 	perror("Cannot set signal handler");
-            	//Nenhum dos erros do kill() e aplicavel. Safe to ignore
+            	/* Nenhum dos erros do kill() e aplicavel. Safe to ignore */
             	kill(0, SIGUSR2);
         	}
 
         	printf("i-banco vai terminar.\n--\n");
 
-        	while (1) { //O ciclo termina quando wait() devolve com o erro ECHILD; no more children
+        	while (1) { /* O ciclo termina quando wait() devolve com o erro ECHILD; no more children */
             	wpid = wait(&status);
             	if (wpid == -1 && errno == ECHILD)
-                	break; //Nao existem mais filhos, terminar ciclo
+                	break; /* Nao existem mais filhos, terminar ciclo */
             	else if (wpid == -1)
-                	continue; //Outro erro, continuar o ciclo ate nao existirem mais filhos
+                	continue; /* Outro erro, continuar o ciclo ate nao existirem mais filhos */
 
             	if (WIFEXITED(status)) {
                 	printf("FILHO TERMINADO (PID=%d; terminou normalmente)\n", wpid);
@@ -155,14 +167,13 @@ int main(int argc, char **argv) {
             	}
         	}
 
-			comando_t comando;
-			comando.operacao = ID_SAIR;
 			for (i = 0; i < NUM_TRABALHADORAS; i++) {
-				produzir(comando);
+				produzir(ID_SAIR, 0, 0);
 			}
 
 			for(i = 0; i < NUM_TRABALHADORAS; i++) {
-				pthread_join(tarefas[i], NULL);
+				if(pthread_join(tarefas[i], NULL) != 0)
+					fprintf(stderr, "Failed to join with thread %ld", tarefas[i]);
 			}
 
             printf("--\ni-banco terminou.\n");
@@ -182,12 +193,7 @@ int main(int argc, char **argv) {
             idConta = atoi(args[1]);
             valor = atoi(args[2]);
 
-			comando_t comando;
-			comando.operacao = ID_DEBITAR;
-			comando.idConta = idConta;
-			comando.valor = valor;
-
-			produzir(comando);
+			produzir(ID_DEBITAR, idConta, valor);
 		}
 
             /* Creditar */
@@ -201,30 +207,20 @@ int main(int argc, char **argv) {
             idConta = atoi(args[1]);
             valor = atoi(args[2]);
 
-			comando_t comando;
-			comando.operacao = ID_CREDITAR;
-			comando.idConta = idConta;
-			comando.valor = valor;
-
-			produzir(comando);
+			produzir(ID_CREDITAR, idConta, valor);
 		}
             /* Ler Saldo */
         else if (strcmp(args[0], COMANDO_LER_SALDO) == 0) {
             int idConta;
 
             if (numargs < 2) {
-            		printf("%s: Sintaxe inválida, tente de novo.\n", COMANDO_LER_SALDO);
+        		printf("%s: Sintaxe inválida, tente de novo.\n", COMANDO_LER_SALDO);
                 continue;
             }
 
             idConta = atoi(args[1]);
 
-			comando_t comando;
-			comando.operacao = ID_LER_SALDO;
-			comando.idConta = idConta;
-			comando.valor = 0;
-
-			produzir(comando);
+			produzir(ID_LER_SALDO, idConta, 0);
         }
 
             /* Simular */
@@ -236,7 +232,7 @@ int main(int argc, char **argv) {
                 continue;
             }
 
-            //Segundo limitacao do enunciado
+            /* Segundo limitacao do enunciado */
             if (nChildren < MAX_CHILDREN) {
                 nChildren++;
                 nAnos = atoi(args[1]);

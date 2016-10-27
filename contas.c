@@ -21,22 +21,27 @@ int contaExiste(int idConta) {
 
 void inicializarContas() {
     int i;
-    for (i = 0; i < NUM_CONTAS; i++)
+    for (i = 0; i < NUM_CONTAS; i++) {
         contasSaldos[i] = 0;
+        if (pthread_mutex_init(&mutex_contas[i], NULL) != 0) {
+    		perror("Error while creating mutex!");
+    		exit(1);
+    	}
+    }
 }
 
 int debitar(int idConta, int valor) {
     atrasar();
     if (!contaExiste(idConta))
         return -1;
-    pthread_mutex_lock(&mutex_contas[idConta-1]);
+    if (pthread_mutex_lock(&mutex_contas[idConta-1]) != 0) {perror("Erro ao obter trinco!"); exit(4); }
     if (contasSaldos[idConta - 1] < valor) {
-        pthread_mutex_unlock(&mutex_contas[idConta-1]);
+        pthread_mutex_unlock(&mutex_contas[idConta-1]); /* Nenhum dos erros do pthread_mutex_unlock e aplicavel. Safe to ignore */
         return -1;
     }
     atrasar(); //FIXME
     contasSaldos[idConta - 1] -= valor;
-    pthread_mutex_unlock(&mutex_contas[idConta-1]);
+    pthread_mutex_unlock(&mutex_contas[idConta-1]); /* Nenhum dos erros do pthread_mutex_unlock e aplicavel. Safe to ignore */
     return 0;
 }
 
@@ -44,9 +49,9 @@ int creditar(int idConta, int valor) {
     atrasar();
     if (!contaExiste(idConta))
         return -1;
-    pthread_mutex_lock(&mutex_contas[idConta-1]);
+    if (pthread_mutex_lock(&mutex_contas[idConta-1]) != 0) {perror("Erro ao obter trinco!"); exit(4); }
     contasSaldos[idConta - 1] += valor;
-    pthread_mutex_unlock(&mutex_contas[idConta-1]);
+    pthread_mutex_unlock(&mutex_contas[idConta-1]); /* Nenhum dos erros do pthread_mutex_unlock e aplicavel. Safe to ignore */
     return 0;
 }
 
@@ -55,9 +60,9 @@ int lerSaldo(int idConta) {
     atrasar();
     if (!contaExiste(idConta))
         return -1;
-    pthread_mutex_lock(&mutex_contas[idConta-1]);
+    if (pthread_mutex_lock(&mutex_contas[idConta-1]) != 0) {perror("Erro ao obter trinco!"); exit(4); }
     s = contasSaldos[idConta - 1];
-    pthread_mutex_unlock(&mutex_contas[idConta-1]);
+    pthread_mutex_unlock(&mutex_contas[idConta-1]); /* Nenhum dos erros do pthread_mutex_unlock e aplicavel. Safe to ignore */
     return s;
 }
 
