@@ -39,7 +39,7 @@ int debitar(int idConta, int valor) {
         pthread_mutex_unlock(&mutex_contas[idConta-1]); /* Nenhum dos erros do pthread_mutex_unlock e aplicavel. Safe to ignore */
         return -1;
     }
-    atrasar(); /* FIXME */
+    atrasar();
     contasSaldos[idConta - 1] -= valor;
     pthread_mutex_unlock(&mutex_contas[idConta-1]); /* Nenhum dos erros do pthread_mutex_unlock e aplicavel. Safe to ignore */
     return 0;
