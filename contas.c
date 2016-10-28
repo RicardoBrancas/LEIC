@@ -30,6 +30,15 @@ void inicializarContas() {
     }
 }
 
+void finalizarContas() {
+    int i;
+    for (i = 0; i < NUM_CONTAS; i++) {
+        if (pthread_mutex_destroy(&mutex_contas[i]) != 0) {
+    		perror("Error while destroying mutex!");
+    	}
+    }
+}
+
 int debitar(int idConta, int valor) {
     atrasar();
     if (!contaExiste(idConta))

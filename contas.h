@@ -14,6 +14,8 @@
 
 void inicializarContas();
 
+void finalizarContas();
+
 int contaExiste(int idConta);
 
 int debitar(int idConta, int valor);

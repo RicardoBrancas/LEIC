@@ -175,6 +175,15 @@ int main(int argc, char **argv) {
 				if(pthread_join(tarefas[i], NULL) != 0)
 					fprintf(stderr, "Failed to join with thread %ld", tarefas[i]);
 			}
+			
+			finalizarContas();
+            
+            if (sem_destroy(&sem_podeProduzir) != 0) {perror("Error while destroying semaphore!");}
+            if (sem_destroy(&sem_podeProduzir) != 0) {perror("Error while destroying semaphore!");}
+            
+            if (pthread_mutex_destroy(&mutex_c) != 0) {
+                perror("Error while destoying mutex!");
+            }
 
             printf("--\ni-banco terminou.\n");
             exit(EXIT_SUCCESS);
