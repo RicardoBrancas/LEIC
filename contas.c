@@ -39,6 +39,25 @@ void finalizarContas() {
     }
 }
 
+int min(int a, int b) {
+        return (a <= b) ? a : b;
+}
+
+int max(int a, int b) {
+        return (a >= b) ? a : b;
+}
+
+int transferir(int idContaDe, int idContaPara, int valor) {
+    pthread_mutex_lock(&mutex_contas[min(idContaDe, idContaPara)]);
+    pthread_mutex_lock(&mutex_contas[max(idContaDe, idContaPara)]);
+    
+    debitar(idContaDe, valor);
+    creditar(idContaPara, valor);
+    
+    pthread_mutex_lock(&mutex_contas[max(idContaDe, idContaPara)]);
+    pthread_mutex_lock(&mutex_contas[min(idContaDe, idContaPara)]);
+}
+
 int debitar(int idConta, int valor) {
     atrasar();
     if (!contaExiste(idConta))
