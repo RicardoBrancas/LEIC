@@ -236,7 +236,7 @@ int main(int argc, char **argv) {
         else if (strcmp(args[0], COMANDO_SIMULAR) == 0) {
             int nAnos, pid;
 
-            if (numargs < 1) {
+            if (numargs < 2) {
                 printf("%s: Sintaxe inválida, tente de novo.\n", COMANDO_SIMULAR);
                 continue;
             }
