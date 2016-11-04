@@ -15,17 +15,19 @@
 #include <pthread.h>
 #include <semaphore.h>
 
-#define COMANDO_DEBITAR   "debitar"
-#define COMANDO_CREDITAR  "creditar"
-#define COMANDO_LER_SALDO "lerSaldo"
-#define COMANDO_SIMULAR   "simular"
-#define COMANDO_SAIR      "sair"
-#define COMANDO_AGORA     "agora"
+#define COMANDO_DEBITAR    "debitar"
+#define COMANDO_CREDITAR   "creditar"
+#define COMANDO_LER_SALDO  "lerSaldo"
+#define COMANDO_SIMULAR    "simular"
+#define COMANDO_SAIR       "sair"
+#define COMANDO_AGORA      "agora"
+#define COMANDO_TRANSFERIR "transferir"
 
-#define ID_SAIR      0
-#define ID_DEBITAR   1
-#define ID_CREDITAR  2
-#define ID_LER_SALDO 3
+#define ID_SAIR       0
+#define ID_DEBITAR    1
+#define ID_CREDITAR   2
+#define ID_LER_SALDO  3
+#define ID_TRANSFERIR 4
 
 #define MAXARGS 3
 #define BUFFER_SIZE 100
