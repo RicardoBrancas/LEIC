@@ -18,6 +18,8 @@ void finalizarContas();
 
 int contaExiste(int idConta);
 
+int transferir(int idDe, int idPara, int valor);
+
 int debitar(int idConta, int valor);
 
 int creditar(int idConta, int valor);

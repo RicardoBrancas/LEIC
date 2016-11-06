@@ -29,7 +29,7 @@
 #define ID_LER_SALDO  3
 #define ID_TRANSFERIR 4
 
-#define MAXARGS 3
+#define MAXARGS 4
 #define BUFFER_SIZE 100
 
 #define MAX_CHILDREN 20
@@ -40,6 +40,7 @@
 typedef struct {
 	int operacao;
 	int idConta;
+	int idContaDestino;
 	int valor;
 } comando_t;
 
@@ -71,6 +72,11 @@ void consumir(comando_t comando) {
 			printf("%s(%d): Erro.\n\n", COMANDO_LER_SALDO, comando.idConta);
 		else
 			printf("%s(%d): O saldo da conta é %d.\n\n", COMANDO_LER_SALDO, comando.idConta, saldo);
+	} else if (comando.operacao == ID_TRANSFERIR) {
+		if (transferir(comando.idConta, comando.idContaDestino, comando.valor) < 0)
+			printf("Erro ao transferir %d da conta %d para a conta %d.\n\n", comando.valor, comando.idConta, comando.idContaDestino);
+		else
+			printf("%s(%d, %d, %d): OK\n\n", COMANDO_TRANSFERIR, comando.idConta, comando.idContaDestino, comando.valor);
 	}
 }
 
@@ -95,9 +101,10 @@ void *consumidor(void *arg) {
 }
 
 comando_t temp_c;
-void produzir(int op, int id, int val) {
+void produzir(int op, int idDe, int val, int idPara) {
 	temp_c.operacao = op;
-	temp_c.idConta = id;
+	temp_c.idConta = idDe;
+	temp_c.idContaDestino = idPara;
 	temp_c.valor = val;
 
 	if (sem_wait(&sem_podeProduzir) != 0) { perror("Erro ao esperar pelo semaforo!"); exit(3); }
@@ -170,19 +177,19 @@ int main(int argc, char **argv) {
         	}
 
 			for (i = 0; i < NUM_TRABALHADORAS; i++) {
-				produzir(ID_SAIR, 0, 0);
+				produzir(ID_SAIR, 0, 0, 0);
 			}
 
 			for(i = 0; i < NUM_TRABALHADORAS; i++) {
 				if(pthread_join(tarefas[i], NULL) != 0)
 					fprintf(stderr, "Failed to join with thread %ld", tarefas[i]);
 			}
-			
+
 			finalizarContas();
-            
+
             if (sem_destroy(&sem_podeProduzir) != 0) {perror("Error while destroying semaphore!");}
             if (sem_destroy(&sem_podeProduzir) != 0) {perror("Error while destroying semaphore!");}
-            
+
             if (pthread_mutex_destroy(&mutex_c) != 0) {
                 perror("Error while destoying mutex!");
             }
@@ -204,7 +211,7 @@ int main(int argc, char **argv) {
             idConta = atoi(args[1]);
             valor = atoi(args[2]);
 
-			produzir(ID_DEBITAR, idConta, valor);
+			produzir(ID_DEBITAR, idConta, valor, 0);
 		}
 
             /* Creditar */
@@ -218,7 +225,7 @@ int main(int argc, char **argv) {
             idConta = atoi(args[1]);
             valor = atoi(args[2]);
 
-			produzir(ID_CREDITAR, idConta, valor);
+			produzir(ID_CREDITAR, idConta, valor, 0);
 		}
             /* Ler Saldo */
         else if (strcmp(args[0], COMANDO_LER_SALDO) == 0) {
@@ -231,8 +238,24 @@ int main(int argc, char **argv) {
 
             idConta = atoi(args[1]);
 
-			produzir(ID_LER_SALDO, idConta, 0);
+			produzir(ID_LER_SALDO, idConta, 0, 0);
         }
+
+			/* Transferir */
+		else if (strcmp(args[0], COMANDO_TRANSFERIR) == 0) {
+			int idDe, idPara, valor;
+
+			if (numargs < 4) {
+				printf("%s: Sintaxe inválida, tente de novo.\n", COMANDO_TRANSFERIR);
+				continue;
+			}
+
+			idDe = atoi(args[1]);
+			idPara = atoi(args[2]);
+			valor = atoi(args[3]);
+
+			produzir(ID_TRANSFERIR, idDe, valor, idPara);
+		}
 
             /* Simular */
         else if (strcmp(args[0], COMANDO_SIMULAR) == 0) {

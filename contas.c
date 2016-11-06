@@ -13,6 +13,7 @@
 
 int contasSaldos[NUM_CONTAS];
 
+pthread_mutexattr_t attr;
 pthread_mutex_t mutex_contas[NUM_CONTAS];
 
 int contaExiste(int idConta) {
@@ -21,9 +22,13 @@ int contaExiste(int idConta) {
 
 void inicializarContas() {
     int i;
+
+    pthread_mutexattr_init(&attr);
+    pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE);
+
     for (i = 0; i < NUM_CONTAS; i++) {
         contasSaldos[i] = 0;
-        if (pthread_mutex_init(&mutex_contas[i], NULL) != 0) {
+        if (pthread_mutex_init(&mutex_contas[i], &attr) != 0) {
     		perror("Error while creating mutex!");
     		exit(1);
     	}
@@ -48,14 +53,24 @@ int max(int a, int b) {
 }
 
 int transferir(int idContaDe, int idContaPara, int valor) {
-    pthread_mutex_lock(&mutex_contas[min(idContaDe, idContaPara)]);
-    pthread_mutex_lock(&mutex_contas[max(idContaDe, idContaPara)]);
-    
-    debitar(idContaDe, valor);
+    if (!contaExiste(idContaDe) || !contaExiste(idContaPara))
+        return -1;
+
+    if (pthread_mutex_lock(&mutex_contas[min(idContaDe, idContaPara)-1]) != 0) {perror("Erro ao obter trinco!"); exit(4); }
+    if (pthread_mutex_lock(&mutex_contas[max(idContaDe, idContaPara)-1]) != 0) {perror("Erro ao obter trinco!"); exit(4); }
+
+    if(debitar(idContaDe, valor) < 0) {
+        pthread_mutex_unlock(&mutex_contas[min(idContaDe, idContaPara)-1]); /* Nenhum dos erros do pthread_mutex_unlock e aplicavel. Safe to ignore */
+        pthread_mutex_unlock(&mutex_contas[max(idContaDe, idContaPara)-1]); /* Nenhum dos erros do pthread_mutex_unlock e aplicavel. Safe to ignore */
+        return -1;
+    }
+
     creditar(idContaPara, valor);
-    
-    pthread_mutex_lock(&mutex_contas[max(idContaDe, idContaPara)]);
-    pthread_mutex_lock(&mutex_contas[min(idContaDe, idContaPara)]);
+
+    pthread_mutex_unlock(&mutex_contas[min(idContaDe, idContaPara)-1]); /* Nenhum dos erros do pthread_mutex_unlock e aplicavel. Safe to ignore */
+    pthread_mutex_unlock(&mutex_contas[max(idContaDe, idContaPara)-1]); /* Nenhum dos erros do pthread_mutex_unlock e aplicavel. Safe to ignore */
+
+    return 0;
 }
 
 int debitar(int idConta, int valor) {
