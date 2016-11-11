@@ -47,9 +47,10 @@ typedef struct {
 pthread_t tarefas[NUM_TRABALHADORAS];
 pthread_mutex_t mutex_c;
 sem_t sem_podeProduzir, sem_podeConsumir;
+pthread_cond_t var_cond;
 
 comando_t cmd_buffer[CMD_BUFFER_DIM];
-int buff_write_idx = 0, buff_read_idx = 0;
+int buff_write_idx = 0, buff_read_idx = 0, buffer_n = 0;
 
 void consumir(comando_t comando) {
 	if (comando.operacao == ID_DEBITAR) {
@@ -91,9 +92,14 @@ void *consumidor(void *arg) {
 		pthread_mutex_unlock(&mutex_c); /* Nenhum dos erros do pthread_mutex_unlock e aplicavel. Safe to ignore */
 		sem_post(&sem_podeProduzir);  /* Nenhum dos erros do sem_post e aplicavel. Safe to ignore */
 
-		if (comando.operacao != ID_SAIR)
+		if (comando.operacao != ID_SAIR) {
 			consumir(comando);
-		else
+
+			if (pthread_mutex_lock(&mutex_c) != 0) {perror("Erro ao obter trinco!"); exit(4); }
+			buffer_n--;
+			if(buffer_n == 0) pthread_cond_signal(&var_cond); /* Nenhum dos error do pthread_cond_signal e aplicavel. Safe to ignore */
+			pthread_mutex_unlock(&mutex_c); /* Nenhum dos erros do pthread_mutex_unlock e aplicavel. Safe to ignore */
+		} else
 			break;
 	}
 
@@ -108,8 +114,11 @@ void produzir(int op, int idDe, int val, int idPara) {
 	temp_c.valor = val;
 
 	if (sem_wait(&sem_podeProduzir) != 0) { perror("Erro ao esperar pelo semaforo!"); exit(3); }
+	if (pthread_mutex_lock(&mutex_c) != 0) {perror("Erro ao obter trinco!"); exit(4); }
 	cmd_buffer[buff_write_idx] = temp_c;
 	buff_write_idx = (buff_write_idx + 1) % CMD_BUFFER_DIM;
+	buffer_n++;
+	pthread_mutex_unlock(&mutex_c); /* Nenhum dos erros do pthread_mutex_unlock e aplicavel. Safe to ignore */
 	sem_post(&sem_podeConsumir); /* Nenhum dos erros do sem_post e aplicavel. Safe to ignore */
 }
 
@@ -132,6 +141,11 @@ int main(int argc, char **argv) {
 		else
 			perror("Error while creating semaphore");
 		exit(2);
+	}
+
+	if (pthread_cond_init(&var_cond, NULL) != 0) {
+		perror("Error while initializing condition variable! Lack of system resources?");
+		exit(6);
 	}
 
 	for(i = 0; i < NUM_TRABALHADORAS; i++) {
@@ -187,12 +201,14 @@ int main(int argc, char **argv) {
 
 			finalizarContas();
 
-            if (sem_destroy(&sem_podeProduzir) != 0) {perror("Error while destroying semaphore!");}
-            if (sem_destroy(&sem_podeProduzir) != 0) {perror("Error while destroying semaphore!");}
+            if (sem_destroy(&sem_podeProduzir) != 0) perror("Error while destroying semaphore!");
+            if (sem_destroy(&sem_podeProduzir) != 0) perror("Error while destroying semaphore!");
 
-            if (pthread_mutex_destroy(&mutex_c) != 0) {
+            if (pthread_mutex_destroy(&mutex_c) != 0)
                 perror("Error while destoying mutex!");
-            }
+
+			if(pthread_cond_destroy(&var_cond) != 0)
+				perror("Error while destroying condition variable!");
 
             printf("--\ni-banco terminou.\n");
             exit(EXIT_SUCCESS);
@@ -271,7 +287,15 @@ int main(int argc, char **argv) {
                 nChildren++;
                 nAnos = atoi(args[1]);
 
-                pid = fork();
+				if (pthread_mutex_lock(&mutex_c) != 0) {perror("Erro ao obter trinco!"); exit(4); }
+				while(buffer_n != 0) {
+					if(pthread_cond_wait(&var_cond, &mutex_c) != 0) {
+						perror("Error while waiting for condition variable!");
+						exit(7);
+					}
+				}
+				pid = fork();
+				pthread_mutex_unlock(&mutex_c);
 
                 if (pid == -1) {
                     perror("Fork failed. Lack of system resources?");
