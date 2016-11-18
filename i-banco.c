@@ -14,6 +14,7 @@
 #include <sys/wait.h>
 #include <pthread.h>
 #include <semaphore.h>
+#include <fcntl.h>
 
 #define COMANDO_DEBITAR    "debitar"
 #define COMANDO_CREDITAR   "creditar"
@@ -52,9 +53,14 @@ pthread_cond_t var_cond;
 comando_t cmd_buffer[CMD_BUFFER_DIM];
 int buff_write_idx = 0, buff_read_idx = 0, buffer_n = 0;
 
-void consumir(comando_t comando) {
-	if (comando.operacao == ID_DEBITAR) {
+char buf[60];
 
+void consumir(comando_t comando) {
+	int f = open("log.txt", O_WRONLY | O_APPEND | O_CREAT, S_IRUSR | S_IWUSR);
+	
+	if (comando.operacao == ID_DEBITAR) {
+		strcpy(buf, "SAIR!!\n");
+		write(f, buf, strlen(buf));
 		if (debitar(comando.idConta, comando.valor) < 0)
 			printf("%s(%d, %d): Erro\n\n", COMANDO_DEBITAR, comando.idConta, comando.valor);
 		else
@@ -79,6 +85,8 @@ void consumir(comando_t comando) {
 		else
 			printf("%s(%d, %d, %d): OK\n\n", COMANDO_TRANSFERIR, comando.idConta, comando.idContaDestino, comando.valor);
 	}
+
+	close(f);
 }
 
 void *consumidor(void *arg) {
