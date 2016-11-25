@@ -12,5 +12,11 @@ contas.o: contas.c contas.h
 i-banco.o: i-banco.c contas.h commandlinereader.h
 	gcc $(CFLAGS) -c i-banco.c
 
+test:
+	(i-banco )
+	(ls i-banco-pipe)
+	("simular 4" | i-banco-terminal i-banco-pipe)
+	
+	
 clean:
 	rm -f *.o i-banco

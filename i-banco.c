@@ -38,6 +38,8 @@
 #define NUM_TRABALHADORAS 3
 #define CMD_BUFFER_DIM (NUM_TRABALHADORAS * 2)
 
+#define FICHEIRO_LOG "log.txt"
+
 typedef struct {
 	int operacao;
 	int idConta;
@@ -55,18 +57,23 @@ int buff_write_idx = 0, buff_read_idx = 0, buffer_n = 0;
 
 char buf[60];
 
-void consumir(comando_t comando) {
-	int f = open("log.txt", O_WRONLY | O_APPEND | O_CREAT, S_IRUSR | S_IWUSR);
-	
+int log_file;
+
+void consumir(comando_t comando) {	
 	if (comando.operacao == ID_DEBITAR) {
-		strcpy(buf, "SAIR!!\n");
-		write(f, buf, strlen(buf));
+        
+        sprintf(buf, "%ld : %s(%d, %d)\n", (long) pthread_self(), COMANDO_DEBITAR, comando.idConta, comando.valor);
+		write(log_file, buf, strlen(buf));
+        
 		if (debitar(comando.idConta, comando.valor) < 0)
 			printf("%s(%d, %d): Erro\n\n", COMANDO_DEBITAR, comando.idConta, comando.valor);
 		else
 			printf("%s(%d, %d): OK\n\n", COMANDO_DEBITAR, comando.idConta, comando.valor);
 
 	} else if (comando.operacao == ID_CREDITAR) {
+        
+        sprintf(buf, "%ld : %s(%d, %d)\n", (long) pthread_self(), COMANDO_CREDITAR, comando.idConta, comando.valor);
+		write(log_file, buf, strlen(buf));
 
 		if (creditar(comando.idConta, comando.valor) < 0)
 			printf("%s(%d, %d): Erro\n\n", COMANDO_CREDITAR, comando.idConta, comando.valor);
@@ -75,18 +82,24 @@ void consumir(comando_t comando) {
 
 	} else if (comando.operacao == ID_LER_SALDO) {
 		int saldo = lerSaldo(comando.idConta);
+        
+        sprintf(buf, "%ld : %s(%d)\n", (long) pthread_self(), COMANDO_LER_SALDO, comando.idConta);
+		write(log_file, buf, strlen(buf));
+        
 		if (saldo < 0)
 			printf("%s(%d): Erro.\n\n", COMANDO_LER_SALDO, comando.idConta);
 		else
 			printf("%s(%d): O saldo da conta é %d.\n\n", COMANDO_LER_SALDO, comando.idConta, saldo);
 	} else if (comando.operacao == ID_TRANSFERIR) {
+        
+        sprintf(buf, "%ld : %s(%d, %d, %d)\n", (long) pthread_self(), COMANDO_TRANSFERIR, comando.valor, comando.idConta, comando.idContaDestino);
+		write(log_file, buf, strlen(buf));
+        
 		if (transferir(comando.idConta, comando.idContaDestino, comando.valor) < 0)
 			printf("Erro ao transferir %d da conta %d para a conta %d.\n\n", comando.valor, comando.idConta, comando.idContaDestino);
 		else
 			printf("%s(%d, %d, %d): OK\n\n", COMANDO_TRANSFERIR, comando.idConta, comando.idContaDestino, comando.valor);
 	}
-
-	close(f);
 }
 
 void *consumidor(void *arg) {
@@ -155,7 +168,9 @@ int main(int argc, char **argv) {
 		perror("Error while initializing condition variable! Lack of system resources?");
 		exit(6);
 	}
-
+    
+    log_file = open(FICHEIRO_LOG, O_WRONLY | O_CREAT, 0666);
+    
 	for(i = 0; i < NUM_TRABALHADORAS; i++) {
 		if(pthread_create(&tarefas[i], NULL, consumidor, NULL) != 0)
 				perror("Erro ao criar nova tarefa!");
@@ -206,6 +221,8 @@ int main(int argc, char **argv) {
 				if(pthread_join(tarefas[i], NULL) != 0)
 					fprintf(stderr, "Failed to join with thread %ld", tarefas[i]);
 			}
+			
+			close(log_file);
 
 			finalizarContas();
 
@@ -283,7 +300,7 @@ int main(int argc, char **argv) {
 
             /* Simular */
         else if (strcmp(args[0], COMANDO_SIMULAR) == 0) {
-            int nAnos, pid;
+            int nAnos, pid, fd;
 
             if (numargs < 2) {
                 printf("%s: Sintaxe inválida, tente de novo.\n", COMANDO_SIMULAR);
@@ -294,6 +311,7 @@ int main(int argc, char **argv) {
             if (nChildren < MAX_CHILDREN) {
                 nChildren++;
                 nAnos = atoi(args[1]);
+                
 
 				if (pthread_mutex_lock(&mutex_c) != 0) {perror("Erro ao obter trinco!"); exit(4); }
 				while(buffer_n != 0) {
@@ -308,6 +326,12 @@ int main(int argc, char **argv) {
                 if (pid == -1) {
                     perror("Fork failed. Lack of system resources?");
                 } else if (pid == 0) {
+                    char ficheiro[64];
+                    sprintf(ficheiro, "i-banco-sim-%d.txt", getpid());
+                    
+                    fd = open(ficheiro, O_WRONLY | O_CREAT, 0666);
+                    dup2(fd, 1);
+                    
                     simular(nAnos);
                     exit(0);
                 }
