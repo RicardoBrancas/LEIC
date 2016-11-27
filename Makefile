@@ -18,11 +18,5 @@ i-banco.o: i-banco.c i-banco.h contas.h
 i-banco-terminal.o: i-banco-terminal.c i-banco.h commandlinereader.h
 	gcc $(CFLAGS) -c i-banco-terminal.c
 
-test:
-	(i-banco )
-	(ls i-banco-pipe)
-	("simular 4" | i-banco-terminal i-banco-pipe)
-
-
 clean:
 	rm -f *.o i-banco i-banco-terminal
