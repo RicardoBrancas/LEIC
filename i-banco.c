@@ -4,7 +4,7 @@
    // Sistemas Operativos, DEI/IST/ULisboa 2016-17
  */
 
-#include "commandlinereader.h"
+
 #include "contas.h"
 #include <stdlib.h>
 #include <stdio.h>
@@ -16,22 +16,7 @@
 #include <semaphore.h>
 #include <fcntl.h>
 
-#define COMANDO_DEBITAR    "debitar"
-#define COMANDO_CREDITAR   "creditar"
-#define COMANDO_LER_SALDO  "lerSaldo"
-#define COMANDO_SIMULAR    "simular"
-#define COMANDO_SAIR       "sair"
-#define COMANDO_AGORA      "agora"
-#define COMANDO_TRANSFERIR "transferir"
-
-#define ID_SAIR       0
-#define ID_DEBITAR    1
-#define ID_CREDITAR   2
-#define ID_LER_SALDO  3
-#define ID_TRANSFERIR 4
-
-#define MAXARGS 4
-#define BUFFER_SIZE 100
+#include "i-banco.h"
 
 #define MAX_CHILDREN 20
 
@@ -39,13 +24,6 @@
 #define CMD_BUFFER_DIM (NUM_TRABALHADORAS * 2)
 
 #define FICHEIRO_LOG "log.txt"
-
-typedef struct {
-	int operacao;
-	int idConta;
-	int idContaDestino;
-	int valor;
-} comando_t;
 
 pthread_t tarefas[NUM_TRABALHADORAS];
 pthread_mutex_t mutex_c;
@@ -59,46 +37,45 @@ char buf[60];
 
 int log_file;
 
-void consumir(comando_t comando) {	
+void consumir(comando_t comando) {
 	if (comando.operacao == ID_DEBITAR) {
-        
-        sprintf(buf, "%ld : %s(%d, %d)\n", (long) pthread_self(), COMANDO_DEBITAR, comando.idConta, comando.valor);
-		write(log_file, buf, strlen(buf));
-        
-		if (debitar(comando.idConta, comando.valor) < 0)
+        if (debitar(comando.idConta, comando.valor) < 0)
 			printf("%s(%d, %d): Erro\n\n", COMANDO_DEBITAR, comando.idConta, comando.valor);
 		else
 			printf("%s(%d, %d): OK\n\n", COMANDO_DEBITAR, comando.idConta, comando.valor);
 
-	} else if (comando.operacao == ID_CREDITAR) {
-        
-        sprintf(buf, "%ld : %s(%d, %d)\n", (long) pthread_self(), COMANDO_CREDITAR, comando.idConta, comando.valor);
+		snprintf(buf, 60, "%ld : %s(%d, %d)\n", (long) pthread_self(), COMANDO_DEBITAR, comando.idConta, comando.valor);
 		write(log_file, buf, strlen(buf));
 
-		if (creditar(comando.idConta, comando.valor) < 0)
+	} else if (comando.operacao == ID_CREDITAR) {
+       	if (creditar(comando.idConta, comando.valor) < 0)
 			printf("%s(%d, %d): Erro\n\n", COMANDO_CREDITAR, comando.idConta, comando.valor);
  		else
 			printf("%s(%d, %d): OK\n\n", COMANDO_CREDITAR, comando.idConta, comando.valor);
 
+		snprintf(buf, 60, "%ld : %s(%d, %d)\n", (long) pthread_self(), COMANDO_CREDITAR, comando.idConta, comando.valor);
+		write(log_file, buf, strlen(buf));
+
 	} else if (comando.operacao == ID_LER_SALDO) {
 		int saldo = lerSaldo(comando.idConta);
-        
-        sprintf(buf, "%ld : %s(%d)\n", (long) pthread_self(), COMANDO_LER_SALDO, comando.idConta);
-		write(log_file, buf, strlen(buf));
-        
-		if (saldo < 0)
+
+        if (saldo < 0)
 			printf("%s(%d): Erro.\n\n", COMANDO_LER_SALDO, comando.idConta);
 		else
 			printf("%s(%d): O saldo da conta é %d.\n\n", COMANDO_LER_SALDO, comando.idConta, saldo);
-	} else if (comando.operacao == ID_TRANSFERIR) {
-        
-        sprintf(buf, "%ld : %s(%d, %d, %d)\n", (long) pthread_self(), COMANDO_TRANSFERIR, comando.valor, comando.idConta, comando.idContaDestino);
+
+
+        snprintf(buf, 60, "%ld : %s(%d)\n", (long) pthread_self(), COMANDO_LER_SALDO, comando.idConta);
 		write(log_file, buf, strlen(buf));
-        
+
+	} else if (comando.operacao == ID_TRANSFERIR) {
 		if (transferir(comando.idConta, comando.idContaDestino, comando.valor) < 0)
 			printf("Erro ao transferir %d da conta %d para a conta %d.\n\n", comando.valor, comando.idConta, comando.idContaDestino);
 		else
 			printf("%s(%d, %d, %d): OK\n\n", COMANDO_TRANSFERIR, comando.idConta, comando.idContaDestino, comando.valor);
+
+		snprintf(buf, 60, "%ld : %s(%d, %d, %d)\n", (long) pthread_self(), COMANDO_TRANSFERIR, comando.valor, comando.idConta, comando.idContaDestino);
+		write(log_file, buf, strlen(buf));
 	}
 }
 
@@ -145,8 +122,7 @@ void produzir(int op, int idDe, int val, int idPara) {
 
 int main(int argc, char **argv) {
 
-    char *args[MAXARGS + 1];
-    char buffer[BUFFER_SIZE];
+
     int nChildren = 0;
 	int i;
 
@@ -168,9 +144,9 @@ int main(int argc, char **argv) {
 		perror("Error while initializing condition variable! Lack of system resources?");
 		exit(6);
 	}
-    
+
     log_file = open(FICHEIRO_LOG, O_WRONLY | O_CREAT, 0666);
-    
+
 	for(i = 0; i < NUM_TRABALHADORAS; i++) {
 		if(pthread_create(&tarefas[i], NULL, consumidor, NULL) != 0)
 				perror("Erro ao criar nova tarefa!");
@@ -183,13 +159,12 @@ int main(int argc, char **argv) {
     while (1) {
         int numargs;
 
-        numargs = readLineArguments(args, MAXARGS + 1, buffer, BUFFER_SIZE);
 
         /* EOF (end of file) do stdin ou comando "sair" */
-        if (numargs < 0 || (numargs > 0 && (strcmp(args[0], COMANDO_SAIR) == 0))) {
+        if (0/*TODO somethin*/) {
             int wpid, status;
 
-        	if (numargs > 1 && (strcmp(args[1], COMANDO_AGORA) == 0)) {
+        	if (0/*TODO somethin*/) {
             	/* ignorar o signal no processo-pai */
             	if (signal(SIGUSR2, SIG_IGN) == SIG_ERR)
                 	perror("Cannot set signal handler");
@@ -221,7 +196,7 @@ int main(int argc, char **argv) {
 				if(pthread_join(tarefas[i], NULL) != 0)
 					fprintf(stderr, "Failed to join with thread %ld", tarefas[i]);
 			}
-			
+
 			close(log_file);
 
 			finalizarContas();
@@ -237,111 +212,6 @@ int main(int argc, char **argv) {
 
             printf("--\ni-banco terminou.\n");
             exit(EXIT_SUCCESS);
-        } else if (numargs == 0)
-            /* Nenhum argumento; ignora e volta a pedir */
-            continue;
-
-            /* Debitar */
-        else if (strcmp(args[0], COMANDO_DEBITAR) == 0) {
-            int idConta, valor;
-            if (numargs < 3) {
-                printf("%s: Sintaxe inválida, tente de novo.\n", COMANDO_DEBITAR);
-                continue;
-            }
-
-            idConta = atoi(args[1]);
-            valor = atoi(args[2]);
-
-			produzir(ID_DEBITAR, idConta, valor, 0);
-		}
-
-            /* Creditar */
-        else if (strcmp(args[0], COMANDO_CREDITAR) == 0) {
-            int idConta, valor;
-            if (numargs < 3) {
-                printf("%s: Sintaxe inválida, tente de novo.\n", COMANDO_CREDITAR);
-                continue;
-            }
-
-            idConta = atoi(args[1]);
-            valor = atoi(args[2]);
-
-			produzir(ID_CREDITAR, idConta, valor, 0);
-		}
-            /* Ler Saldo */
-        else if (strcmp(args[0], COMANDO_LER_SALDO) == 0) {
-            int idConta;
-
-            if (numargs < 2) {
-        		printf("%s: Sintaxe inválida, tente de novo.\n", COMANDO_LER_SALDO);
-                continue;
-            }
-
-            idConta = atoi(args[1]);
-
-			produzir(ID_LER_SALDO, idConta, 0, 0);
-        }
-
-			/* Transferir */
-		else if (strcmp(args[0], COMANDO_TRANSFERIR) == 0) {
-			int idDe, idPara, valor;
-
-			if (numargs < 4) {
-				printf("%s: Sintaxe inválida, tente de novo.\n", COMANDO_TRANSFERIR);
-				continue;
-			}
-
-			idDe = atoi(args[1]);
-			idPara = atoi(args[2]);
-			valor = atoi(args[3]);
-
-			produzir(ID_TRANSFERIR, idDe, valor, idPara);
-		}
-
-            /* Simular */
-        else if (strcmp(args[0], COMANDO_SIMULAR) == 0) {
-            int nAnos, pid, fd;
-
-            if (numargs < 2) {
-                printf("%s: Sintaxe inválida, tente de novo.\n", COMANDO_SIMULAR);
-                continue;
-            }
-
-            /* Segundo limitacao do enunciado */
-            if (nChildren < MAX_CHILDREN) {
-                nChildren++;
-                nAnos = atoi(args[1]);
-                
-
-				if (pthread_mutex_lock(&mutex_c) != 0) {perror("Erro ao obter trinco!"); exit(4); }
-				while(buffer_n != 0) {
-					if(pthread_cond_wait(&var_cond, &mutex_c) != 0) {
-						perror("Error while waiting for condition variable!");
-						exit(7);
-					}
-				}
-				pid = fork();
-				pthread_mutex_unlock(&mutex_c);
-
-                if (pid == -1) {
-                    perror("Fork failed. Lack of system resources?");
-                } else if (pid == 0) {
-                    char ficheiro[64];
-                    sprintf(ficheiro, "i-banco-sim-%d.txt", getpid());
-                    
-                    fd = open(ficheiro, O_WRONLY | O_CREAT, 0666);
-                    dup2(fd, 1);
-                    
-                    simular(nAnos);
-                    exit(0);
-                }
-            } else {
-                perror("No more children available.");
-            }
-
-
-        } else {
-            printf("Comando desconhecido. Tente de novo.\n");
         }
 
     }
