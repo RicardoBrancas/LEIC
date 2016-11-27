@@ -42,8 +42,12 @@ int main(int argc, char **argv) {
 
 		numargs = readLineArguments(args, MAXARGS + 1, buffer, BUFFER_SIZE);
 
-		if (numargs < 0) {
+		if (numargs < 0 || (numargs > 0 && (strcmp(args[0], COMANDO_SAIR_TERMINAL) == 0))) {
 
+			close(file);
+
+			printf("o terminal do i-banco terminou.\n");
+			exit(EXIT_SUCCESS);
 		}
 
 		else if (numargs == 0)
