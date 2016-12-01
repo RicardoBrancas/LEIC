@@ -6,6 +6,7 @@
 #include <sys/stat.h>
 #include <sys/wait.h>
 #include <time.h>
+#include <errno.h>
 
 #include "commandlinereader.h"
 #include "i-banco.h"
@@ -26,7 +27,7 @@ void produzir(int op, int idDe, int val, int idPara) {
 	temp_c.valor = val;
 
 	time(&start);
-	if (write(pipeTerminalToIbanco, &temp_c, sizeof(comando_t)) == -1) {
+	if (write(pipeTerminalToIbanco, &temp_c, sizeof(comando_t)) == -1 && errno != EPIPE) {
 		perror("Erro ao escrever no pipe (terminal para i-banco)");
 		exit(10);
 	}
@@ -52,7 +53,7 @@ int main(int argc, char **argv) {
 
 	pipeTerminalToIbanco = open(argv[1], O_WRONLY, 0666);
 	if(pipeTerminalToIbanco == -1) {
-		perror("Error while opening the specified file!");
+		perror("Error while opening the specified file! Is i-banco running?");
 		exit(11);
 	}
 
@@ -97,6 +98,8 @@ int main(int argc, char **argv) {
 			if (close(pipeIbancoToTerminal) == -1)
 				perror("Erro ao fechar named pipe (i-banco para terminal)");
 
+			char temp[70];
+			snprintf(temp, 70, "i-banco-terminal-pipe-%d", getpid());
 			if (unlink(temp) == -1)
 				perror("Error while unliking named pipe (i-banco para terminal)");
 

@@ -245,7 +245,6 @@ int main(int argc, char **argv) {
 				nChildren++;
 				nAnos = temp_c.valor;
 
-
 				if (pthread_mutex_lock(&mutex_c) != 0) {perror("Erro ao obter trinco!"); exit(4); }
 				while(buffer_n != 0) {
 					if(pthread_cond_wait(&var_cond, &mutex_c) != 0) {

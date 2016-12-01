@@ -13,9 +13,11 @@
 #define CONTINUE 1
 #define STOP 0
 
+#define BUFFER_SIZE 70
+
 int contasSaldos[NUM_CONTAS];
 
-char buf[60];
+char buf[BUFFER_SIZE];
 int log_file;
 
 pthread_mutexattr_t attr;
@@ -45,9 +47,8 @@ void inicializarContas(int logFile) {
 void finalizarContas() {
 	int i;
 	for (i = 0; i < NUM_CONTAS; i++) {
-		if (pthread_mutex_destroy(&mutex_contas[i]) != 0) {
+		if (pthread_mutex_destroy(&mutex_contas[i]) != 0)
 			perror("Error while destroying mutex!");
-		}
 	}
 }
 
@@ -66,7 +67,11 @@ int transferir(int idContaDe, int idContaPara, int valor) {
 	if (pthread_mutex_lock(&mutex_contas[min(idContaDe, idContaPara)-1]) != 0) {perror("Erro ao obter trinco!"); exit(4); }
 	if (pthread_mutex_lock(&mutex_contas[max(idContaDe, idContaPara)-1]) != 0) {perror("Erro ao obter trinco!"); exit(4); }
 
+	int tempLogFile = log_file; /* Os comandos usados internamente no transferir nao devem aparecer no log */
+	log_file = -1;
+
 	if(debitar(idContaDe, valor) < 0) {
+		log_file = tempLogFile;
 		pthread_mutex_unlock(&mutex_contas[min(idContaDe, idContaPara)-1]); /* Nenhum dos erros do pthread_mutex_unlock e aplicavel. Safe to ignore */
 		pthread_mutex_unlock(&mutex_contas[max(idContaDe, idContaPara)-1]); /* Nenhum dos erros do pthread_mutex_unlock e aplicavel. Safe to ignore */
 		return -1;
@@ -74,8 +79,10 @@ int transferir(int idContaDe, int idContaPara, int valor) {
 
 	creditar(idContaPara, valor);
 
+	log_file = tempLogFile;
+
 	if(log_file != -1) {
-		snprintf(buf, 60, "%lu : %s(%d, %d, %d)\n", pthread_self(), COMANDO_TRANSFERIR, valor, idContaDe, idContaPara);
+		snprintf(buf, BUFFER_SIZE, "%lu : %s(%d, %d, %d)\n", pthread_self(), COMANDO_TRANSFERIR, valor, idContaDe, idContaPara);
 		if (write(log_file, buf, strlen(buf)) == -1)
 			perror("Erro ao escrever no log file!");
 	}
@@ -99,7 +106,7 @@ int debitar(int idConta, int valor) {
 	contasSaldos[idConta - 1] -= valor;
 
 	if(log_file != -1) {
-		snprintf(buf, 60, "%ld : %s(%d, %d)\n", (long) pthread_self(), COMANDO_DEBITAR, idConta, valor);
+		snprintf(buf, BUFFER_SIZE, "%ld : %s(%d, %d)\n", (long) pthread_self(), COMANDO_DEBITAR, idConta, valor);
 		if (write(log_file, buf, strlen(buf)) == -1)
 			perror("Erro ao escrever no log file!");
 	}
@@ -116,7 +123,7 @@ int creditar(int idConta, int valor) {
 	contasSaldos[idConta - 1] += valor;
 
     if(log_file != -1) {
-        snprintf(buf, 60, "%ld : %s(%d, %d)\n", (long) pthread_self(), COMANDO_CREDITAR, idConta, valor);
+        snprintf(buf, BUFFER_SIZE, "%ld : %s(%d, %d)\n", (long) pthread_self(), COMANDO_CREDITAR, idConta, valor);
 		if (write(log_file, buf, strlen(buf)) == -1)
 			perror("Erro ao escrever no log file!");
     }
@@ -134,7 +141,7 @@ int lerSaldo(int idConta) {
 	s = contasSaldos[idConta - 1];
 
     if(log_file != -1) {
-        snprintf(buf, 60, "%ld : %s(%d)\n", (long) pthread_self(), COMANDO_LER_SALDO, idConta);
+        snprintf(buf, BUFFER_SIZE, "%ld : %s(%d)\n", (long) pthread_self(), COMANDO_LER_SALDO, idConta);
 		if (write(log_file, buf, strlen(buf)) == -1)
 			perror("Erro ao escrever no log file!");
     }
