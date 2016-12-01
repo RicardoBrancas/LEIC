@@ -110,7 +110,7 @@ void produzir(int op, int idDe, int val, int idPara) {
 int main(int argc, char **argv) {
 
 
-    int nChildren = 0;
+  int nChildren = 0;
 	int i;
 
 	if (pthread_mutex_init(&mutex_c, NULL) != 0) {
@@ -155,7 +155,7 @@ int main(int argc, char **argv) {
         if (temp_c.operacao == ID_SAIR) {
             int wpid, status;
 
-        	if (0/*TODO somethin*/) {
+        	if (temp_c.valor == 1) {
             	/* ignorar o signal no processo-pai */
             	if (signal(SIGUSR2, SIG_IGN) == SIG_ERR)
                 	perror("Cannot set signal handler");
@@ -204,7 +204,38 @@ int main(int argc, char **argv) {
             printf("--\ni-banco terminou.\n");
             exit(EXIT_SUCCESS);
         }
+				else if (temp_c.operacao == ID_SIMULAR) {
+		            int nAnos, pid, fd;
 
+		            if (nChildren < MAX_CHILDREN) {
+		                nChildren++;
+		                nAnos = temp_c.valor;
+
+
+						if (pthread_mutex_lock(&mutex_c) != 0) {perror("Erro ao obter trinco!"); exit(4); }
+						while(buffer_n != 0) {
+							if(pthread_cond_wait(&var_cond, &mutex_c) != 0) {
+								perror("Error while waiting for condition variable!");
+								exit(7);
+							}
+						}
+						pid = fork();
+						pthread_mutex_unlock(&mutex_c);
+
+		                if (pid == -1) {
+		                    perror("Fork failed. Lack of system resources?");
+		                } else if (pid == 0) {
+		                    char ficheiro[64];
+		                    sprintf(ficheiro, "i-banco-sim-%d.txt", getpid());
+
+		                    fd = open(ficheiro, O_WRONLY | O_CREAT, 0666);
+		                    dup2(fd, 1);
+
+		                    simular(nAnos);
+		                    exit(0);
+		                }
+ }
+ }
 		else
 			produzir(temp_c.operacao, temp_c.idConta, temp_c.valor, temp_c.idContaDestino);
 
