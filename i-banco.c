@@ -77,7 +77,7 @@ void *consumidor(void *arg) {
 		pthread_mutex_unlock(&mutex_c); /* Nenhum dos erros do pthread_mutex_unlock e aplicavel. Safe to ignore */
 		sem_post(&sem_podeProduzir);  /* Nenhum dos erros do sem_post e aplicavel. Safe to ignore */
 
-		if (comando.operacao != ID_SAIR) {
+		if (comando.operacao != ID_SAIR_TAREFA) {
 			consumir(comando);
 
 			if (pthread_mutex_lock(&mutex_c) != 0) {perror("Erro ao obter trinco!"); exit(4); }
@@ -150,10 +150,9 @@ int main(int argc, char **argv) {
         int numargs;
 
 		read(file, &temp_c, sizeof(comando_t));
-		produzir(temp_c.operacao, temp_c.idConta, temp_c.valor, temp_c.idContaDestino);
 
         /* EOF (end of file) do stdin ou comando "sair" */
-        if (0/*TODO somethin*/) {
+        if (temp_c.operacao == ID_SAIR) {
             int wpid, status;
 
         	if (0/*TODO somethin*/) {
@@ -181,7 +180,7 @@ int main(int argc, char **argv) {
         	}
 
 			for (i = 0; i < NUM_TRABALHADORAS; i++) {
-				produzir(ID_SAIR, 0, 0, 0);
+				produzir(ID_SAIR_TAREFA, 0, 0, 0);
 			}
 
 			for(i = 0; i < NUM_TRABALHADORAS; i++) {
@@ -205,6 +204,9 @@ int main(int argc, char **argv) {
             printf("--\ni-banco terminou.\n");
             exit(EXIT_SUCCESS);
         }
+
+		else
+			produzir(temp_c.operacao, temp_c.idConta, temp_c.valor, temp_c.idContaDestino);
 
     }
 }
