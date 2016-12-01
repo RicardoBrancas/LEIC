@@ -31,3 +31,8 @@
 # Debug files
 *.dSYM/
 *.su
+
+i-banco
+i-banco-terminal
+i-banco-pipe
+i-banco-terminal-pipe-*

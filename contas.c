@@ -76,7 +76,8 @@ int transferir(int idContaDe, int idContaPara, int valor) {
 
 	if(log_file != -1) {
 		snprintf(buf, 60, "%lu : %s(%d, %d, %d)\n", pthread_self(), COMANDO_TRANSFERIR, valor, idContaDe, idContaPara);
-		write(log_file, buf, strlen(buf));
+		if (write(log_file, buf, strlen(buf)) == -1)
+			perror("Erro ao escrever no log file!");
 	}
 
 	pthread_mutex_unlock(&mutex_contas[min(idContaDe, idContaPara)-1]); /* Nenhum dos erros do pthread_mutex_unlock e aplicavel. Safe to ignore */
@@ -99,7 +100,8 @@ int debitar(int idConta, int valor) {
 
 	if(log_file != -1) {
 		snprintf(buf, 60, "%ld : %s(%d, %d)\n", (long) pthread_self(), COMANDO_DEBITAR, idConta, valor);
-		write(log_file, buf, strlen(buf));
+		if (write(log_file, buf, strlen(buf)) == -1)
+			perror("Erro ao escrever no log file!");
 	}
 
 	pthread_mutex_unlock(&mutex_contas[idConta-1]); /* Nenhum dos erros do pthread_mutex_unlock e aplicavel. Safe to ignore */
@@ -115,7 +117,8 @@ int creditar(int idConta, int valor) {
 
     if(log_file != -1) {
         snprintf(buf, 60, "%ld : %s(%d, %d)\n", (long) pthread_self(), COMANDO_CREDITAR, idConta, valor);
-		write(log_file, buf, strlen(buf));
+		if (write(log_file, buf, strlen(buf)) == -1)
+			perror("Erro ao escrever no log file!");
     }
 
 	pthread_mutex_unlock(&mutex_contas[idConta-1]); /* Nenhum dos erros do pthread_mutex_unlock e aplicavel. Safe to ignore */
@@ -132,7 +135,8 @@ int lerSaldo(int idConta) {
 
     if(log_file != -1) {
         snprintf(buf, 60, "%ld : %s(%d)\n", (long) pthread_self(), COMANDO_LER_SALDO, idConta);
-		write(log_file, buf, strlen(buf));
+		if (write(log_file, buf, strlen(buf)) == -1)
+			perror("Erro ao escrever no log file!");
     }
 
 	pthread_mutex_unlock(&mutex_contas[idConta-1]); /* Nenhum dos erros do pthread_mutex_unlock e aplicavel. Safe to ignore */

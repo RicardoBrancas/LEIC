@@ -1,10 +1,9 @@
 
-/*
-   // Projeto SO - exercicio 1, version 1
-   // Sistemas Operativos, DEI/IST/ULisboa 2016-17
+/*  Projeto SO - exercicio 1, version 1
+ *  Sistemas Operativos, DEI/IST/ULisboa 2016-17
  */
 
-
+#include "i-banco.h"
 #include "contas.h"
 #include <stdlib.h>
 #include <stdio.h>
@@ -17,15 +16,13 @@
 #include <fcntl.h>
 #include <sys/stat.h>
 
-#include "i-banco.h"
-
 #define MAX_CHILDREN 20
 
 #define NUM_TRABALHADORAS 3
 #define CMD_BUFFER_DIM (NUM_TRABALHADORAS * 2)
 
 #define FICHEIRO_LOG "log.txt"
-#define IBANCOPIPE   "i-banco-pipe"
+#define I_BANCO_PIPE "i-banco-pipe"
 
 pthread_t tarefas[NUM_TRABALHADORAS];
 pthread_mutex_t mutex_c;
@@ -37,32 +34,40 @@ int buff_write_idx = 0, buff_read_idx = 0, buffer_n = 0;
 
 int log_file, file;
 
+int result;
 void consumir(comando_t comando) {
 	if (comando.operacao == ID_DEBITAR) {
-        if (debitar(comando.idConta, comando.valor) < 0)
-			printf("%s(%d, %d): Erro\n\n", COMANDO_DEBITAR, comando.idConta, comando.valor);
-		else
-			printf("%s(%d, %d): OK\n\n", COMANDO_DEBITAR, comando.idConta, comando.valor);
+
+		result = debitar(comando.idConta, comando.valor);
+		if (write(comando.terminalID, &result, sizeof(int)) == -1) {
+			perror("Error while writing to named pipe (i-banco to terminal)");
+			exit(13);
+		}
 
 	} else if (comando.operacao == ID_CREDITAR) {
-       	if (creditar(comando.idConta, comando.valor) < 0)
-			printf("%s(%d, %d): Erro\n\n", COMANDO_CREDITAR, comando.idConta, comando.valor);
- 		else
-			printf("%s(%d, %d): OK\n\n", COMANDO_CREDITAR, comando.idConta, comando.valor);
+
+		result = creditar(comando.idConta, comando.valor);
+		if (write(comando.terminalID, &result, sizeof(int)) == -1) {
+			perror("Error while writing to named pipe (i-banco to terminal)");
+			exit(13);
+		}
 
 	} else if (comando.operacao == ID_LER_SALDO) {
-		int saldo = lerSaldo(comando.idConta);
 
-        if (saldo < 0)
-			printf("%s(%d): Erro.\n\n", COMANDO_LER_SALDO, comando.idConta);
-		else
-			printf("%s(%d): O saldo da conta é %d.\n\n", COMANDO_LER_SALDO, comando.idConta, saldo);
+		result = lerSaldo(comando.idConta);
+		if (write(comando.terminalID, &result, sizeof(int)) == -1) {
+			perror("Error while writing to named pipe (i-banco to terminal)");
+			exit(13);
+		}
 
 	} else if (comando.operacao == ID_TRANSFERIR) {
-		if (transferir(comando.idConta, comando.idContaDestino, comando.valor) < 0)
-			printf("Erro ao transferir %d da conta %d para a conta %d.\n\n", comando.valor, comando.idConta, comando.idContaDestino);
-		else
-			printf("%s(%d, %d, %d): OK\n\n", COMANDO_TRANSFERIR, comando.idConta, comando.idContaDestino, comando.valor);
+
+		result = transferir(comando.idConta, comando.idContaDestino, comando.valor);
+		if (write(comando.terminalID, &result, sizeof(int)) == -1) {
+			perror("Error while writing to named pipe (i-banco to terminal)");
+			exit(13);
+		}
+
 	}
 }
 
@@ -92,7 +97,8 @@ void *consumidor(void *arg) {
 }
 
 comando_t temp_c;
-void produzir(int op, int idDe, int val, int idPara) {
+void produzir(int terminalID, int op, int idDe, int val, int idPara) {
+	temp_c.terminalID = terminalID;
 	temp_c.operacao = op;
 	temp_c.idConta = idDe;
 	temp_c.idContaDestino = idPara;
@@ -107,10 +113,13 @@ void produzir(int op, int idDe, int val, int idPara) {
 	sem_post(&sem_podeConsumir); /* Nenhum dos erros do sem_post e aplicavel. Safe to ignore */
 }
 
+void handlePipeSignal(int signum) {
+	perror("o i-banco tentou escrever/ler numa broken pipe!");
+	exit(20);
+}
+
 int main(int argc, char **argv) {
-
-
-  int nChildren = 0;
+	int nChildren = 0;
 	int i;
 
 	if (pthread_mutex_init(&mutex_c, NULL) != 0) {
@@ -119,7 +128,7 @@ int main(int argc, char **argv) {
 	}
 
 	if ((sem_init(&sem_podeProduzir, 0, CMD_BUFFER_DIM) != 0) ||
-		(sem_init(&sem_podeConsumir, 0, 0) != 0)) {
+	    (sem_init(&sem_podeConsumir, 0, 0) != 0)) {
 		if (errno == ENOSYS)
 			perror("Semaphores not supported!");
 		else
@@ -132,55 +141,72 @@ int main(int argc, char **argv) {
 		exit(6);
 	}
 
-	mkfifo(IBANCOPIPE, 0666);
-	file = open(IBANCOPIPE, O_RDONLY, 0666);
+	if (signal(SIGPIPE, handlePipeSignal) == SIG_ERR)
+		perror("Cannot set signal handler");
 
-    log_file = open(FICHEIRO_LOG, O_WRONLY | O_CREAT, 0666);
+	if (mkfifo(I_BANCO_PIPE, 0666) == -1) {
+		perror("Error while creating named pipe (terminal to i-banco)");
+		exit(12);
+	}
+
+	log_file = open(FICHEIRO_LOG, O_WRONLY | O_CREAT | O_TRUNC, 0666);
+	if(log_file == -1) {
+		perror("Error while opening log file");
+	}
 
 	for(i = 0; i < NUM_TRABALHADORAS; i++) {
 		if(pthread_create(&tarefas[i], NULL, consumidor, NULL) != 0)
-				perror("Erro ao criar nova tarefa!");
+			perror("Erro ao criar nova tarefa!");
 	}
 
-    inicializarContas(log_file);
+	inicializarContas(log_file);
 
-    printf("Bem-vinda/o ao i-banco\n\n");
+	printf("Bem-vinda/o ao i-banco\n");
 
-    while (1) {
-        int numargs;
+	printf("A esperar pela ligacao de um terminal...\n");
+	file = open(I_BANCO_PIPE, O_RDONLY, 0666);
+	if(file == -1) {
+		perror("Error while opening named pipe (terminal para i-banco)");
+		exit(11);
+	}
+	printf("Conectado.\n\n");
 
-		read(file, &temp_c, sizeof(comando_t));
+	while (1) {
+		if (read(file, &temp_c, sizeof(comando_t)) == -1) {
+			perror("Error while reading comand form named pipe (terminal para i-banco)");
+			exit(12);
+		}
 
-        /* EOF (end of file) do stdin ou comando "sair" */
-        if (temp_c.operacao == ID_SAIR) {
-            int wpid, status;
+		/* sair */
+		if (temp_c.operacao == ID_SAIR) {
+			int wpid, status;
 
-        	if (temp_c.valor == 1) {
-            	/* ignorar o signal no processo-pai */
-            	if (signal(SIGUSR2, SIG_IGN) == SIG_ERR)
-                	perror("Cannot set signal handler");
-            	/* Nenhum dos erros do kill() e aplicavel. Safe to ignore */
-            	kill(0, SIGUSR2);
-        	}
+			if (temp_c.valor == ID_SAIR_AGORA) {
+				/* ignorar o signal no processo-pai */
+				if (signal(SIGUSR2, SIG_IGN) == SIG_ERR)
+					perror("Cannot set signal handler");
+				/* Nenhum dos erros do kill() e aplicavel. Safe to ignore */
+				kill(0, SIGUSR2);
+			}
 
-        	printf("i-banco vai terminar.\n--\n");
+			printf("i-banco vai terminar.\n--\n");
 
-        	while (1) { /* O ciclo termina quando wait() devolve com o erro ECHILD; no more children */
-            	wpid = wait(&status);
-            	if (wpid == -1 && errno == ECHILD)
-                	break; /* Nao existem mais filhos, terminar ciclo */
-            	else if (wpid == -1)
-                	continue; /* Outro erro, continuar o ciclo ate nao existirem mais filhos */
+			while (1) { /* O ciclo termina quando wait() devolve com o erro ECHILD; no more children */
+				wpid = wait(&status);
+				if (wpid == -1 && errno == ECHILD)
+					break; /* Nao existem mais filhos, terminar ciclo */
+				else if (wpid == -1)
+					continue; /* Outro erro, continuar o ciclo ate nao existirem mais filhos */
 
-            	if (WIFEXITED(status)) {
-                	printf("FILHO TERMINADO (PID=%d; terminou normalmente)\n", wpid);
-            	} else {
-                	printf("FILHO TERMINADO (PID=%d; terminou abruptamente)\n", wpid);
-            	}
-        	}
+				if (WIFEXITED(status)) {
+					printf("FILHO TERMINADO (PID=%d; terminou normalmente)\n", wpid);
+				} else {
+					printf("FILHO TERMINADO (PID=%d; terminou abruptamente)\n", wpid);
+				}
+			}
 
 			for (i = 0; i < NUM_TRABALHADORAS; i++) {
-				produzir(ID_SAIR_TAREFA, 0, 0, 0);
+				produzir(-1, ID_SAIR_TAREFA, 0, 0, 0);
 			}
 
 			for(i = 0; i < NUM_TRABALHADORAS; i++) {
@@ -188,56 +214,88 @@ int main(int argc, char **argv) {
 					fprintf(stderr, "Failed to join with thread %ld", tarefas[i]);
 			}
 
-			close(log_file);
-
 			finalizarContas();
 
-            if (sem_destroy(&sem_podeProduzir) != 0) perror("Error while destroying semaphore!");
-            if (sem_destroy(&sem_podeProduzir) != 0) perror("Error while destroying semaphore!");
+			if (close(log_file) == -1)
+				perror("Erro ao fechar log file");
 
-            if (pthread_mutex_destroy(&mutex_c) != 0)
-                perror("Error while destoying mutex!");
+			if (close(file) == -1)
+				perror("Erro ao fechar named pipe (terminal para i-banco)");
+
+			if (unlink(I_BANCO_PIPE) == -1)
+				perror("Error while unliking named pipe (terminal para i-banco)");
+
+			if (sem_destroy(&sem_podeProduzir) != 0) perror("Error while destroying semaphore!");
+			if (sem_destroy(&sem_podeProduzir) != 0) perror("Error while destroying semaphore!");
+
+			if (pthread_mutex_destroy(&mutex_c) != 0)
+				perror("Error while destoying mutex!");
 
 			if(pthread_cond_destroy(&var_cond) != 0)
 				perror("Error while destroying condition variable!");
 
-            printf("--\ni-banco terminou.\n");
-            exit(EXIT_SUCCESS);
-        }
-				else if (temp_c.operacao == ID_SIMULAR) {
-		            int nAnos, pid, fd;
+			printf("--\ni-banco terminou.\n");
+			exit(EXIT_SUCCESS);
+		}
 
-		            if (nChildren < MAX_CHILDREN) {
-		                nChildren++;
-		                nAnos = temp_c.valor;
+		else if (temp_c.operacao == ID_SIMULAR) {
+			int nAnos, pid, fd;
+
+			if (nChildren < MAX_CHILDREN) {
+				nChildren++;
+				nAnos = temp_c.valor;
 
 
-						if (pthread_mutex_lock(&mutex_c) != 0) {perror("Erro ao obter trinco!"); exit(4); }
-						while(buffer_n != 0) {
-							if(pthread_cond_wait(&var_cond, &mutex_c) != 0) {
-								perror("Error while waiting for condition variable!");
-								exit(7);
-							}
-						}
-						pid = fork();
-						pthread_mutex_unlock(&mutex_c);
+				if (pthread_mutex_lock(&mutex_c) != 0) {perror("Erro ao obter trinco!"); exit(4); }
+				while(buffer_n != 0) {
+					if(pthread_cond_wait(&var_cond, &mutex_c) != 0) {
+						perror("Error while waiting for condition variable!");
+						exit(7);
+					}
+				}
+				pid = fork();
+				pthread_mutex_unlock(&mutex_c);
 
-		                if (pid == -1) {
-		                    perror("Fork failed. Lack of system resources?");
-		                } else if (pid == 0) {
-		                    char ficheiro[64];
-		                    sprintf(ficheiro, "i-banco-sim-%d.txt", getpid());
+				if (pid == -1) {
+					perror("Fork failed. Lack of system resources?");
+				} else if (pid == 0) {
+					log_file = -1;
 
-		                    fd = open(ficheiro, O_WRONLY | O_CREAT, 0666);
-		                    dup2(fd, 1);
+					char ficheiro[64];
+					snprintf(ficheiro, 64, "i-banco-sim-%d.txt", getpid());
 
-		                    simular(nAnos);
-		                    exit(0);
-		                }
- }
- }
+					fd = open(ficheiro, O_WRONLY | O_CREAT, 0666);
+					dup2(fd, 1);
+
+					simular(nAnos);
+					exit(0);
+				}
+			}
+		}
+
+		else if (temp_c.operacao == ID_CRIAR_FIFO) {
+			char temp[70];
+
+			snprintf(temp, 70, "i-banco-terminal-pipe-%d", temp_c.valor);
+
+			int fd = open(temp, O_WRONLY);
+			/* Send the file descriptor back to the terminal, so we can later know
+			 * wich pipe (using the file descriptor) to use when sending results
+			 * to the terminal.
+			 */
+			if (write(fd, &fd, sizeof(int)) == -1) {
+				perror("Erro ao escrever no pipe (i-banco para terminal)");
+				exit(10);
+			}
+		}
+
+		else if (temp_c.operacao == ID_FINALIZAR_FIFO) {
+			if (close(temp_c.terminalID) == -1)
+				perror("Erro ao fechar named pipe (i-banco para terminal)");
+		}
+
 		else
-			produzir(temp_c.operacao, temp_c.idConta, temp_c.valor, temp_c.idContaDestino);
+			produzir(temp_c.terminalID, temp_c.operacao, temp_c.idConta, temp_c.valor, temp_c.idContaDestino);
 
-    }
+	}
 }

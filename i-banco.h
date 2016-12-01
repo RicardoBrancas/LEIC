@@ -21,17 +21,15 @@
 #define ID_TRANSFERIR      4
 #define ID_SIMULAR         5
 
+#define ID_SAIR_NAO_AGORA  0
+#define ID_SAIR_AGORA      1
+
 typedef struct {
-	//int terminalID;
+	int terminalID;
 	int operacao;
 	int idConta;
 	int idContaDestino;
 	int valor;
 } comando_t;
-
-typedef struct {
-	comando_t comando;
-	int result;
-} result_t;
 
 #endif
