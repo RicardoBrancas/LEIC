@@ -15,6 +15,7 @@
 #include <pthread.h>
 #include <semaphore.h>
 #include <fcntl.h>
+#include <sys/stat.h>
 
 #include "i-banco.h"
 
@@ -24,6 +25,7 @@
 #define CMD_BUFFER_DIM (NUM_TRABALHADORAS * 2)
 
 #define FICHEIRO_LOG "log.txt"
+#define IBANCOPIPE   "i-banco-pipe"
 
 pthread_t tarefas[NUM_TRABALHADORAS];
 pthread_mutex_t mutex_c;
@@ -33,9 +35,7 @@ pthread_cond_t var_cond;
 comando_t cmd_buffer[CMD_BUFFER_DIM];
 int buff_write_idx = 0, buff_read_idx = 0, buffer_n = 0;
 
-char buf[60];
-
-int log_file;
+int log_file, file;
 
 void consumir(comando_t comando) {
 	if (comando.operacao == ID_DEBITAR) {
@@ -44,17 +44,11 @@ void consumir(comando_t comando) {
 		else
 			printf("%s(%d, %d): OK\n\n", COMANDO_DEBITAR, comando.idConta, comando.valor);
 
-		snprintf(buf, 60, "%ld : %s(%d, %d)\n", (long) pthread_self(), COMANDO_DEBITAR, comando.idConta, comando.valor);
-		write(log_file, buf, strlen(buf));
-
 	} else if (comando.operacao == ID_CREDITAR) {
        	if (creditar(comando.idConta, comando.valor) < 0)
 			printf("%s(%d, %d): Erro\n\n", COMANDO_CREDITAR, comando.idConta, comando.valor);
  		else
 			printf("%s(%d, %d): OK\n\n", COMANDO_CREDITAR, comando.idConta, comando.valor);
-
-		snprintf(buf, 60, "%ld : %s(%d, %d)\n", (long) pthread_self(), COMANDO_CREDITAR, comando.idConta, comando.valor);
-		write(log_file, buf, strlen(buf));
 
 	} else if (comando.operacao == ID_LER_SALDO) {
 		int saldo = lerSaldo(comando.idConta);
@@ -64,18 +58,11 @@ void consumir(comando_t comando) {
 		else
 			printf("%s(%d): O saldo da conta é %d.\n\n", COMANDO_LER_SALDO, comando.idConta, saldo);
 
-
-        snprintf(buf, 60, "%ld : %s(%d)\n", (long) pthread_self(), COMANDO_LER_SALDO, comando.idConta);
-		write(log_file, buf, strlen(buf));
-
 	} else if (comando.operacao == ID_TRANSFERIR) {
 		if (transferir(comando.idConta, comando.idContaDestino, comando.valor) < 0)
 			printf("Erro ao transferir %d da conta %d para a conta %d.\n\n", comando.valor, comando.idConta, comando.idContaDestino);
 		else
 			printf("%s(%d, %d, %d): OK\n\n", COMANDO_TRANSFERIR, comando.idConta, comando.idContaDestino, comando.valor);
-
-		snprintf(buf, 60, "%ld : %s(%d, %d, %d)\n", (long) pthread_self(), COMANDO_TRANSFERIR, comando.valor, comando.idConta, comando.idContaDestino);
-		write(log_file, buf, strlen(buf));
 	}
 }
 
@@ -84,7 +71,7 @@ void *consumidor(void *arg) {
 		comando_t comando;
 
 		if (sem_wait(&sem_podeConsumir) != 0) { perror("Erro ao esperar pelo semaforo!"); exit(3); }
-		if (pthread_mutex_lock(&mutex_c) != 0) {perror("Erro ao obter trinco!"); exit(4); }
+		if (pthread_mutex_lock(&mutex_c) != 0) { perror("Erro ao obter trinco!"); exit(4); }
 		comando = cmd_buffer[buff_read_idx];
 		buff_read_idx = (buff_read_idx + 1) % CMD_BUFFER_DIM;
 		pthread_mutex_unlock(&mutex_c); /* Nenhum dos erros do pthread_mutex_unlock e aplicavel. Safe to ignore */
@@ -145,6 +132,9 @@ int main(int argc, char **argv) {
 		exit(6);
 	}
 
+	mkfifo(IBANCOPIPE, 0666);
+	file = open(IBANCOPIPE, O_RDONLY, 0666);
+
     log_file = open(FICHEIRO_LOG, O_WRONLY | O_CREAT, 0666);
 
 	for(i = 0; i < NUM_TRABALHADORAS; i++) {
@@ -152,13 +142,15 @@ int main(int argc, char **argv) {
 				perror("Erro ao criar nova tarefa!");
 	}
 
-    inicializarContas();
+    inicializarContas(log_file);
 
     printf("Bem-vinda/o ao i-banco\n\n");
 
     while (1) {
         int numargs;
 
+		read(file, &temp_c, sizeof(comando_t));
+		produzir(temp_c.operacao, temp_c.idConta, temp_c.valor, temp_c.idContaDestino);
 
         /* EOF (end of file) do stdin ou comando "sair" */
         if (0/*TODO somethin*/) {

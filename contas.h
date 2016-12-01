@@ -12,7 +12,7 @@
 
 #define ATRASO 1
 
-void inicializarContas();
+void inicializarContas(int logFile);
 
 void finalizarContas();
 

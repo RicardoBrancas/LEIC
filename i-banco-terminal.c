@@ -24,6 +24,9 @@ void produzir(int op, int idDe, int val, int idPara) {
 
 int main(int argc, char **argv) {
 
+	//Inicializar o valor do terminalID do temp_c (nunca muda)
+	//temp_c.terminalID = getpid();
+
 	if(argc < 2) {
 		perror("Insuficient arguments given.");
 		exit(1);
@@ -33,7 +36,9 @@ int main(int argc, char **argv) {
 	char buffer[BUFFER_SIZE];
 
 	char *pathname = argv[1];
-	file = open(pathname, O_RDONLY, 0666);
+	file = open(pathname, O_WRONLY, 0666);
+
+	// produzir(ID_CRIAR_FIFO, 0, getpid(), 0);
 
 	printf("Bem-vinda/o ao terminal do i-banco\n\n");
 
@@ -44,9 +49,11 @@ int main(int argc, char **argv) {
 
 		if (numargs < 0 || (numargs > 0 && (strcmp(args[0], COMANDO_SAIR_TERMINAL) == 0))) {
 
+			// produzir(ID_FINALIZAR_FIFO, 0, getpid(), 0);
+
 			close(file);
 
-			printf("o terminal do i-banco terminou.\n");
+			printf("O terminal do i-banco terminou.\n");
 			exit(EXIT_SUCCESS);
 		}
 
