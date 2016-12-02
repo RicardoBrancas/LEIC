@@ -1,5 +1,7 @@
 CFLAGS = -g -Wall -pedantic
 
+all: i-banco i-banco-terminal
+
 i-banco: contas.o i-banco.o
 	gcc -pthread -o i-banco contas.o i-banco.o
 

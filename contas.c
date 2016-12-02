@@ -61,13 +61,15 @@ int max(int a, int b) {
 }
 
 int transferir(int idContaDe, int idContaPara, int valor) {
+    int tempLogFile;
+    
 	if (!contaExiste(idContaDe) || !contaExiste(idContaPara))
 		return -1;
 
 	if (pthread_mutex_lock(&mutex_contas[min(idContaDe, idContaPara)-1]) != 0) {perror("Erro ao obter trinco!"); exit(4); }
 	if (pthread_mutex_lock(&mutex_contas[max(idContaDe, idContaPara)-1]) != 0) {perror("Erro ao obter trinco!"); exit(4); }
 
-	int tempLogFile = log_file; /* Os comandos usados internamente no transferir nao devem aparecer no log */
+	tempLogFile = log_file; /* Os comandos usados internamente no transferir nao devem aparecer no log */
 	log_file = -1;
 
 	if(debitar(idContaDe, valor) < 0) {

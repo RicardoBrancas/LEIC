@@ -258,9 +258,10 @@ int main(int argc, char **argv) {
 				if (pid == -1) {
 					perror("Fork failed. Lack of system resources?");
 				} else if (pid == 0) {
+                    char ficheiro[64];
+                    
 					log_file = -1;
-
-					char ficheiro[64];
+					
 					snprintf(ficheiro, 64, "i-banco-sim-%d.txt", getpid());
 
 					fd = open(ficheiro, O_WRONLY | O_CREAT, 0666);
@@ -274,10 +275,11 @@ int main(int argc, char **argv) {
 
 		else if (temp_c.operacao == ID_CRIAR_FIFO) {
 			char temp[70];
+            int fd;
 
 			snprintf(temp, 70, "i-banco-terminal-pipe-%d", temp_c.valor);
 
-			int fd = open(temp, O_WRONLY);
+			fd = open(temp, O_WRONLY);
 			/* Send the file descriptor back to the terminal, so we can later know
 			 * wich pipe (using the file descriptor) to use when sending results
 			 * to the terminal.

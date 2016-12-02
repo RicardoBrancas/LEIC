@@ -39,6 +39,10 @@ void handlePipeSignal(int signum) {
 }
 
 int main(int argc, char **argv) {
+    char *args[MAXARGS + 1];
+	char buffer[BUFFER_SIZE];
+    char temp[70];
+    
 
 	if(argc < 2) {
 		perror("Insuficient arguments given.");
@@ -48,16 +52,12 @@ int main(int argc, char **argv) {
 	if (signal(SIGPIPE, handlePipeSignal) == SIG_ERR)
 		perror("Cannot set signal handler");
 
-	char *args[MAXARGS + 1];
-	char buffer[BUFFER_SIZE];
-
 	pipeTerminalToIbanco = open(argv[1], O_WRONLY, 0666);
 	if(pipeTerminalToIbanco == -1) {
 		perror("Error while opening the specified file! Is i-banco running?");
 		exit(11);
 	}
-
-	char temp[70];
+	
 	snprintf(temp, 70, "i-banco-terminal-pipe-%d", getpid());
 	if (mkfifo(temp, 0666) == -1) {
 		perror("Error while creating named pipe (i-banco to terminal)");
@@ -76,7 +76,7 @@ int main(int argc, char **argv) {
 		exit(12);
 	}
 
-	//Inicializar o valor do terminalID do temp_c (nunca muda)
+	/* Inicializar o valor do terminalID do temp_c (nunca muda) */
 	temp_c.terminalID = idTerminalNoIbanco;
 
 	printf("Bem-vinda/o ao terminal do i-banco\n\n");
@@ -98,7 +98,6 @@ int main(int argc, char **argv) {
 			if (close(pipeIbancoToTerminal) == -1)
 				perror("Erro ao fechar named pipe (i-banco para terminal)");
 
-			char temp[70];
 			snprintf(temp, 70, "i-banco-terminal-pipe-%d", getpid());
 			if (unlink(temp) == -1)
 				perror("Error while unliking named pipe (i-banco para terminal)");
