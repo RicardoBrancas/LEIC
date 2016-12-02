@@ -22,7 +22,7 @@
 #define CMD_BUFFER_DIM (NUM_TRABALHADORAS * 2)
 
 #define FICHEIRO_LOG "log.txt"
-#define I_BANCO_PIPE "i-banco-pipe"
+#define I_BANCO_PIPE "/tmp/i-banco-pipe"
 
 pthread_t tarefas[NUM_TRABALHADORAS];
 pthread_mutex_t mutex_c;
@@ -260,6 +260,8 @@ int main(int argc, char **argv) {
 				} else if (pid == 0) {
                     char ficheiro[64];
                     
+                    close(log_file);
+                    close(file);
 					log_file = -1;
 					
 					snprintf(ficheiro, 64, "i-banco-sim-%d.txt", getpid());
@@ -277,7 +279,7 @@ int main(int argc, char **argv) {
 			char temp[70];
             int fd;
 
-			snprintf(temp, 70, "i-banco-terminal-pipe-%d", temp_c.valor);
+			snprintf(temp, 70, "/tmp/i-banco-terminal-pipe-%d", temp_c.valor);
 
 			fd = open(temp, O_WRONLY);
 			/* Send the file descriptor back to the terminal, so we can later know

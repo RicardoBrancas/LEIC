@@ -160,6 +160,8 @@ void handleSignal(int signum) {
 
 void simular(int numAnos) {
 	int n, i, saldo;
+    
+    log_file = -1;
 
 	if (signal(SIGUSR2, handleSignal) == SIG_ERR)
 		perror("Cannot set signal handler");

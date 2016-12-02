@@ -58,7 +58,7 @@ int main(int argc, char **argv) {
 		exit(11);
 	}
 	
-	snprintf(temp, 70, "i-banco-terminal-pipe-%d", getpid());
+	snprintf(temp, 70, "/tmp/i-banco-terminal-pipe-%d", getpid());
 	if (mkfifo(temp, 0666) == -1) {
 		perror("Error while creating named pipe (i-banco to terminal)");
 		exit(12);
@@ -98,7 +98,7 @@ int main(int argc, char **argv) {
 			if (close(pipeIbancoToTerminal) == -1)
 				perror("Erro ao fechar named pipe (i-banco para terminal)");
 
-			snprintf(temp, 70, "i-banco-terminal-pipe-%d", getpid());
+			snprintf(temp, 70, "/tmp/i-banco-terminal-pipe-%d", getpid());
 			if (unlink(temp) == -1)
 				perror("Error while unliking named pipe (i-banco para terminal)");
 
