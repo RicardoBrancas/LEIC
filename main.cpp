@@ -3,106 +3,78 @@
 #include<vector>
 #include<list>
 
-//Iterator shorthands
-class Node;
-typedef std::list<Node*>::iterator list_it;
-typedef std::vector<Node*>::iterator vector_it;
+typedef std::vector< std::pair<int, std::list<int> > > Graph;
+typedef std::vector< std::pair<int, std::list<int> > >::iterator vector_it;
 
-// === NODE ===
-class Node {
-private:
-  std::list<Node*> adjacent_nodes;
+std::list<int> topological_sort(Graph* album_ptr) {
+  std::list<int> list;
+  std::deque<int> queue;
 
-  int in_degree;
-
-public:
-  int id;
-
-  Node(int i) : id(i) {}
-
-  bool no_exit_edges() {
-    return adjacent_nodes.empty();
-  }
-
-  bool no_entry_edges() { // O(1)
-    return in_degree == 0;
-  }
-
-  void addEdge(Node* n) {
-    adjacent_nodes.push_back(n);
-  }
-
-  void remove_edge(list_it pos) { // O(1)
-    adjacent_nodes.erase(pos);
-  }
-
-  void incrementInDegree() {
-    in_degree++;
-  }
-
-  list_it begin() { return adjacent_nodes.begin(); }
-  list_it end() { return adjacent_nodes.end(); }
-};
-
-// === GRAPH ===
-
-class Graph {
-private:
-  std::vector<Node*> adjacency_list;
-
-public:
-  Graph(int size)  {
-    adjacency_list.reserve(size);
-    for(int i = 0; i < size; i++)
-      adjacency_list.push_back(new Node(i+1));
-  }
-
-  void addEdge(int from, int to) {
-    adjacency_list[from-1]->addEdge(adjacency_list[to-1]);
-    adjacency_list[to-1]->incrementInDegree();
-  }
-
-  bool has_edges() { // O(V)
-    for(vector_it it = adjacency_list.begin(); it != adjacency_list.end(); ++it) {
-      if(!((*it)->no_exit_edges()))
-        return true;
-    }
-    return false;
-  }
-
-  vector_it begin() { return adjacency_list.begin(); }
-
-  vector_it end() { return adjacency_list.end(); }
-};
-
-// ==== TOPOLOGICAL SORT ====
-
-std::list<Node*> topological_sort(Graph& g) {
-  std::list<Node*> list;
-  std::deque<Node*> queue;
-
-  for(vector_it it = g.begin(); it != g.end(); ++it) { // O(V)
-    if((*it)->no_entry_edges())
-      queue.push_front(*it);
+  for(vector_it it = album_ptr->begin(); it != album_ptr->end(); ++it) {
+    if((*it).first == 0)
+      queue.push_front(it - album_ptr->begin()); //TODO
   }
 
   while(!queue.empty()) { // O( V + E) (MAYBE??)
-    Node* n = queue.front();
+    int n = queue.front();
+    queue.pop_front();
     list.push_back(n);
 
-    for(list_it iterator = n->begin(); iterator != n->end(); ++iterator) {
-      n->remove_edge(iterator); // O(1)
-      if((*iterator)->no_entry_edges()) // O(1)
-        queue.push_front(*iterator);
+    std::list<int>::iterator it = (*album_ptr)[n].second.begin();
+    while (it != (*album_ptr)[n].second.end()) {
+      int m = *it;
+
+      (*album_ptr)[m].first--;
+      (*album_ptr)[n].second.erase(it++);
+
+      if((*album_ptr)[m].first == 0) // O(1)
+        queue.push_front(m);
+
     }
   }
 
-  if(g.has_edges()) // O(V)
-    throw -1; //The Graph has at least a cycle
-  else
-    return list;
+  for(vector_it it = album_ptr->begin(); it != album_ptr->end(); ++it) {
+    if((*it).first != 0)
+      throw -1;
+  }
+
+  return list;
 }
 
 int main() {
+
+  int nNodes, nEdges;
+
+  std::cin >> nNodes >> nEdges;
+
+  std::vector< std::pair<int, std::list<int> > > album(nNodes);
+
+  int before, after;
+  while(true) {
+    std::cin >> before >> after;
+    if(std::cin.eof())
+      break;
+    album[before-1].second.push_back(after-1);
+    album[after-1].first++;
+  }
+
+  try {
+    std::list<int> list = topological_sort(&album);
+
+    for(std::list<int>::iterator it = list.begin(); it != list.end(); ++it) {
+      std::cout << *it+1 << " ";
+    }
+  } catch (int i) {
+    if (i == -1)
+      std::cout << "Incoerente";
+  }
+
+  std::cout << std::endl;
+
+
+
+
+
+
 
 }
