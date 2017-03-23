@@ -51,21 +51,40 @@ add_test(Test5
   -P ${CMAKE_SOURCE_DIR}/test.cmake
 )
 
-# foreach(v RANGE 5 10)
-#   foreach(e RANGE 1 5)
-#     foreach(r RANGE 2)
-#       add_test("auto_test${v}-${e}-${r}"
-#         ${CMAKE_COMMAND}
-#         -D generator=${TESTS_FOLDER}/gen_p1
-#         -D v=${v}
-#         -D e=${e}
-#         -D r=${r}
-#         -D test_cmd=${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/main
-#         -D output_blessed=${TESTS_FOLDER}/auto_test${v}-${e}-${r}.out
-#         -D output_test=${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/auto_test${v}-${e}-${r}.out
-#         -D input_test=${TESTS_FOLDER}/auto_test${v}-${e}-${r}.in
-#         -P ${CMAKE_SOURCE_DIR}/test1.cmake
-#       )
-#     endforeach(r)
-#   endforeach(e)
-# endforeach(v)
+foreach(v RANGE 5 100 2)
+  foreach(e RANGE 1 3)
+    foreach(r RANGE 2)
+      add_test("test${v}-${e}-${r}"
+        ${CMAKE_COMMAND}
+        -D test_cmd=${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/main
+        -D output_blessed=${TESTS_FOLDER}/test${v}-${e}-${r}.out
+        -D output_test=${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/test${v}-${e}-${r}.out
+        -D input_test=${TESTS_FOLDER}/test${v}-${e}-${r}.in
+        -P ${CMAKE_SOURCE_DIR}/test.cmake
+      )
+    endforeach(r)
+  endforeach(e)
+endforeach(v)
+
+foreach(a 10 100 1000)
+  foreach(b RANGE 1 5)
+      add_test("gasa${a}-${b}"
+        ${CMAKE_COMMAND}
+        -D test_cmd=${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/main
+        -D output_blessed=${TESTS_FOLDER}/gasa_${a}_${b}.out
+        -D output_test=${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/gasa_${a}_${b}.out
+        -D input_test=${TESTS_FOLDER}/gasa_${a}_${b}.in
+        -P ${CMAKE_SOURCE_DIR}/test.cmake
+      )
+  endforeach(b)
+endforeach(a)
+
+add_test(HUGE
+  ${CMAKE_COMMAND}
+  -D test_cmd=${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/main
+  -D output_blessed=${TESTS_FOLDER}/test_huge.out
+  -D output_test=${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/test_huge.out
+  -D input_test=${TESTS_FOLDER}/test_huge.in
+  -P ${CMAKE_SOURCE_DIR}/test.cmake
+)
+

@@ -19,13 +19,23 @@
 
 # Compiled Static libraries
 *.lai
-*.la
+*.laEu
 *.a
 *.lib
 
 # Executables
 *.exe
 *.app
+
+*.aux
+*.log
+*.md5
+*.auxlock
+*.dpth
+*.1
+*.2
+
+tests/
 
 build/
 out/

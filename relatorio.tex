@@ -1,0 +1,120 @@
+\documentclass[a4paper]{article}
+\usepackage[margin=1.35in]{geometry}
+\usepackage[portuguese]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{pgfplots}
+\usepackage{mathtools}
+\usepackage{clrscode3e}
+\pgfplotsset{compat=1.13}
+
+\title{\LARGE \textbf{Relatório ASA}}
+\author{Mihail Brinza \\ \scriptsize 83533 \normalsize \and Ricardo Brancas \\ \scriptsize 83557 \normalsize}
+
+\begin{document}
+  \maketitle
+
+  \section{Introdução}
+  O objectivo deste projeto é desenvolver um sistema que ajude o utilizador a tarefa de ordenar
+  fotografias por ordem cronológica.
+  O utilizador dá como input ao sistema o número de fotografias e o número de pares das quais o
+  utilizador se lembra da ordem relativa.
+  O software indica ainda caso não seja possível encontrar uma solução coerente ou os casos em que existe
+  mais que uma.
+
+  \section{Descrição da Solução}
+
+  Para resolver o problema de ordenar \(n\) fotografias em que o utilizador indica \(e\) pares dos
+  quais é conhecida a ordem, considerámos um grafo \(G = (V, E)\) em que \(|V| = n,  |E| = e\).
+  Neste grafo, cada fotografia corresponde a um vértice e cada par de fotografias dadas pelo utilizador
+  \(f_n,  f_m\) corresponde a um arco de \(v_n\) para \(v_m\).
+  Assim, assumindo que o grafo é acíclico e que só possui uma ordenação topológica, essa
+  ordenção corresponde à informação pretendida. Por outro lado, caso o grafo contenha ciclos
+  então a informação introduzida pelo utilizador é incoerente, e caso exista mais do que uma
+  ordenação topológica a informação é insuficiente para gerar uma ordem definitiva.
+
+  \section{Análise Teórica}
+  Para encontrar a ordem topológica utilizámos o algoritmo de Kahn (muito semelhante
+  ao Algortimo da Eliminação de Vértices); este algoritmo divide-se em 3 passos:
+  \begin{enumerate}
+    \item Inicialização: \(O(V)\)\\
+      Em primeiro lugar é necessário verificar qual(is) vértice(s) não possui(em) arco(s)
+      de entrada, pois esse(s) será obrigatoriamente o primeiro da ordem topológica.
+      Esse(s) vértice é colocado na \textit{queue}.
+    \item Ciclo Principal: \(O(V+E)\)\\
+      O ciclo principal é executado enquanto existirem vértices na \textit{queue}.
+      Caso em alguma iteração do ciclo exista mais que um vértice na \textit{queue}, então existem pelo menos
+      duas ordens topológicas e o problema é insuficiente.
+      Em cada iteração remove-se o vértice \(m\) da \textit{queue} e coloca-se na lista final, eliminando depois cada um dos arcos
+      que saem de \(m\). Caso algum dos vértices adjacentes fique sem arcos de entrada, esse vértice é adicionado à \textit{queue}.
+    \item Verificação: \(O(V)\)\\
+      No fim é necessário verificar se o grafo ainda tem arcos, pois nesse caso existe obrigatoriamente um ciclo; ou seja,
+      o problema é incoerente.
+  \end{enumerate}
+
+  O algortimo é assim um \(O(V + (V + E) + V) = O(V + E)\)
+
+  \begin{codebox}
+    \Procname{$\proc{Topological-Sort}(G)$}
+    \li $L \gets \{\}$
+    \li $Q \gets \{\}$
+    \li \For each vertex $u \in \attribxx{G}{V}$
+    \li \Do
+          \If $\proc{has-no-incoming-edges}(u)$
+    \li   \Then
+            $\proc{Enqueue}(Q,u)$
+          \End
+        \End
+    \zi
+    \li \While $Q \ne \{\}$
+    \li \Do
+          \If $\attrib{Q}{lenght} \ne 1$
+    \li   \Then
+            \Error ``Multiple topological orders``
+          \End
+    \li   $u \gets \attrib{Q}{head}$
+    \li   $\proc{Dequeue}(Q)$
+    \li   $\proc{Push-back(L,$u$)}$
+    \li   \For each edge $e \gets (u,m) \in \attrib{u}{Adj}$
+    \li   \Do
+            $\proc{Remove-edge}(G,e)$
+    \li     \If $\proc{has-no-incoming-edges}(m)$
+    \li     \Then
+              $\proc{Enqueue}(Q,m)$
+            \End
+          \End
+        \End
+    \li \If $\proc{has-edges}(G)$
+    \li \Then
+          \Error ``Graph has at least a cycle``
+        \End
+    \li \Return $L$
+  \end{codebox}
+
+  \section{Avaliação Experimental}
+
+  Para testar experimentalmente o nosso algortimo, executámos o nosso programa
+  para valores variando entre \(|V| = 5\) e \(|V| = 10\,000\,000\) com número de arcos
+  \(|E| <= |V|+1\), considerando apenas problemas bem formados. Concluimos que o
+  tempo de execução do algoritmo é linear ao número de fotografias (e consequentemente
+   de vértices), tal como esperado.
+
+  \begin{center}
+  \begin{tikzpicture}
+    \begin{axis}[
+        title={Execution time for problems with solution},
+        xlabel={Number of photos [n]},
+        ylabel={Time [s]},
+        ymajorgrids=true,
+        xmajorgrids=true,
+        grid style=dashed,
+      ]
+
+      \addplot[ only marks, color=blue, mark=x ]
+          coordinates {
+            (5,0.000000)(400000,0.578000)(800000,1.214000)(1200000,1.900000)(1600000,2.592000)(2000000,3.258000)(2400000,4.016000)(2800000,4.676000)(3200000,5.356000)(3600000,6.072000)(4000000,6.762000)(4400000,7.552000)(4800000,8.132000)(5200000,8.940000)(5600000,9.678000)(6000000,10.426000)(6400000,11.042000)(6800000,11.670000)(7200000,12.458000)(7600000,13.198000)(8000000,13.804000)(8400000,14.722000)(8800000,15.400000)(9200000,16.322000)(9600000,16.744000)(10000000,17.682000)
+          };
+    \end{axis}
+  \end{tikzpicture}
+  \end{center}
+\end{document}

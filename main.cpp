@@ -3,6 +3,7 @@
 #include<vector>
 #include<list>
 
+//Just to make src easier to read
 typedef std::vector< std::pair<int, std::list<int> > > Graph;
 typedef std::vector< std::pair<int, std::list<int> > >::iterator vector_it;
 
@@ -17,9 +18,9 @@ std::list<int> topological_sort(Graph* album_ptr) {
   }
 
   bool multipleSol = false;
-  while(!queue.empty()) { // O( V + E) (MAYBE??)
+  while(!queue.empty()) {
     if(queue.size() != 1) {
-      multipleSol = true;
+      multipleSol = true; //Save info for later. Still need to check if graph has cycles
     }
 
     int n = queue.front();
@@ -31,10 +32,10 @@ std::list<int> topological_sort(Graph* album_ptr) {
       int m = *it;
 
       (*album_ptr)[m].first--;
-      (*album_ptr)[n].second.erase(it++);
+      (*album_ptr)[n].second.erase(it++);  //O(1)
 
-      if((*album_ptr)[m].first == 0) // O(1)
-        queue.push_front(int(m));
+      if((*album_ptr)[m].first == 0)
+        queue.push_front(m);
 
     }
   }
@@ -46,7 +47,7 @@ std::list<int> topological_sort(Graph* album_ptr) {
   if (multipleSol)
     throw -2;
 
-  return list;
+  return list; //Expecting RVO
 }
 
 int main() {
