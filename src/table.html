@@ -12,10 +12,28 @@
 
 <body>
 
-
+<div id="header">
+  <div id="clock"></div>
+  <div id="help">
+    <button class="btn btn-secondary">AJUDA</button>
+  </div>
+</div>
 
 <script type="text/javascript" src="js/jquery-3.2.0.js"></script>
 <script type="text/javascript" src="js/bootstrap.js"></script>
+<script type="text/javascript">
+
+  //Clock timer
+  let update_clock = function(){
+    let d = new Date();
+    let h = ("00" + d.getHours()).slice(-2)
+    let m = ("00" + d.getMinutes()).slice(-2)
+    $('#clock').html(h + " : " + m);
+  }
+  update_clock();
+  setInterval(update_clock, 1000);
+
+</script>
 </body>
 
 </html>
