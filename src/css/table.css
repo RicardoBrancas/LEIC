@@ -35,3 +35,7 @@ body {
   word-spacing: 2;
   letter-spacing: 0.1em;
 }
+
+#item-container {
+  color: white;
+}

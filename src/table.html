@@ -21,47 +21,66 @@
 
 
 <div>
-  <div id="categories">
-    <ul class="nav justify-content-center">
-      <li class="nav-item">
-        <a class="nav-link active" href="#">Destaques</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="#">Entradas</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="#">Sopas</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="#">Saladas</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="#">Pratos Principais</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="#">Bebidas</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="#">Sobremesas</a>
-      </li>
-    </ul>
+  <div id="categories" class="d-flex justify-content-center">
+    <div class="btn-group" data-toggle="buttons">
+      <label class="btn btn-primary active">
+        <input type="radio" name="categories" id="btn-destaques" autocomplete="off" checked> Destques
+      </label>
+      <label class="btn btn-primary">
+        <input type="radio" name="categories" id="btn-entradas" autocomplete="off"> Entradas
+      </label>
+      <label class="btn btn-primary">
+        <input type="radio" name="categories" id="btn-sopas" autocomplete="off"> Sopas
+      </label>
+      <label class="btn btn-primary">
+        <input type="radio" name="categories" id="btn-saladas" autocomplete="off"> Saladas
+      </label>
+      <label class="btn btn-primary">
+        <input type="radio" name="categories" id="btn-pratos-principais" autocomplete="off"> Pratos Principais
+      </label>
+      <label class="btn btn-primary">
+        <input type="radio" name="categories" id="btn-bebidas" autocomplete="off"> Bebidas
+      </label>
+      <label class="btn btn-primary">
+        <input type="radio" name="categories" id="btn-sobremesas" autocomplete="off"> Sobremesas
+      </label>
+    </div>
+  </div>
+
+  <div id="main">
+    <div id="item-container">
+
+    </div>
   </div>
 </div>
 
 <script type="text/javascript" src="js/jquery-3.2.0.js"></script>
 <script type="text/javascript" src="js/bootstrap.js"></script>
+<script type="text/javascript" src="js/menu.js"></script>
 <script type="text/javascript">
-
+$(document).ready(function() {
   //Clock timer
-  let update_clock = function(){
+  let update_clock = function() {
     let d = new Date();
     let h = ("00" + d.getHours()).slice(-2)
     let m = ("00" + d.getMinutes()).slice(-2)
     $('#clock').html(h + " : " + m);
-  }
+  };
   update_clock();
   setInterval(update_clock, 1000);
 
+  let category_changed = function() {
+    let cat = $('input[name=categories]:checked', '#categories').attr("id").slice(4);
+    let $item_container = $("#item-container");
+    $item_container.html("");
+    for(item of categories[cat]) {
+      $item_container.append(item.name);
+    }
+  };
+  category_changed();
+  $('#categories input').on('change', category_changed);
+
+});
 </script>
 </body>
 
