@@ -37,5 +37,16 @@ body {
 }
 
 #item-container {
-  color: white;
+  width: 85%;
+  margin: auto;
 }
+
+#item-container .card {
+  max-width: 15rem;
+  background-color: #0e1118;
+}
+
+/*#item-container .card img {
+  max-height: 7.5rem;
+  width: auto;
+}*/

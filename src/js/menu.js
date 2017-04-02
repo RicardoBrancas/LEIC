@@ -11,6 +11,30 @@ var menu = [
       Arroz: 0,
       Cebola: 1
     }
+  },
+  {
+    name: "Bacalhau com Espinafres",
+    price: 8.5,
+    categories: [
+        "pratos-principais-peixe"
+    ]
+  },
+  {
+    name: "Sumo de Laranja",
+    price: 1.5,
+    categories: [
+        "bebidas"
+    ]
+  },
+  {
+    name: "Limonada",
+    price: 1.5,
+    categories: [
+        "bebidas"
+    ],
+    options: {
+      "+ Açúcar": 0
+    }
   }
 ]
 

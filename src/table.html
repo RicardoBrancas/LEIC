@@ -24,7 +24,7 @@
   <div id="categories" class="d-flex justify-content-center">
     <div class="btn-group" data-toggle="buttons">
       <label class="btn btn-primary active">
-        <input type="radio" name="categories" id="btn-destaques" autocomplete="off" checked> Destques
+        <input type="radio" name="categories" id="btn-destaques" autocomplete="off" checked> Destaques
       </label>
       <label class="btn btn-primary">
         <input type="radio" name="categories" id="btn-entradas" autocomplete="off"> Entradas
@@ -48,8 +48,7 @@
   </div>
 
   <div id="main">
-    <div id="item-container">
-
+    <div id="item-container" class="card-deck">
     </div>
   </div>
 </div>
@@ -74,7 +73,15 @@ $(document).ready(function() {
     let $item_container = $("#item-container");
     $item_container.html("");
     for(item of categories[cat]) {
-      $item_container.append(item.name);
+      $item = $("<div>", {class: "card card-inverse"});
+
+      $img = $("<img>", {class: "card-img-top img-fluid", src: "img/items/" + item.name + ".png"});
+      $item.append($img);
+
+      $text = $('<div class="card-block"><h4 class="card-title">' + item.name + '</h4><p class="card-text">' + (item.price.toFixed(2) + " €") + '</p></div>')
+      $item.append($text);
+
+      $item_container.append($item);
     }
   };
   category_changed();
