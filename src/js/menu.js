@@ -35,7 +35,28 @@ var menu = [
     options: {
       "+ Açúcar": 0
     }
-  }
+  },
+  {
+    name: "Couvert",
+    price: 3,
+    categories: [
+        "entradas"
+    ]
+  },
+  {
+    name: "Sopa de Coentros",
+    price: 2,
+    categories: [
+        "sopas"
+    ]
+  },
+  {
+    name: "Salada de Salmão Fumado",
+    price: 7.5,
+    categories: [
+        "saladas"
+    ]
+  },
 ]
 
 var categories = [];

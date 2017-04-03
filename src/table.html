@@ -71,18 +71,31 @@ $(document).ready(function() {
   let category_changed = function() {
     let cat = $('input[name=categories]:checked', '#categories').attr("id").slice(4);
     let $item_container = $("#item-container");
-    $item_container.html("");
-    for(item of categories[cat]) {
-      $item = $("<div>", {class: "card card-inverse"});
+    $item_container.animate({
+      width: 0,
+      opacity: 0
+    }, 400, function() {
+      $item_container.html("");
+      if(categories[cat] !== undefined) {
+        for(item of categories[cat]) {
+          $item = $("<div>", {class: "card card-inverse"});
 
-      $img = $("<img>", {class: "card-img-top img-fluid", src: "img/items/" + item.name + ".png"});
-      $item.append($img);
+          $img = $("<img>", {class: "card-img-top img-fluid", src: "img/items/" + item.name + ".png"});
+          $item.append($img);
 
-      $text = $('<div class="card-block"><h4 class="card-title">' + item.name + '</h4><p class="card-text">' + (item.price.toFixed(2) + " €") + '</p></div>')
-      $item.append($text);
+          $text = $('<div class="card-block"><h5 class="card-title">' + item.name + '</h5><p class="card-text">' + (item.price.toFixed(2) + " €") + '</p></div>')
+          $item.append($text);
 
-      $item_container.append($item);
-    }
+          $item_container.append($item);
+
+          $item_container.animate({
+            width: "70%",
+            opacity: 1
+          }, 400);
+        }
+      }
+    })
+
   };
   category_changed();
   $('#categories input').on('change', category_changed);
