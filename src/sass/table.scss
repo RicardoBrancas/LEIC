@@ -1,12 +1,13 @@
 
-/*
-Backgroud color    -> #252c3c
-Lighter background -> #3a414f
-Darker background  -> #161a24
-*/
+$bg-color: #252c3c;
+$bg-color-light: lighten($bg-color, 5%);
+$bg-color-dark: darken($bg-color, 5%);
+
+$primary-color: #009688;
+$accent-color: #F50057;
 
 body {
-    background-color: #252c3c;
+    background-color: $bg-color;
 }
 
 ::-webkit-scrollbar {
@@ -34,7 +35,7 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: #3a414f;
+  background: $bg-color-light;
   border: 0px none #ffffff;
   border-radius: 50px;
 }
@@ -87,21 +88,21 @@ body {
   padding-bottom: 0.25rem;
   overflow-x: scroll;
   overflow-y: hidden;
-}
 
-#item-container .card {
-  max-width: 15rem;
-  background-color: #161a24;
-}
+  .card {
+    max-width: 15rem;
+    background-color: $bg-color-dark;
 
-#item-container .card img {
-  max-width: 100%;
-  max-height: 10rem;
-  width: auto;
-  height: auto;
-  object-fit: contain;
-}
+    img {
+      max-width: 100%;
+      max-height: 10rem;
+      width: auto;
+      height: auto;
+      object-fit: contain;
+    }
 
-#item-container .card .card-block {
-  padding: 0.85rem;
+    .card-block {
+      padding: 0.85rem;
+    }
+  }
 }

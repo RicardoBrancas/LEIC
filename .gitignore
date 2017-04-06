@@ -1,1 +1,5 @@
 /.idea
+/node_modules
+/out
+/bower_components
+*.yml
