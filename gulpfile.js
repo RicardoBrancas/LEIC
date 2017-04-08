@@ -31,7 +31,6 @@ gulp.task('bower_js', () => {
             }
         }}))
         .pipe(filter(['**/*.js']))
-        .pipe(uglify())
         .pipe(gulp.dest(dest + "js/"));
 });
 
@@ -48,7 +47,14 @@ gulp.task('bower_css', () => {
 });
 
 gulp.task('bower_fonts', () => {
-    return gulp.src(bowerFiles())
+    return gulp.src(bowerFiles({overrides: {
+            'components-font-awesome': {
+                main: [
+                    'css/font-awesome.css',
+                    'fonts/fontawesome-webfont.woff'
+                ]
+            }
+        }}))
         .pipe(filter(['**/*.otf', '**/*.eot', '**/*.svg', '**/*.ttf', '**/*.woff', '**/*.woff2']))
         .pipe(gulp.dest(dest + "fonts/"));
 });
@@ -93,6 +99,8 @@ gulp.task('watch:sass', () => {
         console.log('File ' + event.path + ' was ' + event.type + ', running tasks...');
     });
 });
+
+gulp.task('watch', ['watch:assets', 'watch:sass'])
 
 gulp.task('sass', ['sass:bt', 'sass:t']);
 gulp.task('build', ['bower', 'assets', 'sass']);

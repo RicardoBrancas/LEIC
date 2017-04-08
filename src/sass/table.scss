@@ -92,6 +92,27 @@ body {
   .card {
     max-width: 15rem;
     background-color: $bg-color-dark;
+    transition: background 200ms;
+    cursor: pointer !important;
+
+    &:hover {
+      background-color: darken($bg-color-dark, 2.5%);
+    }
+
+    &.selected {
+      background-color: darken($bg-color-dark, 7.5%);
+    }
+
+    button {
+      cursor: pointer;
+      position: absolute;
+      right: 0;
+      bottom: 0;
+
+      .fa {
+        vertical-align: middle;
+      }
+    }
 
     img {
       max-width: 100%;
