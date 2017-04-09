@@ -1,6 +1,26 @@
+$white       : #FFFFFF;
+$ghost       : #FAFAFA;
+$snow        : #F9F9F9;
+$vapor       : #F6F6F6;
+$white-smoke : #F5F5F5;
+$silver      : #EFEFEF;
+$smoke       : #EEEEEE;
+$gainsboro   : #DDDDDD;
+$iron        : #CCCCCC;
+$base        : #AAAAAA;
+$aluminum    : #999999;
+$jumbo       : #888888;
+$monsoon     : #777777;
+$steel       : #666666;
+$charcoal    : #555555;
+$tuatara     : #444444;
+$oil         : #333333;
+$jet         : #222222;
+$black       : #000000;
 
 $bg-color: #252c3c;
 $bg-color-light: lighten($bg-color, 5%);
+$bg-color-very-light: lighten($bg-color, 20%);
 $bg-color-dark: darken($bg-color, 5%);
 
 $primary-color: #009688;
@@ -21,22 +41,22 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #e1e1e1;
-  border: 0px none #ffffff;
+  background: lighten($bg-color, 60%);
+  border: none;
   border-radius: 50px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #ffffff;
+  background: lighten($bg-color, 77%);
 }
 
 ::-webkit-scrollbar-thumb:active {
-  background: #000000;
+  background: darken($bg-color, 7.5%);
 }
 
 ::-webkit-scrollbar-track {
   background: $bg-color-light;
-  border: 0px none #ffffff;
+  border: 0px none $snow;
   border-radius: 50px;
 }
 
@@ -60,7 +80,7 @@ body {
   text-align: center;
   margin: auto;
   font-size: 2em;
-  color: white;
+  color: $snow;
   font-weight: 300;
 }
 
@@ -81,8 +101,12 @@ body {
   letter-spacing: 0.1em;
 }
 
+#categories .btn {
+  cursor: pointer;
+}
+
 #item-container {
-  width: 70%;
+  width: 61.8034%;
   max-height: 15rem;
   margin: auto;
   padding-bottom: 0.25rem;
@@ -124,6 +148,45 @@ body {
 
     .card-block {
       padding: 0.85rem;
+    }
+  }
+}
+
+#order {
+  position: fixed;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 20em;
+  height: 30em;
+  background-color: $bg-color-very-light;
+  border-radius: 0;
+  overflow-y: scroll;
+
+  .card {
+    background-color: transparent;
+    border: none;
+    border-radius: 0;
+
+    .card-header {
+      background-color: $bg-color-light;
+      border-radius: 0;
+    }
+
+    .card-block {
+      padding: 0;
+    }
+
+    .list-group-item {
+      background-color: lighten($bg-color-light, 2%);
+      color: $snow;
+      border-radius: 0;
+
+      button {
+        color: $snow;
+        text-shadow: none;
+        opacity: 1;
+      }
     }
   }
 }

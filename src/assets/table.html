@@ -51,6 +51,41 @@
     <div id="item-container" class="card-deck">
     </div>
   </div>
+
+  <div id="order" role="tablist">
+      <div class="card">
+        <div class="card-header" role="tab" id="confirmed">
+          <h5 class="mb-0">
+            <a data-toggle="collapse" data-parent="#order" href="#confirmed-content">
+              Confirmado
+            </a>
+          </h5>
+        </div>
+
+        <div id="confirmed-content" class="collapse show" role="tabpanel">
+          <div class="card-block">
+            <ul class="list-group">
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header" role="tab" id="not-confirmed">
+          <h5 class="mb-0">
+            <a class="collapsed" data-toggle="collapse" data-parent="#order" href="#not-confirmed-content">
+              A confirmar
+            </a>
+          </h5>
+        </div>
+        <div id="not-confirmed-content" class="collapse" role="tabpanel">
+          <div class="card-block">
+            <ul class="list-group">
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
 </div>
 
 <script type="text/javascript" src="js/jquery.js"></script>
@@ -60,10 +95,35 @@
 <script type="text/javascript">
 $(document).ready(function() {
 
+  var update_order = function() {
+    let order = JSON.parse(localStorage.getItem('order'));
+
+    $order = $('#not-confirmed-content').find('.card-block ul');
+    $order.empty();
+
+    for(i of order) {
+      item = menu.find(function(x) {return x.id == i});
+
+      $item = $('<li class="list-group-item justify-content-between">' + item.name + '<span><span class="badge badge-default badge-pill">' + (item.price.toFixed(2) + " €") + '</span><button type="button" class="close" aria-label="Close"><i class="fa fa-times" aria-hidden="true"></i></button></span></li>');
+
+      $order.append($item);
+    }
+  }
+
+  var add_to_order = function(item) {
+    if(!localStorage.getItem('order')) {
+      localStorage.setItem('order', JSON.stringify([]));
+    }
+
+    let temp = JSON.parse(localStorage.getItem('order'));
+    temp.push(item);
+    localStorage.setItem('order', JSON.stringify(temp));
+    update_order();
+  }
+
   var item_clicked = function() {
     $item_container = $('#item-container');
     $item_container.find('.card').removeClass('selected');
-    console.log("A");
     $(this).addClass('selected');
   };
 
@@ -75,7 +135,6 @@ $(document).ready(function() {
     let m = ("00" + d.getMinutes()).slice(-2)
     $('#clock').html(h + " : " + m);
   };
-  update_clock();
   setInterval(update_clock, 1000);
 
   let category_changed = function() {
@@ -93,13 +152,17 @@ $(document).ready(function() {
           $img = $("<img>", {class: "card-img-top img-fluid", src: "img/items/" + item.name + ".png"});
           $item.append($img);
 
-          $text = $('<div class="card-block"><h5 class="card-title">' + item.name + '</h5><p class="card-text">' + (item.price.toFixed(2) + " €") + '</p>' + '<button type="button" class="btn btn-primary btn-sm"><i class="fa fa-plus" aria-hidden="true"></i></button>' + '</div>');
+          $text = $('<div class="card-block"><h5 class="card-title">' + item.name + '</h5><p class="card-text">' + (item.price.toFixed(2) + " €") + '</p>' + '<button type="button" class="quick-add btn btn-primary btn-sm"><i class="fa fa-plus" aria-hidden="true"></i></button>' + '</div>');
           $item.append($text);
 
           $item_container.append($item);
 
+          $item.find('button.quick-add').click(function () {
+            add_to_order(item.id);
+          });
+
           $item_container.animate({
-            width: "70%",
+            width: "61.8034%",
             opacity: 1
           }, 400);
         }
@@ -111,9 +174,13 @@ $(document).ready(function() {
     });
 
   };
-  category_changed();
   $('#categories input').on('change', category_changed);
 
+
+  //Init
+  update_clock();
+  category_changed();
+  update_order();
 });
 </script>
 </body>

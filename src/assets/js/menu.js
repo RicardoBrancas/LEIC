@@ -1,6 +1,7 @@
 var menu = [
   {
     name: "Bitoque de Vaca",
+    id: 1,
     price: 7.5,
     categories: [
         "destaques",
@@ -14,6 +15,7 @@ var menu = [
   },
   {
     name: "Bacalhau com Espinafres",
+    id: 2,
     price: 8.5,
     categories: [
         "pratos-principais-peixe"
@@ -21,6 +23,7 @@ var menu = [
   },
   {
     name: "Sumo de Laranja",
+    id: 3,
     price: 1.5,
     categories: [
         "bebidas"
@@ -28,6 +31,7 @@ var menu = [
   },
   {
     name: "Limonada",
+    id: 4,
     price: 1.5,
     categories: [
         "bebidas"
@@ -38,6 +42,7 @@ var menu = [
   },
   {
     name: "Couvert",
+    id: 5,
     price: 3,
     categories: [
         "entradas"
@@ -45,6 +50,7 @@ var menu = [
   },
   {
     name: "Sopa de Coentros",
+    id: 6,
     price: 2,
     categories: [
         "sopas"
@@ -52,6 +58,7 @@ var menu = [
   },
   {
     name: "Salada de Salmão Fumado",
+    id: 7,
     price: 7.5,
     categories: [
         "saladas"
