@@ -86,6 +86,9 @@
         </div>
       </div>
     </div>
+    <div id="price">
+      Total: <span></span>
+    </div>
 </div>
 
 <script type="text/javascript" src="js/jquery.js"></script>
@@ -101,13 +104,18 @@ $(document).ready(function() {
     $order = $('#not-confirmed-content').find('.card-block ul');
     $order.empty();
 
+    let totalPrice = 0;
     for(i of order) {
       item = menu.find(function(x) {return x.id == i});
 
-      $item = $('<li class="list-group-item justify-content-between">' + item.name + '<span><span class="badge badge-default badge-pill">' + (item.price.toFixed(2) + " €") + '</span><button type="button" class="close" aria-label="Close"><i class="fa fa-times" aria-hidden="true"></i></button></span></li>');
+      totalPrice += item.price;
+
+      $item = $('<li class="list-group-item justify-content-between">' + item.name + '<span><span class="badge badge-default badge-pill">' + (item.price.toFixed(2) + " €") + '</span><button type="button" class="close"><i class="fa fa-times"></i></button></span></li>');
 
       $order.append($item);
     }
+    $('#price').find('span').empty().text(totalPrice.toFixed(2) + " €");
+
   }
 
   var add_to_order = function(item) {
@@ -152,14 +160,14 @@ $(document).ready(function() {
           $img = $("<img>", {class: "card-img-top img-fluid", src: "img/items/" + item.name + ".png"});
           $item.append($img);
 
-          $text = $('<div class="card-block"><h5 class="card-title">' + item.name + '</h5><p class="card-text">' + (item.price.toFixed(2) + " €") + '</p>' + '<button type="button" class="quick-add btn btn-primary btn-sm"><i class="fa fa-plus" aria-hidden="true"></i></button>' + '</div>');
+          $text = $('<div class="card-block"><h5 class="card-title">' + item.name + '</h5><p class="card-text">' + (item.price.toFixed(2) + " €") + '</p>' + '<button type="button" class="quick-add btn btn-primary btn-sm"><i class="fa fa-plus"></i></button>' + '</div>');
           $item.append($text);
 
           $item_container.append($item);
 
-          $item.find('button.quick-add').click(function () {
-            add_to_order(item.id);
-          });
+          $item.find('button.quick-add').click(function (wrappedID) {
+            return function() { add_to_order(wrappedID); }
+          }(item.id));
 
           $item_container.animate({
             width: "61.8034%",
