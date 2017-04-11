@@ -48,7 +48,8 @@
   </div>
 
   <div id="main">
-    <div id="item-container" class="card-deck">
+    <div id="item-container" class="card-deck"></div>
+    <div id="selected-item">
     </div>
   </div>
 
@@ -130,9 +131,17 @@ $(document).ready(function() {
   }
 
   var item_clicked = function() {
+    $this = $(this);
+
     $item_container = $('#item-container');
     $item_container.find('.card').removeClass('selected');
-    $(this).addClass('selected');
+    $this.addClass('selected');
+
+    $selected_item = $('#selected-item');
+    $selected_item.empty();
+
+    $img = $('<img>', {src: "img/items/big/" + $this.attr('data-item-id') + ".png"})
+    $selected_item.append($img);
   };
 
 
@@ -148,6 +157,7 @@ $(document).ready(function() {
   let category_changed = function() {
     let cat = $('input[name=categories]:checked', '#categories').attr("id").slice(4);
     let $item_container = $("#item-container");
+    $('#selected-item').empty();
     $item_container.animate({
       width: 0,
       opacity: 0
@@ -155,7 +165,7 @@ $(document).ready(function() {
       $item_container.empty();
       if(categories[cat] !== undefined) {
         for(item of categories[cat]) {
-          $item = $("<div>", {class: "card card-inverse"});
+          $item = $("<div>", {class: "card card-inverse", 'data-item-id': item.id});
 
           $img = $("<img>", {class: "card-img-top img-fluid", src: "img/items/" + item.name + ".png"});
           $item.append($img);
