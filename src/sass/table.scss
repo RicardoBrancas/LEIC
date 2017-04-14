@@ -161,7 +161,6 @@ body {
   height: 30em;
   background-color: $bg-color-very-light;
   border-radius: 0;
-  overflow-y: scroll;
 
   .card {
     background-color: transparent;
@@ -191,6 +190,24 @@ body {
   }
 }
 
+#order-inner {
+  max-height: 100%;
+  overflow-y: scroll;
+}
+
 #price {
+  position: absolute;
+  bottom: 0;
+  transform: translateY(100%);
   color: $snow;
+  font-size: 1.2em;
+}
+
+#selected-item {
+  padding: 2rem;
+
+  img {
+    max-height: calc(100vh - 4rem - 15rem - 1.5rem - 10rem);
+  }
+
 }
