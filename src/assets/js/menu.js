@@ -7,6 +7,15 @@ var menu = [
         "destaques",
         "pratos-principais-carne"
     ],
+    nutrition: {
+      "Energia": "658 kCal",
+      "Lípidos": "29.5 g",
+      "\tdos quais saturados": "7.5 g",
+      "Colesterol": "296 mg",
+      "Hidratos de Carbono": "49.5 g",
+      "Proteína": "44 g",
+      "Sódio": "429 mg"
+    },
     options: {
       Batatas: 1,
       Arroz: 0,
@@ -19,7 +28,10 @@ var menu = [
     price: 8.5,
     categories: [
         "pratos-principais-peixe"
-    ]
+    ],
+    nutrition: {
+
+    }
   },
   {
     name: "Sumo de Laranja",
@@ -27,7 +39,10 @@ var menu = [
     price: 1.5,
     categories: [
         "bebidas"
-    ]
+    ],
+    nutrition: {
+
+    }
   },
   {
     name: "Limonada",
@@ -36,6 +51,9 @@ var menu = [
     categories: [
         "bebidas"
     ],
+    nutrition: {
+
+    },
     options: {
       "+ Açúcar": 0
     }
@@ -46,7 +64,10 @@ var menu = [
     price: 3,
     categories: [
         "entradas"
-    ]
+    ],
+    nutrition: {
+
+    }
   },
   {
     name: "Sopa de Coentros",
@@ -54,7 +75,10 @@ var menu = [
     price: 2,
     categories: [
         "sopas"
-    ]
+    ],
+    nutrition: {
+
+    }
   },
   {
     name: "Salada de Salmão Fumado",
@@ -62,7 +86,10 @@ var menu = [
     price: 7.5,
     categories: [
         "saladas"
-    ]
+    ],
+    nutrition: {
+
+    }
   },
 ]
 

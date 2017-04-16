@@ -215,9 +215,25 @@ body {
 
 #selected-item {
   padding: 2rem;
+  position: absolute;
+  width: 100%;
 
   img {
     max-height: calc(100vh - 4rem - 15rem - 1.5rem - 10rem);
+  }
+
+  table {
+    color: $snow;
+    left: 5%;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    white-space: pre;
+  }
+
+  button {
+    position: absolute;
+    right: 25%;
   }
 
 }

@@ -8,6 +8,8 @@
 <link rel="stylesheet" href="css/bootstrap-table.css">
 <link rel="stylesheet" href="css/table.css">
 
+<title>Com.ISTo</title>
+
 </head>
 
 <body>
@@ -102,7 +104,7 @@ $(document).ready(function() {
     $order.empty();
 
     let totalPrice = 0;
-    var length = order.length;
+    var length = order ? order.length : 0;
     for(let i = 0; i < length; i++) {
       item = menu.find(function(x) {return x.id == order[i]});
 
@@ -159,6 +161,25 @@ $(document).ready(function() {
 
     $img = $('<img>', {class: 'img-fluid mx-auto d-block', src: "img/items/big/" + $this.attr('data-item-id') + ".png"})
     $selected_item.append($img);
+
+    $button = $('<button type="button" class="btn btn-primary">Adicionar</button>');
+    $selected_item.append($button);
+
+    $button.click(function (wrappedID) {
+      return function() { add_to_order(wrappedID); }
+    }($this.attr('data-item-id')));
+
+    item = menu.find(function(x) {return x.id == $this.attr('data-item-id')});
+
+    $nutrition_table = $('<table class=""><thead><tr><th>A</th><th>B</th></tr></thead><tbody></tbody></table>');
+    $tbody = $nutrition_table.find('tbody');
+
+    for (var key in item.nutrition) {
+      $trow = $('<tr><th scope="row">' + key + '</th><td>' + item.nutrition[key] + '</td></tr>');
+      $tbody.append($trow);
+    }
+
+    $selected_item.append($nutrition_table);
   };
 
 
