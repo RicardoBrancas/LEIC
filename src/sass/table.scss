@@ -1,67 +1,67 @@
-$white       : #FFFFFF;
-$ghost       : #FAFAFA;
-$snow        : #F9F9F9;
-$vapor       : #F6F6F6;
-$white-smoke : #F5F5F5;
-$silver      : #EFEFEF;
-$smoke       : #EEEEEE;
-$gainsboro   : #DDDDDD;
-$iron        : #CCCCCC;
-$base        : #AAAAAA;
-$aluminum    : #999999;
-$jumbo       : #888888;
-$monsoon     : #777777;
-$steel       : #666666;
-$charcoal    : #555555;
-$tuatara     : #444444;
-$oil         : #333333;
-$jet         : #222222;
-$black       : #000000;
+$white:        #FFFFFF;
+$ghost:        #FAFAFA;
+$snow:         #F9F9F9;
+$vapor:        #F6F6F6;
+$white-smoke:  #F5F5F5;
+$silver:       #EFEFEF;
+$smoke:        #EEEEEE;
+$gainsboro:    #DDDDDD;
+$iron:         #CCCCCC;
+$base:         #AAAAAA;
+$aluminum:     #999999;
+$jumbo:        #888888;
+$monsoon:      #777777;
+$steel:        #666666;
+$charcoal:     #555555;
+$tuatara:      #444444;
+$oil:          #333333;
+$jet:          #222222;
+$black:        #000000;
 
-$bg-color: #252c3c;
-$bg-color-light: lighten($bg-color, 5%);
+$bg-color:            #252c3c;
+$bg-color-light:      lighten($bg-color, 5%);
 $bg-color-very-light: lighten($bg-color, 20%);
-$bg-color-dark: darken($bg-color, 5%);
+$bg-color-dark:       darken($bg-color, 5%);
 
 $primary-color: #009688;
-$accent-color: #F50057;
+$accent-color:  #F50057;
 
 body {
-    background-color: $bg-color;
+  background-color: $bg-color;
 }
 
 ::-webkit-scrollbar {
-  width: 5px;
   height: 5px;
+  width: 5px;
 }
 
 ::-webkit-scrollbar-button {
-  width: 0px;
-  height: 0px;
+  height: 0;
+  width: 0;
 }
 
 ::-webkit-scrollbar-thumb {
   background: lighten($bg-color, 60%);
-  border: none;
+  border: 0;
   border-radius: 50px;
-}
 
-::-webkit-scrollbar-thumb:hover {
-  background: lighten($bg-color, 77%);
-}
+  &:hover {
+    background: lighten($bg-color, 77%);
+  }
 
-::-webkit-scrollbar-thumb:active {
-  background: darken($bg-color, 7.5%);
+  &:active {
+    background: darken($bg-color, 7.5%);
+  }
 }
 
 ::-webkit-scrollbar-track {
   background: $bg-color-light;
-  border: 0px none $snow;
+  border: 0 none $snow;
   border-radius: 50px;
-}
 
-::-webkit-scrollbar-track:active {
-  background: #333333;
+  &:active {
+    background: $oil;
+  }
 }
 
 ::-webkit-scrollbar-corner {
@@ -69,36 +69,36 @@ body {
 }
 
 #header {
-  width: 100%;
   height: 4rem;
+  width: 100%;
 }
 
 #clock {
+  color: $snow;
+  font-size: 2em;
+  font-weight: 300;
   height: 4rem;
   line-height: 4rem;
-  width: 5em;
-  text-align: center;
   margin: auto;
-  font-size: 2em;
-  color: $snow;
-  font-weight: 300;
+  text-align: center;
+  width: 5em;
 }
 
 #help {
-  position: absolute;
   float: right;
+  position: absolute;
   right: 0;
   top: 0;
 }
 
 #help button {
-  height: 4rem;
-  padding-left: 2.5rem;
-  padding-right: 2.5rem;
   font-size: 1.75em;
   font-weight: 500;
+  height: 4rem;
+  letter-spacing: .1em;
+  padding-left: 2.5rem;
+  padding-right: 2.5rem;
   word-spacing: 2;
-  letter-spacing: 0.1em;
 }
 
 #categories .btn {
@@ -106,18 +106,19 @@ body {
 }
 
 #item-container {
-  width: 61.8034%;
-  max-height: 15rem;
   margin: auto;
-  padding-bottom: 0.25rem;
+  max-height: 15rem;
   overflow-x: scroll;
   overflow-y: hidden;
+  padding-bottom: .25rem;
+  width: 61.8034%;
+
 
   .card {
-    max-width: 15rem;
     background-color: $bg-color-dark;
-    transition: background 200ms;
     cursor: pointer !important;
+    max-width: 15rem;
+    transition: background 200ms;
 
     &:hover {
       background-color: darken($bg-color-dark, 2.5%);
@@ -128,10 +129,10 @@ body {
     }
 
     button {
+      bottom: 0;
       cursor: pointer;
       position: absolute;
       right: 0;
-      bottom: 0;
 
       .fa {
         vertical-align: middle;
@@ -139,32 +140,32 @@ body {
     }
 
     img {
-      max-width: 100%;
-      max-height: 10rem;
-      width: auto;
       height: auto;
+      max-height: 10rem;
+      max-width: 100%;
       object-fit: contain;
+      width: auto;
     }
 
     .card-block {
-      padding: 0.85rem;
+      padding: .85rem;
     }
   }
 }
 
 #order {
+  background-color: $bg-color-very-light;
+  border-radius: 0;
+  height: 30em;
   position: fixed;
   right: 0;
   top: 50%;
   transform: translateY(-50%);
   width: 20em;
-  height: 30em;
-  background-color: $bg-color-very-light;
-  border-radius: 0;
 
   .card {
     background-color: transparent;
-    border: none;
+    border: 0;
     border-radius: 0;
 
     .card-header {
@@ -178,13 +179,14 @@ body {
 
     .list-group-item {
       background-color: lighten($bg-color-light, 2%);
-      color: $snow;
       border-radius: 0;
+      color: $snow;
 
       button {
         color: $snow;
-        text-shadow: none;
         opacity: 1;
+        padding-left: .5em;
+        text-shadow: none;
       }
     }
   }
@@ -195,12 +197,20 @@ body {
   overflow-y: scroll;
 }
 
-#price {
-  position: absolute;
+#confirm {
   bottom: 0;
+  font-size: 1.2em;
+  position: absolute;
+  right: 0;
   transform: translateY(100%);
+}
+
+#price {
+  bottom: 0;
   color: $snow;
   font-size: 1.2em;
+  position: absolute;
+  transform: translateY(100%);
 }
 
 #selected-item {

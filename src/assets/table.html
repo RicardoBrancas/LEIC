@@ -84,6 +84,7 @@
     <div id="price">
       Total: <span></span>
     </div>
+    <button id="confirm" type="button" class="btn btn-primary">Confirmar</button>
   </div>
 </div>
 
@@ -95,34 +96,55 @@
 $(document).ready(function() {
 
   var update_order = function() {
-    let order = JSON.parse(localStorage.getItem('order'));
+    let order = JSON.parse(sessionStorage.getItem('order'));
 
     $order = $('#not-confirmed-content').find('.card-block ul');
     $order.empty();
 
     let totalPrice = 0;
-    for(i of order) {
-      item = menu.find(function(x) {return x.id == i});
+    var length = order.length;
+    for(let i = 0; i < length; i++) {
+      item = menu.find(function(x) {return x.id == order[i]});
 
       totalPrice += item.price;
 
       $item = $('<li class="list-group-item justify-content-between">' + item.name + '<span><span class="badge badge-default badge-pill">' + (item.price.toFixed(2) + " €") + '</span><button type="button" class="close"><i class="fa fa-times"></i></button></span></li>');
 
+      $item.find('button.close').click(function(wrappedIndex) {
+        return function() { remove_from_order(wrappedIndex); };
+      }(i));
+
       $order.append($item);
     }
+
+    if (length != 0) {
+      $('#confirm').show();
+    } else {
+      $('#confirm').hide();
+    }
     $('#price').find('span').empty().text(totalPrice.toFixed(2) + " €");
+
 
   }
 
   var add_to_order = function(item) {
-    if(!localStorage.getItem('order')) {
-      localStorage.setItem('order', JSON.stringify([]));
+    if(!sessionStorage.getItem('order')) {
+      sessionStorage.setItem('order', JSON.stringify([]));
     }
 
-    let temp = JSON.parse(localStorage.getItem('order'));
+    let temp = JSON.parse(sessionStorage.getItem('order'));
     temp.push(item);
-    localStorage.setItem('order', JSON.stringify(temp));
+    sessionStorage.setItem('order', JSON.stringify(temp));
     update_order();
+  }
+
+  var remove_from_order = function(index) {
+    if(sessionStorage.getItem('order')) {
+      let temp = JSON.parse(sessionStorage.getItem('order'));
+      temp.splice(index, 1);
+      sessionStorage.setItem('order', JSON.stringify(temp));
+      update_order();
+    }
   }
 
   var item_clicked = function() {
@@ -189,6 +211,9 @@ $(document).ready(function() {
   };
   $('#categories input').on('change', category_changed);
 
+  $('#confirm').click(function() {
+    alert('Not implemented!');
+  })
 
   //Init
   update_clock();
