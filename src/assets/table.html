@@ -50,6 +50,7 @@
   </div>
 
   <div id="main">
+    <button id="go-back" type="button" class="btn btn-link"><i class="fa fa-arrow-left"></i></button>
     <div id="item-container" class="card-deck"></div>
     <div id="selected-item">
     </div>
@@ -171,7 +172,7 @@ $(document).ready(function() {
 
     item = menu.find(function(x) {return x.id == $this.attr('data-item-id')});
 
-    $nutrition_table = $('<table class=""><thead><tr><th></th><th></th></tr></thead><tbody></tbody></table>');
+    $nutrition_table = $('<div class="table-wrapper"><h4 class="mb-3">Informação Nutricional</h4><table class=""><thead><tr><th></th><th></th></tr></thead><tbody></tbody></table></div>');
     $tbody = $nutrition_table.find('tbody');
 
     for (var key in item.nutrition) {
@@ -192,7 +193,7 @@ $(document).ready(function() {
   };
   setInterval(update_clock, 1000);
 
-  let category_changed_inner = function(cat, is_sub_cat = false) {
+  let category_changed_inner = function(cat, is_sub_cat = false, parent_cat = undefined) {
     let $item_container = $("#item-container");
     $('#selected-item').empty();
     $item_container.animate({
@@ -206,7 +207,7 @@ $(document).ready(function() {
 
         $something.click(function() {
           $this = $(this);
-          category_changed_inner($this.attr('data-cat'), true);
+          category_changed_inner($this.attr('data-cat'), true, "pratos-principais");
         });
       } else if(categories[cat] !== undefined) {
         for(item of categories[cat]) {
@@ -231,7 +232,12 @@ $(document).ready(function() {
         opacity: 1
       }, 400);
       if (is_sub_cat) {
-        //TODO back button
+        $('#go-back').show();
+        $('#go-back').click(function() {
+          category_changed_inner(parent_cat);
+        });
+      } else {
+        $('#go-back').hide();
       }
       $item_container.find('.card button').click(function(e) {
         e.stopPropagation();

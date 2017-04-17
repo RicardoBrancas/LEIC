@@ -107,7 +107,7 @@ body {
 
 #item-container {
   margin: auto;
-  max-height: 15rem;
+  max-height: 17rem;
   overflow-x: scroll;
   overflow-y: hidden;
   padding-bottom: .25rem;
@@ -219,13 +219,17 @@ body {
     max-height: calc(100vh - 4rem - 15rem - 1.5rem - 10rem);
   }
 
-  table {
-    color: $snow;
+  .table-wrapper {
+    color: $white-smoke;
     left: 5%;
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
     white-space: pre;
+
+    th {
+      padding-right: 1em;
+    }
   }
 
   button {
@@ -233,4 +237,13 @@ body {
     right: 25%;
   }
 
+}
+
+#go-back {
+  color: $snow;
+  cursor: pointer;
+  display: none;
+  font-size: 3em;
+  left: 5%;
+  position: absolute;
 }
