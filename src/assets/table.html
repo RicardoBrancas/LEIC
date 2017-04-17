@@ -171,7 +171,7 @@ $(document).ready(function() {
 
     item = menu.find(function(x) {return x.id == $this.attr('data-item-id')});
 
-    $nutrition_table = $('<table class=""><thead><tr><th>A</th><th>B</th></tr></thead><tbody></tbody></table>');
+    $nutrition_table = $('<table class=""><thead><tr><th></th><th></th></tr></thead><tbody></tbody></table>');
     $tbody = $nutrition_table.find('tbody');
 
     for (var key in item.nutrition) {
@@ -192,8 +192,7 @@ $(document).ready(function() {
   };
   setInterval(update_clock, 1000);
 
-  let category_changed = function() {
-    let cat = $('input[name=categories]:checked', '#categories').attr("id").slice(4);
+  let category_changed_inner = function(cat, is_sub_cat = false) {
     let $item_container = $("#item-container");
     $('#selected-item').empty();
     $item_container.animate({
@@ -201,7 +200,15 @@ $(document).ready(function() {
       opacity: 0
     }, 400, function() {
       $item_container.empty();
-      if(categories[cat] !== undefined) {
+      if(cat == "pratos-principais") {
+        $something = $('<div class="card card-inverse" data-cat="pratos-principais-carne"><img class="card-img-top" src="..."><div class="card-block"><h4 class="card-title">Carne</h4></div></div><div class="card card-inverse" data-cat="pratos-principais-peixe"><img class="card-img-top" src="..."><div class="card-block"><h4 class="card-title">Peixe</h4></div></div><div class="card card-inverse" data-cat="pratos-principais-vegetariano"><img class="card-img-top" src="..." ><div class="card-block"><h4 class="card-title">Vegetariano</h4></div></div>')
+        $item_container.append($something);
+
+        $something.click(function() {
+          $this = $(this);
+          category_changed_inner($this.attr('data-cat'), true);
+        });
+      } else if(categories[cat] !== undefined) {
         for(item of categories[cat]) {
           $item = $("<div>", {class: "card card-inverse", 'data-item-id': item.id});
 
@@ -216,19 +223,26 @@ $(document).ready(function() {
           $item.find('button.quick-add').click(function (wrappedID) {
             return function() { add_to_order(wrappedID); }
           }(item.id));
-
-          $item_container.animate({
-            width: "61.8034%",
-            opacity: 1
-          }, 400);
+          $item.click(item_clicked);
         }
+      }
+      $item_container.animate({
+        width: "61.8034%",
+        opacity: 1
+      }, 400);
+      if (is_sub_cat) {
+        //TODO back button
       }
       $item_container.find('.card button').click(function(e) {
         e.stopPropagation();
-      })
-      $item_container.find('.card').click(item_clicked);
+      });
     });
 
+  }
+
+  let category_changed = function() {
+    let cat = $('input[name=categories]:checked', '#categories').attr("id").slice(4);
+    category_changed_inner(cat);
   };
   $('#categories input').on('change', category_changed);
 
