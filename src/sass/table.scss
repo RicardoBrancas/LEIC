@@ -26,6 +26,10 @@ $bg-color-dark:       darken($bg-color, 5%);
 $primary-color: #009688;
 $accent-color:  #F50057;
 
+html {
+  font-size: 85%;
+}
+
 body {
   background-color: $bg-color;
 }
@@ -89,16 +93,17 @@ body {
   position: absolute;
   right: 0;
   top: 0;
-}
 
-#help button {
-  font-size: 1.75em;
-  font-weight: 500;
-  height: 4rem;
-  letter-spacing: .1em;
-  padding-left: 2.5rem;
-  padding-right: 2.5rem;
-  word-spacing: 2;
+  button {
+    font-size: 1.75em;
+    font-variant: small-caps;
+    font-weight: 500;
+    height: 6rem;
+    padding-left: 2.5rem;
+    padding-right: 2.5rem;
+    white-space: normal;
+    width: 17rem;
+  }
 }
 
 #categories .btn {
@@ -111,6 +116,7 @@ body {
   overflow-x: scroll;
   overflow-y: hidden;
   padding-bottom: .25rem;
+  padding-top: .5rem;
   width: 61.8034%;
 
 

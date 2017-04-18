@@ -17,7 +17,7 @@
 <div id="header">
   <div id="clock"></div>
   <div id="help">
-    <button type="button" class="btn btn-secondary">AJUDA</button>
+    <button type="button" class="btn btn-secondary">Chamar o Empregado</button>
   </div>
 </div>
 
@@ -98,10 +98,7 @@
 <script type="text/javascript">
 $(document).ready(function() {
 
-  var update_order = function() {
-    let order = JSON.parse(sessionStorage.getItem('order'));
-
-    $order = $('#not-confirmed-content').find('.card-block ul');
+  var update_order_common = function(order, $order, removable) {
     $order.empty();
 
     let totalPrice = 0;
@@ -111,7 +108,7 @@ $(document).ready(function() {
 
       totalPrice += item.price;
 
-      $item = $('<li class="list-group-item justify-content-between">' + item.name + '<span><span class="badge badge-default badge-pill">' + (item.price.toFixed(2) + " €") + '</span><button type="button" class="close"><i class="fa fa-times"></i></button></span></li>');
+      $item = $('<li class="list-group-item justify-content-between">' + item.name + '<span><span class="badge badge-default badge-pill">' + (item.price.toFixed(2) + " €") + '</span>' + (removable ? '<button type="button" class="close"><i class="fa fa-times"></i></button>' : '') + '</span></li>');
 
       $item.find('button.close').click(function(wrappedIndex) {
         return function() { remove_from_order(wrappedIndex); };
@@ -120,14 +117,34 @@ $(document).ready(function() {
       $order.append($item);
     }
 
-    if (length != 0) {
+    if (removable && (length != 0)) {
       $('#confirm').show();
-    } else {
+    } else if (removable) {
       $('#confirm').hide();
     }
+
+    return totalPrice;
+
+  }
+
+  var update_order_not_confirmed = function() {
+    let order = JSON.parse(sessionStorage.getItem('order'));
+    $order = $('#not-confirmed-content').find('.card-block ul');
+    return update_order_common(order, $order, true);
+  }
+
+  var update_order_confirmed = function() {
+    let order = JSON.parse(sessionStorage.getItem('order_2'));
+    $order = $('#confirmed-content').find('.card-block ul');
+    return update_order_common(order, $order, false);
+  }
+
+  var update_order_total = function() {
+    let price1 = update_order_not_confirmed();
+    let price2 = update_order_confirmed();
+    let totalPrice = price1 + price2;
+
     $('#price').find('span').empty().text(totalPrice.toFixed(2) + " €");
-
-
   }
 
   var add_to_order = function(item) {
@@ -138,7 +155,7 @@ $(document).ready(function() {
     let temp = JSON.parse(sessionStorage.getItem('order'));
     temp.push(item);
     sessionStorage.setItem('order', JSON.stringify(temp));
-    update_order();
+    update_order_total();
   }
 
   var remove_from_order = function(index) {
@@ -146,7 +163,7 @@ $(document).ready(function() {
       let temp = JSON.parse(sessionStorage.getItem('order'));
       temp.splice(index, 1);
       sessionStorage.setItem('order', JSON.stringify(temp));
-      update_order();
+      update_order_total();
     }
   }
 
@@ -253,13 +270,20 @@ $(document).ready(function() {
   $('#categories input').on('change', category_changed);
 
   $('#confirm').click(function() {
-    alert('Not implemented!');
+    if(confirm('Tem a certeza que pretende efetuar o pedido?')) {
+      let currentOrder = JSON.parse(sessionStorage.getItem('order'));
+      let currentOrder2 = JSON.parse(sessionStorage.getItem('order_2'));
+      if(currentOrder2 == null) currentOrder2 = [];
+      sessionStorage.setItem('order_2', JSON.stringify(currentOrder2.concat(currentOrder)));
+      sessionStorage.setItem('order', JSON.stringify([]));
+      update_order_total();
+    }
   })
 
   //Init
   update_clock();
   category_changed();
-  update_order();
+  update_order_total();
 });
 </script>
 </body>
