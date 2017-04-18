@@ -222,6 +222,7 @@ body {
   padding: 2rem;
   position: absolute;
   width: 100%;
+  height: calc(100vh - 4rem - 15rem - 1.5rem - 10rem);
 
   img {
     max-height: calc(100vh - 4rem - 15rem - 1.5rem - 10rem);
