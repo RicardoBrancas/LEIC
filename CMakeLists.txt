@@ -10,3 +10,13 @@ SET(CMAKE_BUILD_TYPE Debug)
 
 add_executable(main main.cpp)
 
+foreach(n RANGE 1 5)
+  add_test("Example${n}"
+    ${CMAKE_COMMAND}
+    -D test_cmd=${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/main
+    -D output_blessed=${TESTS_FOLDER}/Example${n}.out
+    -D output_test=${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Example${n}.out
+    -D input_test=${TESTS_FOLDER}/Example${n}.in
+    -P ${CMAKE_SOURCE_DIR}/test.cmake
+  )
+endforeach(n)
