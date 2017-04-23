@@ -1,60 +1,151 @@
 #include<iostream>
 #include<vector>
-#include<list>
-#include<limits>
 #include<queue>
 
-class comparator {
-private:
-  std::vector<int>* keys;
-public:
-  comparator(std::vector<int>* k) : keys(k) {}
-  bool operator() (const int& lhs, const int&rhs) const {
-    return (*keys)[lhs] > (*keys)[rhs];
-  }
+struct Edge {
+	int from, to, cost;
+
+	Edge(int f, int t, int c) : from(f), to(t), cost(c) {}
+
+	inline bool isAirline() const { return to == 0 || from == 0; }
+
+	friend inline bool operator>(const Edge& l, const Edge& r) {
+		return l.cost > r.cost;
+	}
 };
 
-typedef std::vector< std::list<int> > Graph;
-typedef std::vector< std::list<int> >::iterator graph_it;
-typedef std::priority_queue<int, std::vector<int>, comparator> priority_q;
+//Despite the weird c++ semantics, using a greater comparator creates a min-heap
+typedef std::priority_queue<Edge, std::vector<Edge>, std::greater<Edge> > edge_pq;
 
-void prim(Graph* graph_ptr) {
-  std::vector<int> key(graph_ptr->size());
-  std::vector<int> pi(graph_ptr->size());
+class Set {
+	int label, rank;
+	Set* parent;
 
-  for(unsigned int i = 0; i < graph_ptr->size(); i++) {
-    key[i] = std::numeric_limits<int>::max();
-    pi[i] = -1;
-  }
+	void Link(Set* x, Set* y) {
+		if(x->rank > y->rank)
+			y->parent = x;
+		else {
+			x->parent = y;
+			if(x->rank == y->rank)
+				y->rank++;
+		}
+	}
 
-  key[1] = 0; //Maybe use 0?
+public:
+	Set(int l) : label(l), rank(0), parent(this) {}
 
-  priority_q Q = priority_q(comparator(&key));
-  for(unsigned int i = 0; i < graph_ptr->size(); i++) {
-    Q.push(i);
-  }
+	Set* FindSet() {
+		if(label != parent->label)
+			parent = parent->FindSet();
+		return parent;
+	}
 
-  //Initialization finished
+	void Union(Set* s) {
+		Link(FindSet(), s->FindSet());
+	}
+
+	friend inline bool operator!=(const Set& l, const Set& r) {
+		return l.label != r.label;
+	}
+};
+
+/* Consideremos R = numero de estradas
+				A = numero de linhas aereas
+
+	Complexidade: O( R logV + (V+A-1) logV ) = O( (V+R+A-1) logV)
+				= O( (V + E) logV )
+	E para grafos ligados (E >= V-1):
+				= O( E logV )
+*/
+void kruskal(unsigned V, edge_pq* roads_pq, edge_pq* airlines_pq) {
+	std::vector<bool> inMST(V, false);
+
+	std::vector<Set*> jr_forest;
+	for(unsigned i = 0; i < V; i++) {
+		jr_forest.push_back(new Set(i));
+	}
+
+	//First we consider just the roads: O(R logV)
+	int jr_totalCost = 0, jr_roadN = 0;
+	while(!roads_pq->empty()) {
+		Edge e = roads_pq->top();
+		roads_pq->pop();
+
+		if(*jr_forest[e.from]->FindSet() != *jr_forest[e.to]->FindSet()) {
+			jr_totalCost += e.cost;
+			jr_roadN++;
+			inMST[e.from] = true;
+			inMST[e.to] = true;
+			airlines_pq->push(e); //Vamos adicionando a estradas às linhas aereas
+			jr_forest[e.from]->Union(jr_forest[e.to]);
+		}
+	}
+
+	//No fim ficamos, no maximo, com (V - 1) + A arcos em airline_pq
+
+	//Consideramos agora os arcos "todos" O( (V+A-1) logV)
+	std::vector<Edge> edges;
+	std::vector<Set*> forest;
+	for(unsigned i = 0; i < V; i++) {
+		forest.push_back(new Set(i));
+	}
+
+	int roadN = 0, airlineN = 0;
+	while(!airlines_pq->empty()) {
+		Edge e = airlines_pq->top();
+		airlines_pq->pop();
+
+		if(*forest[e.from]->FindSet() != *forest[e.to]->FindSet()) {
+			if(e.isAirline())
+				airlineN++;
+			else
+				roadN++;
+			inMST[e.from] = true;
+			inMST[e.to] = true;
+			edges.push_back(e);
+			forest[e.from]->Union(forest[e.to]);
+		}
+	}
+
+	for(unsigned i = 0; i < V; i++) {
+		if(i != 0 && !inMST[i]) { //only the first vertex is allowed
+			std::cout << "Insuficiente" << std::endl;
+			return;
+		}
+	}
+
+	int totalCost = 0;
+	for(unsigned i = 0; i < edges.size(); i++) {
+		if(airlineN > 1 || !edges[i].isAirline())
+			totalCost += edges[i].cost;
+	}
+
+	if(jr_roadN != (roadN + airlineN)-1 || jr_totalCost > totalCost) {
+		std::cout << totalCost << std::endl << airlineN << " " << roadN << std::endl;
+	} else {
+		std::cout << jr_totalCost << std::endl << 0 << " " << jr_roadN << std::endl;
+	}
 }
 
 int main() {
-  int cityN, airportN, roadN, city, cost, cityFrom, cityTo;
+	int cityN, airportN, roadN, city, cost, cityFrom, cityTo;
 
-  std::cin >> cityN;
+	std::cin >> cityN;
 
-  Graph cities(cityN + 1);
+	edge_pq roads_pq;
+	edge_pq airlines_pq;
 
-  std::cin >> airportN;
-  for(int i = 0; i < airportN; i++) {
-    std::cin >> city >> cost;
-    cities[0].push_back(city);
-    cities[city].push_back(0);
-  }
+	std::cin >> airportN;
+	for(int i = 0; i < airportN; i++) {
+		std::cin >> city >> cost;
+		airlines_pq.push(Edge(0, city, cost));
+	}
 
-  std::cin >> roadN;
-  for(int i = 0; i < roadN; i++) {
-    std::cin >> cityFrom >> cityTo >> cost;
-    cities[cityFrom].push_back(cityTo);
-    cities[cityTo].push_back(cityFrom);
-  }
+	std::cin >> roadN;
+	for(int i = 0; i < roadN; i++) {
+		std::cin >> cityFrom >> cityTo >> cost;
+		roads_pq.push(Edge(cityFrom, cityTo, cost));
+	}
+
+	kruskal(cityN+1, &roads_pq, &airlines_pq);
 }
