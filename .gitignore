@@ -39,3 +39,4 @@ tests/
 
 build/
 out/
+results*

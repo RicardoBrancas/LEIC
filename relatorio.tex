@@ -1,0 +1,113 @@
+\documentclass[a4paper]{article}
+\usepackage[margin=1.35in]{geometry}
+\usepackage[portuguese]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{pgfplots}
+\usepackage{pgfplotstable}
+\usepackage{mathtools}
+\usepackage{clrscode3e}
+\pgfplotsset{compat=1.13}
+
+\title{\LARGE \textbf{Relatório ASA}}
+\author{Mihail Brinza \\ \scriptsize 83533 \normalsize \and Ricardo Brancas \\ \scriptsize 83557 \normalsize}
+
+\begin{document}
+	\maketitle
+	\section{Introdução}
+	Este projeto tem como objetivo criar um sistema que permita ao utilizador conhecer
+	a forma mais barata de ligar um conjento de cidades com base numa rede de possíveis
+	infra-estruturas.
+	O utilizador dá como input ao sistema o número de cidades, o número de possiveis aeroportos,
+	o custo de cada um deles, o número de estradas e o custo de cada uma.
+	O software indica ainda caso não seja possível interligar todas as cidades.
+	No caso de existirem duas formas de interligar as cidades com o mesmo custo,
+	é indicada aquela que utiliza menos aeroportos.
+
+	\section{Descrição da Solução}
+	Para resolver o problema de encontrar a forma mais barata de interligar $c$
+	cidades, considerando $a$ possíveis aeroportos e $e$ possiveis estradas,
+	consideramos um grafo não dirigido $G = (V, E, w)$ em que:
+	\begin{enumerate}
+		\item $|V| = c + 1$
+		\item $|E| = a + e$
+		\item $w$ é a função de pesos que faz corresponder a cada arco o custo
+		 de construir a estrada/aeroporto.
+	\end{enumerate}
+	Neste grafo uma estrada entre as cidades $i$ e $j$ corresponde a um arco
+	$(v_i, v_j)$; e existir um aeroporto na cidade $i$ corresponde a existir
+	um arco $(v_0, v_i)$, onde $v_0$ é um vértice especial que representa as
+	ligações entre todos os aeroportos (como se fosse o céu).
+
+	Considerando este grafo, encontrar a solução do problema passa por descobrir
+	a MST do grafo, sendo apenas necessário tomar especial atenção ao requerimento
+	de que deve ser escolhida a MST que utiliza menos aeroportos (na realidade é
+	necessário descobrir duas MST, uma considerando só as estradas e outra considerando
+	todos os arcos).
+
+	\section{Análise Teórica}
+	Para encontrar a(s) MST utilizámos o Algoritmo de Kruskal. Consideramos que
+	o algoritmo recebe como input duas priority queues de arcos (estradas num e aeroportos
+	no outro) ordenadas segundo: 1) o peso dos arcos; 2) se o arco é um arco de aeroporto.
+
+	Nas seguintes complexiades considera-se que $A$ = número de aeroportos, $R$ = número de estradas.
+
+	\begin{enumerate}
+		\item Inicialização 1: $O(V)$\\
+			Criamos um vetor de booleanos que indica se cada um dos vértices já
+			pertence à MST.
+			Criamos ainda um vetor de Disjoint-Sets que vai ser utilizado no algortimo.
+		\item Ciclo 1: $O(R\cdot log(V))$\\
+			Executamos o ciclo principal do algoritmo de Kruskal, apenas em relação
+			aos arcos de estradas.
+			Sempre que escolhemos um arco, juntamo-lo à priority queue que contem os arcos de aeroporto.
+			Ao longo da execução vamos computando o custo da MST; atualizado as
+			flags do vetor de presença e contando o número de arcos já selecionados.
+		\item Inicialização 2: $O(V)$\\
+			Re-inicializamos o vetor dos Disjoint-Sets.
+		\item Ciclo 2: $O( (V + A) \cdot log(V))$\\
+			No segundo ciclo executamos novamente o algoritmo de Kruskal, mas apenas considerando
+			os arcos escolhidos durante a ultima execução ($V-1$ no máximo) e os arcos de aeroporto (ainda não considerados).
+			Esta solução funciona porque os restantes arcos já nunca seriam escolhidos.
+			Os arcos que vão sendo escolhidos são colocados num vetor.
+			Ao longo da execução vamos novamente atualizado as flags do vetor de presença
+			e contando, separadamente, o número de estradas e aeroportos já selecionados.
+		\item Finalização: $O(V)$\\
+			No fim é necessário escolher qual é a solução ótima do problema
+
+
+	\end{enumerate}
+
+
+  \begin{center}
+  \begin{tikzpicture}
+    \begin{axis}[
+        title={Execution time for problems with solution},
+        xlabel={Number of photos [n]},
+        ylabel={Time [s]},
+        ymajorgrids=true,
+        xmajorgrids=true,
+        grid style=dashed
+      ]
+
+      \addplot [smooth, color=blue, mark=x] table [x=c, y=t] {./results1.data};
+    \end{axis}
+  \end{tikzpicture}
+  \end{center}
+
+  \begin{center}
+  \begin{tikzpicture}
+    \begin{axis}[
+        title={Execution time for problems with solution},
+        xlabel={Number of photos [n]},
+        ylabel={Time / log(n)},
+        ymajorgrids=true,
+        xmajorgrids=true,
+        grid style=dashed
+      ]
+
+      \addplot [only marks, color=blue, mark=x] table [x=c, y=tln] {./results1.data};
+    \end{axis}
+  \end{tikzpicture}
+  \end{center}
+\end{document}

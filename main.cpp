@@ -10,7 +10,9 @@ struct Edge {
 	inline bool isAirline() const { return to == 0 || from == 0; }
 
 	friend inline bool operator>(const Edge& l, const Edge& r) {
-		return l.cost > r.cost;
+		if( l.cost != r.cost)
+			return l.cost > r.cost;
+		else return l.isAirline();
 	}
 };
 
@@ -58,26 +60,23 @@ public:
 				= O( E logV )
 */
 void kruskal(unsigned V, edge_pq* roads_pq, edge_pq* airlines_pq) {
-	std::vector<bool> inMST(V, false);
-
-	std::vector<Set*> jr_forest;
+	std::vector<Set*> forest;
 	for(unsigned i = 0; i < V; i++) {
-		jr_forest.push_back(new Set(i));
+		forest.push_back(new Set(i));
 	}
 
 	//First we consider just the roads: O(R logV)
-	int jr_totalCost = 0, jr_roadN = 0;
+	int jr_totalCost = 0;
+	unsigned jr_roadN = 0;
 	while(!roads_pq->empty()) {
 		Edge e = roads_pq->top();
 		roads_pq->pop();
 
-		if(*jr_forest[e.from]->FindSet() != *jr_forest[e.to]->FindSet()) {
+		if(*forest[e.from]->FindSet() != *forest[e.to]->FindSet()) {
 			jr_totalCost += e.cost;
 			jr_roadN++;
-			inMST[e.from] = true;
-			inMST[e.to] = true;
 			airlines_pq->push(e); //Vamos adicionando a estradas às linhas aereas
-			jr_forest[e.from]->Union(jr_forest[e.to]);
+			forest[e.from]->Union(forest[e.to]);
 		}
 	}
 
@@ -85,12 +84,13 @@ void kruskal(unsigned V, edge_pq* roads_pq, edge_pq* airlines_pq) {
 
 	//Consideramos agora os arcos "todos" O( (V+A-1) logV)
 	std::vector<Edge> edges;
-	std::vector<Set*> forest;
+
 	for(unsigned i = 0; i < V; i++) {
-		forest.push_back(new Set(i));
+		delete forest[i];
+		forest[i] = new Set(i);
 	}
 
-	int roadN = 0, airlineN = 0;
+	unsigned roadN = 0, airlineN = 0;
 	while(!airlines_pq->empty()) {
 		Edge e = airlines_pq->top();
 		airlines_pq->pop();
@@ -100,18 +100,20 @@ void kruskal(unsigned V, edge_pq* roads_pq, edge_pq* airlines_pq) {
 				airlineN++;
 			else
 				roadN++;
-			inMST[e.from] = true;
-			inMST[e.to] = true;
 			edges.push_back(e);
 			forest[e.from]->Union(forest[e.to]);
 		}
 	}
 
+	Set* set = forest[1]->FindSet();
 	for(unsigned i = 0; i < V; i++) {
-		if(i != 0 && !inMST[i]) { //only the first vertex is allowed
+		if(i != 0 && set != forest[i]->FindSet()) { //only the first vertex is allowed
 			std::cout << "Insuficiente" << std::endl;
 			return;
 		}
+	}
+	for(unsigned i = 0; i < V; i++) {
+		delete forest[i];
 	}
 
 	int totalCost = 0;
@@ -120,10 +122,11 @@ void kruskal(unsigned V, edge_pq* roads_pq, edge_pq* airlines_pq) {
 			totalCost += edges[i].cost;
 	}
 
-	if(jr_roadN != (roadN + airlineN)-1 || jr_totalCost > totalCost) {
-		std::cout << totalCost << std::endl << airlineN << " " << roadN << std::endl;
-	} else {
+	if(jr_roadN == V-2 && jr_totalCost <= totalCost) {
 		std::cout << jr_totalCost << std::endl << 0 << " " << jr_roadN << std::endl;
+	} else {
+		std::cout << totalCost << std::endl << airlineN << " " << roadN << std::endl;
+
 	}
 }
 
