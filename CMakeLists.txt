@@ -32,3 +32,12 @@ foreach(n RANGE 1 3)
     -P ${CMAKE_SOURCE_DIR}/test.cmake
   )
 endforeach(n)
+
+add_test("Test_huge"
+  ${CMAKE_COMMAND}
+  -D test_cmd=${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/main
+  -D output_blessed=${TESTS_FOLDER}/huge.out
+  -D output_test=${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/huge.out
+  -D input_test=${TESTS_FOLDER}/huge.in
+  -P ${CMAKE_SOURCE_DIR}/test.cmake
+)

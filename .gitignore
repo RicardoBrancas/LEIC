@@ -39,4 +39,4 @@ tests/
 
 build/
 out/
-results*
+results.data

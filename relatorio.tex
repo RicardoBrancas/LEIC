@@ -1,5 +1,5 @@
 \documentclass[a4paper]{article}
-\usepackage[margin=1.35in]{geometry}
+\usepackage[margin=3cm]{geometry}
 \usepackage[portuguese]{babel}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
@@ -61,8 +61,8 @@
 			Executamos o ciclo principal do algoritmo de Kruskal, apenas em relação
 			aos arcos de estradas.
 			Sempre que escolhemos um arco, juntamo-lo à priority queue que contem os arcos de aeroporto.
-			Ao longo da execução vamos computando o custo da MST; atualizado as
-			flags do vetor de presença e contando o número de arcos já selecionados.
+			Ao longo da execução vamos computando o custo da MST e contando o número
+			de arcos já selecionados.
 		\item Inicialização 2: $O(V)$\\
 			Re-inicializamos o vetor dos Disjoint-Sets.
 		\item Ciclo 2: $O( (V + A) \cdot log(V))$\\
@@ -70,20 +70,70 @@
 			os arcos escolhidos durante a ultima execução ($V-1$ no máximo) e os arcos de aeroporto (ainda não considerados).
 			Esta solução funciona porque os restantes arcos já nunca seriam escolhidos.
 			Os arcos que vão sendo escolhidos são colocados num vetor.
-			Ao longo da execução vamos novamente atualizado as flags do vetor de presença
-			e contando, separadamente, o número de estradas e aeroportos já selecionados.
+			Ao longo da execução vamos contando, separadamente, o número de estradas
+			e aeroportos já selecionados.
 		\item Finalização: $O(V)$\\
-			No fim é necessário escolher qual é a solução ótima do problema
-
-
+			No fim é necessário verficar se todos os vértices fazem parte do mesmo Disjoint-Set.
+			Computamos o custo da MST através dos arcos guardados no vetor (tendo em atenção
+			ao detalhe que podemos ter apenas um arco-aeroporto selecionado).
+			De seguida é necessário verificar se a primeira MST calculada é abrangente ao grafo todo
+			e se o seu custo é inferior ao da segunda, se sim, essa é a solução ótima, se não, a solução
+			ótima é a segunda MST calculada.
 	\end{enumerate}
 
+	Complexidade total: $O(3V + R\cdot log(V) + (V+A)\cdot log(V)) = O((E+V)\cdot log(V))$
 
+	No caso em que o grafo é conexo ($E \geq V-1$): $O(E\cdot log(V))$
+
+	\begin{codebox}
+		\Procname{$\proc{Kruskals}(V, R, A)$}
+		\li $MST \gets \{\}$
+		\li $MST_{roads} \gets \{\}$
+		\li \For each vertex $u \in V$ \Do
+		\li 	$\proc{Make-Set}(u)$
+			\End
+		\zi
+		\li \While $R \ne \{\}$ \Do
+		\li 	$e = (u, v) \gets \proc{Heap-Extract}(R)$
+		\li		\If $\proc{Find-Set}(u) \ne \proc{Find-Set}(v)$ \Then
+		\li			$MST_{roads} \gets MST_{roads} \cup \{e\}$
+		\li			$\proc{Heap-Insert}(A, e)$
+		\li			$\proc{Union}(u, v)$
+				\End
+			\End
+		\zi
+		\li \For each vertex $u \in V$ \Do
+		\li 	$\proc{Make-Set}(u)$
+			\End
+		\zi
+		\li \While $A \ne \{\}$ \Do
+		\li 	$e = (u, v) \gets \proc{Heap-Extract}(A)$
+		\li		\If $\proc{Find-Set}(u) \ne \proc{Find-Set}(v)$ \Then
+		\li			$MST \gets MST \cup \{e\}$
+		\li			$\proc{Union}(u, v)$
+				\End
+			\End
+		\zi
+		\li \If $\exists (u, v) \in V \setminus \{v_0\}: \proc{Find-Set}(u) \ne \proc{Find-Set}(v)$ \Then
+		\li \Error ``Graph is not connected''
+			\End
+		\li \If $\proc{Is-Optimal}(MST_{roads})$ \Then
+		\li		\Return $MST_{roads}$
+		\li	\Else
+		\li		\Return $MST$
+			\End
+	\end{codebox}
+
+	\section{Avaliação Experimental}
+
+
+	Os gráficos seguintes foram obtidos com recurso ao gerador de inputs, variando o número de cidades $c$, considerando
+	o número de estradas e aeroportos igual a $4c$ e o peso máximo dos arcos igual a $c/2$
   \begin{center}
   \begin{tikzpicture}
     \begin{axis}[
-        title={Execution time for problems with solution},
-        xlabel={Number of photos [n]},
+        title={Execution time for problems with varying number of cities},
+        xlabel={Number of cities [c]},
         ylabel={Time [s]},
         ymajorgrids=true,
         xmajorgrids=true,
@@ -91,6 +141,7 @@
       ]
 
       \addplot [smooth, color=blue, mark=x] table [x=c, y=t] {./results1.data};
+	  \addplot [no markers, gray] table[y={create col/linear regression={y=t}}] {./results1.data};
     \end{axis}
   \end{tikzpicture}
   \end{center}
@@ -98,15 +149,16 @@
   \begin{center}
   \begin{tikzpicture}
     \begin{axis}[
-        title={Execution time for problems with solution},
-        xlabel={Number of photos [n]},
-        ylabel={Time / log(n)},
+        title={Execution time for problems with varying number of cities},
+        xlabel={Number of cities [c]},
+        ylabel={Time / log(c)},
         ymajorgrids=true,
         xmajorgrids=true,
         grid style=dashed
       ]
 
       \addplot [only marks, color=blue, mark=x] table [x=c, y=tln] {./results1.data};
+	  \addplot [no markers, thick, red] table[y={create col/linear regression={y=tln}}] {./results1.data};
     \end{axis}
   \end{tikzpicture}
   \end{center}
