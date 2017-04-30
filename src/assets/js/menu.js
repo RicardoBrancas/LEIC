@@ -22,14 +22,14 @@ var menu = [
 		  options: {
 			  "Não": {},
 			  "Sim": {
-				  "Energia": 455.6,
-			      "Lípidos": 17,
-			      "\tdos quais saturados": 2.3,
+				  "Energia": 126,
+			      "Lípidos": 10,
+			      "\tdos quais saturados": 3,
 			      "Colesterol": 99,
-			      "Hidratos de Carbono": 28.5,
-			      "\tdos quais açucares": 3.2,
-			      "Proteína": 53.6,
-			      "Sódio": 648
+			      "Hidratos de Carbono": 17.5,
+			      "\tdos quais açucares": 1.2,
+			      "Proteína": 0.3,
+			      "Sódio": 750
 			  }
 		  },
 		  default: "Sim"
