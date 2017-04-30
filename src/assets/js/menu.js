@@ -17,7 +17,7 @@ var menu = [
       "Proteína": [53.6, "g"],
       "Sódio": [648, "mg"]
     },
-    options: {
+    choices: {
       Batatas: {
 		  options: {
 			  "Não": {},

@@ -98,6 +98,17 @@
 	<script type="text/javascript">
 	$(document).ready(function() {
 
+		var ss_readObject = function(key, failover = null) {
+			if(!sessionStorage.getItem(key)) {
+				return failover;
+			}
+			return JSON.parse(sessionStorage.getItem(key));
+		}
+
+		var ss_writeObject = function(key, obj) {
+			sessionStorage.setItem(key, JSON.stringify(obj));
+		}
+
 		$('#order').find('.card-header-wrapper').click(function () {
 			$(this).toggleClass("collapsed");
 		})
@@ -108,11 +119,11 @@
 			let totalPrice = 0;
 			var length = order ? order.length : 0;
 			for(let i = 0; i < length; i++) {
-				item = menu.find(function(x) {return x.id == order[i]});
+				item = menu.find(function(x) {return x.id == order[i][0]});
 
 				totalPrice += item.price;
 
-				$item = $('<li class="list-group-item justify-content-between">' + item.name + '<span><span class="badge badge-default badge-pill">' + (item.price.toFixed(2) + " €") + '</span>' + (removable ? '<button type="button" class="close"><i class="fa fa-times"></i></button>' : '') + '</span></li>');
+				$item = $('<li class="list-group-item justify-content-between">' + item.name + (order[i][1] != undefined ? "(mod)" : "") + '<span><span class="badge badge-default badge-pill">' + (item.price.toFixed(2) + " €") + '</span>' + (removable ? '<button type="button" class="close"><i class="fa fa-times"></i></button>' : '') + '</span></li>');
 
 				$item.find('button.close').click(function(wrappedIndex) {
 					return function() { remove_from_order(wrappedIndex); };
@@ -155,8 +166,10 @@
 				sessionStorage.setItem('order', JSON.stringify([]));
 			}
 
+			var choices = ss_readObject('options');
+
 			let temp = JSON.parse(sessionStorage.getItem('order'));
-			temp.push(item);
+			temp.push([item, choices[item]]);
 			sessionStorage.setItem('order', JSON.stringify(temp));
 			update_order_total();
 		}
@@ -170,12 +183,18 @@
 			}
 		}
 
-		var calculateNutrition = function(item, key) {
-			var base = item.nutrition[key][0];
+		var calculateNutrition = function(item, nutrition_line) {
+			var base = item.nutrition[nutrition_line][0];
 
 			try {
-				for (var option in item.options) {
-					base += item.options[option].options[item.options[option].default][key];
+				temp = ss_readObject('options');
+				for (var choice in item.choices) {
+					if(temp[item.id] != undefined && temp[item.id][choice] != undefined) {
+						if(item.choices[choice].options[temp[item.id][choice]][nutrition_line] != undefined)
+							base += item.choices[choice].options[temp[item.id][choice]][nutrition_line];
+					} else {
+						base += item.choices[choice].options[item.choices[choice].default][nutrition_line];
+					}
 				}
 			} catch (err) {
 				console.log("Error parsing menu")
@@ -240,16 +259,41 @@
 				$selected_item.append($tables_wrapper);
 
 				$tbody = $tables_wrapper.find('#options-table tbody');
-				for (var key in item.options) {
-					trow = '<tr><th scope="row">' + key + '</th><td><select class="form-control custom-select">'
+				for (var choice in item.choices) {
+					trow = '<tr><th scope="row">' + choice + '</th><td><select class="form-control custom-select">'
 
-					for (var option in item.options[key].options) {
-						trow += '<option ' + (option == item.options[key].default ? "selected" : "") + '>' + option + '</option>';
+					temp = ss_readObject('options');
+					for (var option in item.choices[choice].options) {
+						if(temp[item.id] != undefined && temp[item.id][choice] != undefined) {
+							trow += '<option ' + (option == temp[item.id][choice] ? "selected" : "") + '>' + option + '</option>';
+						} else {
+							trow += '<option ' + (option == item.choices[choice].default ? "selected" : "") + '>' + option + '</option>';
+						}
 					}
 
 					trow += '</select></td></tr>';
 
 					$trow = $(trow);
+
+					$trow.find('select').change(function (item, choice) {
+						return function() {
+							temp = ss_readObject("options", {});
+
+							if(temp[item.id] == undefined)
+								temp[item.id] = {};
+
+							temp[item.id][choice] = this.value;
+							ss_writeObject("options", temp)
+
+							$tbody = $tables_wrapper.find('#nutrition-table tbody');
+							$tbody.empty();
+							for (var key in item.nutrition) {
+								$trow = $('<tr><th scope="row">' + key + '</th><td>' + calculateNutrition(item, key) + " " + item.nutrition[key][1] + '</td></tr>');
+								$tbody.append($trow);
+							}
+						};
+					}(item, choice));
+
 					$tbody.append($trow);
 				}
 			};
