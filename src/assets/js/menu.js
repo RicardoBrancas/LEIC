@@ -8,17 +8,32 @@ var menu = [
         "pratos-principais-carne"
     ],
     nutrition: {
-      "Energia": "455.6 kCal",
-      "Lípidos": "17 g",
-      "\tdos quais saturados": "2.3 g",
-      "Colesterol": "99 mg",
-      "Hidratos de Carbono": "28.5 g",
-      "\tdos quais açucares": "3.2 g",
-      "Proteína": "53.6 g",
-      "Sódio": "648 mg"
+      "Energia": [455.6, "kCal"],
+      "Lípidos": [17, "g"],
+      "\tdos quais saturados": [2.3, "g"],
+      "Colesterol": [99, "mg"],
+      "Hidratos de Carbono": [28.5, "g"],
+      "\tdos quais açucares": [3.2, "g"],
+      "Proteína": [53.6, "g"],
+      "Sódio": [648, "mg"]
     },
     options: {
-      Batatas: 1,
+      Batatas: {
+		  options: {
+			  "Não": {},
+			  "Sim": {
+				  "Energia": 455.6,
+			      "Lípidos": 17,
+			      "\tdos quais saturados": 2.3,
+			      "Colesterol": 99,
+			      "Hidratos de Carbono": 28.5,
+			      "\tdos quais açucares": 3.2,
+			      "Proteína": 53.6,
+			      "Sódio": 648
+			  }
+		  },
+		  default: "Sim"
+	  },
       Arroz: 0,
       Cebola: 1
     }

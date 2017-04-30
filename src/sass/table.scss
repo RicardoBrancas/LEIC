@@ -1,3 +1,5 @@
+@import '../../bower_components/components-font-awesome/scss/font-awesome';
+
 $white:        #FFFFFF;
 $ghost:        #FAFAFA;
 $snow:         #F9F9F9;
@@ -26,233 +28,268 @@ $bg-color-dark:       darken($bg-color, 5%);
 $primary-color: #009688;
 $accent-color:  #F50057;
 
-html {
-  font-size: 85%;
-}
-
 body {
-  background-color: $bg-color;
+	background-color: $bg-color;
 }
 
 ::-webkit-scrollbar {
-  height: 5px;
-  width: 5px;
+	height: 5px;
+	width: 5px;
 }
 
 ::-webkit-scrollbar-button {
-  height: 0;
-  width: 0;
+	height: 0;
+	width: 0;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: lighten($bg-color, 60%);
-  border: 0;
-  border-radius: 50px;
+	background: lighten($bg-color, 60%);
+	border: 0;
+	border-radius: 50px;
 
-  &:hover {
-    background: lighten($bg-color, 77%);
-  }
+	&:hover {
+		background: lighten($bg-color, 77%);
+	}
 
-  &:active {
-    background: darken($bg-color, 7.5%);
-  }
+	&:active {
+		background: darken($bg-color, 7.5%);
+	}
 }
 
 ::-webkit-scrollbar-track {
-  background: $bg-color-light;
-  border: 0 none $snow;
-  border-radius: 50px;
+	background: $bg-color-light;
+	border: 0 none $snow;
+	border-radius: 50px;
 
-  &:active {
-    background: $oil;
-  }
+	&:active {
+		background: $oil;
+	}
 }
 
 ::-webkit-scrollbar-corner {
-  background: transparent;
+	background: transparent;
 }
 
 #header {
-  height: 4rem;
-  width: 100%;
+	height: 4rem;
+	width: 100%;
 }
 
 #clock {
-  color: $snow;
-  font-size: 2em;
-  font-weight: 300;
-  height: 4rem;
-  line-height: 4rem;
-  margin: auto;
-  text-align: center;
-  width: 5em;
+	color: $snow;
+	font-size: 2em;
+	font-weight: 300;
+	height: 4rem;
+	line-height: 4rem;
+	margin: auto;
+	text-align: center;
+	width: 5em;
 }
 
 #help {
-  float: right;
-  position: absolute;
-  right: 0;
-  top: 0;
+	float: right;
+	position: absolute;
+	right: 0;
+	top: 0;
 
-  button {
-    font-size: 1.75em;
-    font-variant: small-caps;
-    font-weight: 500;
-    height: 6rem;
-    padding-left: 2.5rem;
-    padding-right: 2.5rem;
-    white-space: normal;
-    width: 17rem;
-  }
+	button {
+		font-size: 1.75em;
+		font-variant: small-caps;
+		font-weight: 500;
+		height: 6rem;
+		padding-left: 2.5rem;
+		padding-right: 2.5rem;
+		white-space: normal;
+		width: 17rem;
+	}
 }
 
 #categories .btn {
-  cursor: pointer;
-  font-size: 1.1em;
-  padding: .75rem 1.25rem;
+	cursor: pointer;
+	font-size: 1.1em;
 }
 
 #item-container {
-  margin: auto;
-  max-height: 17rem;
-  overflow-x: scroll;
-  overflow-y: hidden;
-  padding-bottom: .25rem;
-  padding-top: .5rem;
-  width: 61.8034%;
+	margin: auto;
+	max-height: 17rem;
+	overflow-x: scroll;
+	overflow-y: hidden;
+	padding-bottom: .25rem;
+	padding-top: .5rem;
+	width: 61.8034%;
 
 
-  .card {
-    background-color: $bg-color-dark;
-    cursor: pointer !important;
-    max-width: 15rem;
-    transition: background 200ms;
+	.card {
+		background-color: $bg-color-dark;
+		cursor: pointer;
+		max-width: 15rem;
+		transition: background 200ms;
 
-    &:hover {
-      background-color: darken($bg-color-dark, 2.5%);
-    }
+		&:hover {
+			background-color: darken($bg-color-dark, 2.5%);
+		}
 
-    &.selected {
-      background-color: darken($bg-color-dark, 7.5%);
-    }
+		&.selected {
+			background-color: darken($bg-color-dark, 7.5%);
+		}
 
-    button {
-      bottom: 0;
-      cursor: pointer;
-      position: absolute;
-      right: 0;
+		button {
+			bottom: 0;
+			cursor: pointer;
+			position: absolute;
+			right: 0;
 
-      .fa {
-        vertical-align: middle;
-      }
-    }
+			.fa {
+				vertical-align: middle;
+			}
+		}
 
-    img {
-      height: 10rem;
-      object-fit: contain;
-    }
+		img {
+			height: 10rem;
+			object-fit: contain;
+		}
 
-    .card-block {
-      padding: .85rem;
-    }
-  }
+		.card-block {
+			padding: .85rem;
+		}
+	}
 }
 
 #order {
-  background-color: $bg-color-very-light;
-  border-radius: 0;
-  height: 30em;
-  position: fixed;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 20em;
+	background-color: $bg-color-very-light;
+	border-radius: 0;
+	height: 30em;
+	position: fixed;
+	right: 0;
+	top: 50%;
+	transform: translateY(-50%);
+	width: 20em;
 
-  .card {
-    background-color: transparent;
-    border: 0;
-    border-radius: 0;
+	.card-header {
+		background-color: $bg-color-light;
+	}
 
-    .card-header {
-      background-color: $bg-color-light;
-      border-radius: 0;
-    }
+	.card-block {
+		padding: 0;
+	}
 
-    .card-block {
-      padding: 0;
-    }
+	.list-group-item {
+		background-color: lighten($bg-color-light, 2%);
+		border-radius: 0;
+		color: $snow;
 
-    .list-group-item {
-      background-color: lighten($bg-color-light, 2%);
-      border-radius: 0;
-      color: $snow;
-
-      button {
-        color: $snow;
-        opacity: 1;
-        padding-left: .5em;
-        text-shadow: none;
-      }
-    }
-  }
+		button {
+			color: $snow;
+			opacity: 1;
+			padding-left: .5em;
+			text-shadow: none;
+		}
+	}
 }
 
 #order-inner {
-  max-height: 100%;
-  overflow-y: scroll;
+	max-height: 100%;
+	overflow-y: scroll;
 }
 
 #confirm {
-  bottom: 0;
-  font-size: 1.2em;
-  position: absolute;
-  right: 0;
-  transform: translateY(100%);
+	bottom: 0;
+	font-size: 1.2em;
+	position: absolute;
+	right: 0;
+	transform: translateY(100%);
 }
 
 #price {
-  bottom: 0;
-  color: $snow;
-  font-size: 1.2em;
-  position: absolute;
-  transform: translateY(100%);
+	bottom: 0;
+	color: $snow;
+	font-size: 1.2em;
+	position: absolute;
+	transform: translateY(100%);
 }
 
 #selected-item {
-  padding: 2rem;
-  position: absolute;
-  width: 100%;
-  height: calc(100vh - 4rem - 15rem - 1.5rem - 10rem);
+	padding: 2rem;
+	position: absolute;
+	width: 100%;
+	height: calc(100vh - 4rem - 15rem - 1.5rem - 10rem);
 
-  img {
-    max-height: calc(100vh - 4rem - 15rem - 1.5rem - 10rem);
-  }
+	img {
+		max-height: calc(100vh - 4rem - 15rem - 1.5rem - 10rem);
+	}
 
-  .table-wrapper {
-    color: $white-smoke;
-    left: 5%;
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    white-space: pre;
+	.table-wrapper {
+		color: $white-smoke;
 
-    th {
-      padding-right: 1em;
-    }
-  }
+		white-space: pre;
 
-  button {
-    position: absolute;
-    right: 25%;
-  }
+		th {
+			padding-right: 1em;
+		}
+	}
+
+	button {
+		position: absolute;
+		right: 25%;
+	}
 
 }
 
 #go-back {
-  color: $snow;
-  cursor: pointer;
-  display: none;
-  font-size: 3em;
-  left: 5%;
-  position: absolute;
+	color: $snow;
+	cursor: pointer;
+	display: none;
+	font-size: 3em;
+	left: 5%;
+	position: absolute;
+}
+
+#tables {
+	background-color: lighten($bg-color, 3%);
+	width: 25%;
+	left: 5%;
+	position: absolute;
+	top: 50%;
+	transform: translateY(-50%);
+
+	.card-header {
+		background-color: lighten($bg-color, 1%);
+	}
+
+	.table th,
+	.table td {
+		border-top-color: $bg-color;
+	}
+}
+
+.collapse-container {
+	a {
+		color: $snow;
+
+		&::after {
+			@include fa-icon;
+
+			position: absolute;
+			right: 1em;
+			top: 1.5rem;
+			font-size: 1.5em;
+			transform: translateY(-50%);
+			content: $fa-var-caret-down;
+		}
+
+		&.collapsed::after {
+			content: $fa-var-caret-up;
+		}
+	}
+
+	.card-header {
+		border-radius: 0;
+	}
+
+	.card {
+		background-color: transparent;
+		color: $snow;
+		border-radius: 0;
+		border: 0;
+	}
 }
