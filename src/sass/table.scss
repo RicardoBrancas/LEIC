@@ -184,6 +184,20 @@ body {
 			padding-left: .5em;
 			text-shadow: none;
 		}
+
+		.item-left {
+			position: absolute;
+			top: 0.75rem;
+			right: 1rem;
+		}
+
+		ul {
+			color: $aluminum;
+		}
+
+		.badge {
+			font-size: 85%;
+		}
 	}
 }
 

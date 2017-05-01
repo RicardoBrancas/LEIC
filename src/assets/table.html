@@ -123,7 +123,24 @@
 
 				totalPrice += item.price;
 
-				$item = $('<li class="list-group-item justify-content-between">' + item.name + (order[i][1] != undefined ? "(mod)" : "") + '<span><span class="badge badge-default badge-pill">' + (item.price.toFixed(2) + " €") + '</span>' + (removable ? '<button type="button" class="close"><i class="fa fa-times"></i></button>' : '') + '</span></li>');
+				item_src = '<li class="list-group-item d-flex"><span class="w-100">' + item.name + '</span>';
+
+				if(order[i][1] != undefined) {
+					item_src += '<ul class="list-unstyled pl-3">';
+					for(choice in order[i][1]) {
+						item_src += '<li><strong>' + choice + "</strong>: " + order[i][1][choice] + "</li>"
+					}
+					item_src += '</ul>'
+				}
+
+				item_src += '<span class="item-left"><span class="badge badge-default">' + (item.price.toFixed(2) + " €") + '</span>';
+
+				if(removable)
+					item_src += '<button type="button" class="close"><i class="fa fa-times"></i></button>';
+
+				item_src += '</span></li>';
+
+				$item = $(item_src);
 
 				$item.find('button.close').click(function(wrappedIndex) {
 					return function() { remove_from_order(wrappedIndex); };
@@ -166,7 +183,7 @@
 				sessionStorage.setItem('order', JSON.stringify([]));
 			}
 
-			var choices = ss_readObject('options');
+			var choices = ss_readObject('options', {});
 
 			let temp = JSON.parse(sessionStorage.getItem('order'));
 			temp.push([item, choices[item]]);
@@ -262,7 +279,7 @@
 				for (var choice in item.choices) {
 					trow = '<tr><th scope="row">' + choice + '</th><td><select class="form-control custom-select">'
 
-					temp = ss_readObject('options');
+					temp = ss_readObject('options', {});
 					for (var option in item.choices[choice].options) {
 						if(temp[item.id] != undefined && temp[item.id][choice] != undefined) {
 							trow += '<option ' + (option == temp[item.id][choice] ? "selected" : "") + '>' + option + '</option>';
