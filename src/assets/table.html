@@ -251,7 +251,7 @@
 						</div>
 					</div>
 
-					<div class="card">
+					<div class="card choices-card">
 						<a class="card-header-wrapper" data-parent="#tables" data-toggle="collapse" href="#options-table">
 							<div class="card-header" role="tab">
 								<h5 class="mb-0">Personalização</h5>
@@ -271,43 +271,47 @@
 
 				$selected_item.append($tables_wrapper);
 
-				$tbody = $tables_wrapper.find('#options-table tbody');
-				for (var choice in item.choices) {
-					trow = '<tr><th scope="row">' + choice + '</th><td><select class="form-control custom-select">'
+				if(item.choices != undefined) {
+					$tbody = $tables_wrapper.find('#options-table tbody');
+					for (var choice in item.choices) {
+						trow = '<tr><th scope="row">' + choice + '</th><td><select class="form-control custom-select">'
 
-					temp = sessionStorage.getObject('options', {});
-					for (var option in item.choices[choice].options) {
-						if(temp[item.id] != undefined && temp[item.id][choice] != undefined) {
-							trow += '<option ' + (option == temp[item.id][choice] ? "selected" : "") + '>' + option + '</option>';
-						} else {
-							trow += '<option ' + (option == item.choices[choice].default ? "selected" : "") + '>' + option + '</option>';
-						}
-					}
-
-					trow += '</select></td></tr>';
-
-					$trow = $(trow);
-
-					$trow.find('select').change(function (item, choice) {
-						return function() {
-							temp = sessionStorage.getObject("options", {});
-
-							if(temp[item.id] == undefined)
-								temp[item.id] = {};
-
-							temp[item.id][choice] = this.value;
-							sessionStorage.setObject("options", temp)
-
-							$tbody = $tables_wrapper.find('#nutrition-table tbody');
-							$tbody.empty();
-							for (var key in item.nutrition) {
-								$trow = $('<tr><th scope="row">' + key + '</th><td>' + calculateNutrition(item, key) + " " + item.nutrition[key][1] + '</td></tr>');
-								$tbody.append($trow);
+						temp = sessionStorage.getObject('options', {});
+						for (var option in item.choices[choice].options) {
+							if(temp[item.id] != undefined && temp[item.id][choice] != undefined) {
+								trow += '<option ' + (option == temp[item.id][choice] ? "selected" : "") + '>' + option + '</option>';
+							} else {
+								trow += '<option ' + (option == item.choices[choice].default ? "selected" : "") + '>' + option + '</option>';
 							}
-						};
-					}(item, choice));
+						}
 
-					$tbody.append($trow);
+						trow += '</select></td></tr>';
+
+						$trow = $(trow);
+
+						$trow.find('select').change(function (item, choice) {
+							return function() {
+								temp = sessionStorage.getObject("options", {});
+
+								if(temp[item.id] == undefined)
+									temp[item.id] = {};
+
+								temp[item.id][choice] = this.value;
+								sessionStorage.setObject("options", temp)
+
+								$tbody = $tables_wrapper.find('#nutrition-table tbody');
+								$tbody.empty();
+								for (var key in item.nutrition) {
+									$trow = $('<tr><th scope="row">' + key + '</th><td>' + calculateNutrition(item, key) + " " + item.nutrition[key][1] + '</td></tr>');
+									$tbody.append($trow);
+								}
+							};
+						}(item, choice));
+
+						$tbody.append($trow);
+					}
+				} else {
+					$tables_wrapper.find('.choices-card').hide();
 				}
 			};
 

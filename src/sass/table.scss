@@ -70,6 +70,18 @@ body {
 	background: transparent;
 }
 
+select.custom-select {
+	background-color: lighten($bg-color-light, 2%);
+	background-image: url("data:image/svg+xml;charset=utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 5'><path fill='#f9f9f9' d='M2 0L0 2h4zm0 5L0 3h4z'/></svg>");
+	color: $snow;
+
+	&:focus {
+		background-color: $bg-color-very-light;
+		color: $snow;
+		border-color: $bg-color;
+	}
+}
+
 #header {
 	height: 4rem;
 	width: 100%;
@@ -187,7 +199,7 @@ body {
 
 		.item-left {
 			position: absolute;
-			top: 0.75rem;
+			top: .75rem;
 			right: 1rem;
 		}
 
