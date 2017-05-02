@@ -22,20 +22,40 @@ var menu = [
 		  options: {
 			  "Não": {},
 			  "Sim": {
-				  "Energia": 126,
+				  "Energia": 152,
 			      "Lípidos": 10,
-			      "\tdos quais saturados": 3,
-			      "Colesterol": 99,
-			      "Hidratos de Carbono": 17.5,
-			      "\tdos quais açucares": 1.2,
-			      "Proteína": 0.3,
-			      "Sódio": 750
+			      "\tdos quais saturados": 3.1,
+			      "Hidratos de Carbono": 15,
+			      "Proteína": 2,
+			      "Sódio": 2.3
 			  }
 		  },
 		  default: "Sim"
 	  },
-      Arroz: 0,
-      Cebola: 1
+      Arroz: {
+		  options: {
+			  "Não": {},
+			  "Sim": {
+				  "Energia": 130,
+			      "Lípidos": 0.3,
+			      "\tdos quais saturados": 0.1,
+			      "Hidratos de Carbono": 28,
+			      "Proteína": 3,
+			      "Sódio": 1
+			  }
+		  },
+		  default: "Não"
+	  },
+      Cebola: {
+		  options: {
+			  "Não": {},
+			  "Sim": {
+				  "Energia": 15,
+				  "Hidratos de Carbono": 3.5
+			  }
+		  },
+		  default: "Sim"
+	  }
     }
   },
   {
@@ -47,13 +67,13 @@ var menu = [
         "pratos-principais-peixe"
     ],
     nutrition: {
-      "Energia": "658 kCal",
-      "Lípidos": "29.5 g",
-      "\tdos quais saturados": "7.5 g",
-      "Colesterol": "296 mg",
-      "Hidratos de Carbono": "49.5 g",
-      "\tdos quais açucares": "8 g",
-      "Proteína": "44 g",
+      "Energia": [658, "kCal"],
+      "Lípidos": [29.5, "g"],
+      "\tdos quais saturados": [7.5, "g"],
+      "Colesterol": [296, "mg"],
+      "Hidratos de Carbono": [49.5, "g"],
+      "\tdos quais açucares": [8, "g"],
+      "Proteína": [44, "g"],
       "Sódio": "429 mg"
     }
   },
@@ -65,15 +85,29 @@ var menu = [
         "bebidas"
     ],
     nutrition: {
-      "Energia": "111 kCal",
-      "Lípidos": "0.7 g",
-      "\tdos quais saturados": "0 g",
-      "Colesterol": "0 mg",
-      "Hidratos de Carbono": "25.9 g",
-      "\tdos quais açucares": "20 g",
-      "Proteína": "1.3 g",
-      "Sódio": "2 mg"
-    }
+      "Energia": [111, "kCal"],
+      "Lípidos": [0.7, "g"],
+      "\tdos quais saturados": [0, "g"],
+      "Colesterol": [0, "mg"],
+      "Hidratos de Carbono": [25.9, "g"],
+      "\tdos quais açucares": [20, "g"],
+      "Proteína": [1.3, "g"],
+      "Sódio": [2, "mg"]
+  	},
+	choices: {
+		"Açúcar": {
+			options: {
+				"Nenhum": {},
+				"Normal": {
+
+				},
+				"Extra": {
+
+				}
+			},
+			default: "Normal"
+		}
+	}
   },
   {
     name: "Limonada",

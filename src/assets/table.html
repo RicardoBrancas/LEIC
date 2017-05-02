@@ -98,16 +98,16 @@
 	<script type="text/javascript">
 	$(document).ready(function() {
 
-		var ss_readObject = function(key, failover = null) {
-			if(!sessionStorage.getItem(key)) {
+		Storage.prototype.getObject = function(key, failover = null) {
+			if(!this.getItem(key)) {
 				return failover;
 			}
-			return JSON.parse(sessionStorage.getItem(key));
+			return JSON.parse(this.getItem(key));
 		}
 
-		var ss_writeObject = function(key, obj) {
-			sessionStorage.setItem(key, JSON.stringify(obj));
-		}
+		Storage.prototype.setObject = function (key, obj) {
+			this.setItem(key, JSON.stringify(obj))
+		};
 
 		$('#order').find('.card-header-wrapper').click(function () {
 			$(this).toggleClass("collapsed");
@@ -178,24 +178,19 @@
 			$('#price').find('span').empty().text(totalPrice.toFixed(2) + " €");
 		}
 
-		var add_to_order = function(item) {
-			if(!sessionStorage.getItem('order')) {
-				sessionStorage.setItem('order', JSON.stringify([]));
-			}
-
-			var choices = ss_readObject('options', {});
-
-			let temp = JSON.parse(sessionStorage.getItem('order'));
-			temp.push([item, choices[item]]);
-			sessionStorage.setItem('order', JSON.stringify(temp));
+		var add_to_order = function(item_id) {
+			let choices = sessionStorage.getObject('options', {});
+			let temp = sessionStorage.getObject('order', []);
+			temp.push([item_id, choices[item_id]]);
+			sessionStorage.setObject('order', temp);
 			update_order_total();
 		}
 
 		var remove_from_order = function(index) {
-			if(sessionStorage.getItem('order')) {
-				let temp = JSON.parse(sessionStorage.getItem('order'));
+			let temp = sessionStorage.getObject('order');
+			if(temp) {
 				temp.splice(index, 1);
-				sessionStorage.setItem('order', JSON.stringify(temp));
+				sessionStorage.setObject('order', temp);
 				update_order_total();
 			}
 		}
@@ -204,13 +199,14 @@
 			var base = item.nutrition[nutrition_line][0];
 
 			try {
-				temp = ss_readObject('options');
+				temp = sessionStorage.getObject('options', {});
 				for (var choice in item.choices) {
 					if(temp[item.id] != undefined && temp[item.id][choice] != undefined) {
 						if(item.choices[choice].options[temp[item.id][choice]][nutrition_line] != undefined)
 							base += item.choices[choice].options[temp[item.id][choice]][nutrition_line];
 					} else {
-						base += item.choices[choice].options[item.choices[choice].default][nutrition_line];
+						if(item.choices[choice].options[item.choices[choice].default][nutrition_line] != undefined)
+							base += item.choices[choice].options[item.choices[choice].default][nutrition_line];
 					}
 				}
 			} catch (err) {
@@ -251,7 +247,7 @@
 							</div>
 						</a>
 						<div id="nutrition-table" class="collapse show" role="tabpanel">
-							<table class="table table-sm"><tbody></tbody></table>
+							<table class="table table-sm stripes"><tbody></tbody></table>
 						</div>
 					</div>
 
@@ -279,7 +275,7 @@
 				for (var choice in item.choices) {
 					trow = '<tr><th scope="row">' + choice + '</th><td><select class="form-control custom-select">'
 
-					temp = ss_readObject('options', {});
+					temp = sessionStorage.getObject('options', {});
 					for (var option in item.choices[choice].options) {
 						if(temp[item.id] != undefined && temp[item.id][choice] != undefined) {
 							trow += '<option ' + (option == temp[item.id][choice] ? "selected" : "") + '>' + option + '</option>';
@@ -294,13 +290,13 @@
 
 					$trow.find('select').change(function (item, choice) {
 						return function() {
-							temp = ss_readObject("options", {});
+							temp = sessionStorage.getObject("options", {});
 
 							if(temp[item.id] == undefined)
 								temp[item.id] = {};
 
 							temp[item.id][choice] = this.value;
-							ss_writeObject("options", temp)
+							sessionStorage.setObject("options", temp)
 
 							$tbody = $tables_wrapper.find('#nutrition-table tbody');
 							$tbody.empty();

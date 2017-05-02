@@ -266,13 +266,25 @@ body {
 	top: 50%;
 	transform: translateY(-50%);
 
+	.table {
+		max-width: calc(100% - 1rem);
+		width: calc(100% - 1rem);
+		margin-bottom: 0;
+		margin: .5rem;
+	}
+
 	.card-header {
 		background-color: lighten($bg-color, 1%);
 	}
 
 	.table th,
 	.table td {
-		border-top-color: $bg-color;
+		vertical-align: middle;
+		border-top: 0;
+	}
+
+	.table.stripes tr:not(:first-of-type) {
+		border-top: 1px solid $bg-color;
 	}
 }
 
