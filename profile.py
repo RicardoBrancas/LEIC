@@ -10,10 +10,10 @@ result = open("results.data", "w+");
 print("Starting!");
 
 result.write("c t tln\n")
-for c in range(0, 600000, 50000):
+for c in range(0, 6000, 500):
 	ci = max(c, 2)
-	a = int(min(ci**2 / 2, 4*ci));
-	r = int(min(ci**2 / 2, 4*ci));
+	a = int((ci**2)/2);
+	r = int((ci**2)/2);
 	maxW = int(ci / 2);
 
 	print("Running test "+str(ci)+"-"+str(a)+"-"+str(r)+"-"+str(maxW)+"-0", sep='')
@@ -26,7 +26,7 @@ for c in range(0, 600000, 50000):
 	subprocess.run([generator, str(ci), str(a), str(r), str(maxW), "0"], stdout=f)
 	f.close();
 
-	for i in range(0, 10, jobs):
+	for i in range(0, 2, jobs):
 
 		ps = [None] * jobs
 		for j in range(0, jobs):

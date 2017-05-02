@@ -56,10 +56,10 @@ public:
 
 	Complexidade: O( R logV + (V+A-1) logV ) = O( (V+R+A-1) logV)
 				= O( (V + E) logV )
-	E para grafos ligados (E >= V-1):
+	Para grafos ligados (E >= V-1):
 				= O( E logV )
 */
-void kruskal(unsigned V, edge_pq* roads_pq, edge_pq* airlines_pq) {
+void kruskals(unsigned V, edge_pq* roads_pq, edge_pq* airlines_pq) {
 	std::vector<Set*> forest;
 	for(unsigned i = 0; i < V; i++) {
 		forest.push_back(new Set(i));
@@ -81,7 +81,6 @@ void kruskal(unsigned V, edge_pq* roads_pq, edge_pq* airlines_pq) {
 	}
 
 	//No fim ficamos, no maximo, com (V - 1) + A arcos em airline_pq
-
 	//Consideramos agora os arcos "todos" O( (V+A-1) logV)
 	std::vector<Edge> edges;
 
@@ -150,5 +149,5 @@ int main() {
 		roads_pq.push(Edge(cityFrom, cityTo, cost));
 	}
 
-	kruskal(cityN+1, &roads_pq, &airlines_pq);
+	kruskals(cityN+1, &roads_pq, &airlines_pq);
 }

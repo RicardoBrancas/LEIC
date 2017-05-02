@@ -36,6 +36,7 @@
 *.2
 
 tests/
+profile_tests/
 
 build/
 out/
