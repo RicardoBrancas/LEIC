@@ -133,6 +133,11 @@
 					item_src += '</ul>'
 				}
 
+				if(!removable)
+					item_src += `<div class="progress w-100">
+									<div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" style="width: ` + Math.floor(Math.random() * 100) + `%"></div>
+								</div>`;
+
 				item_src += '<span class="item-left"><span class="badge badge-default">' + (item.price.toFixed(2) + " €") + '</span>';
 
 				if(removable)
