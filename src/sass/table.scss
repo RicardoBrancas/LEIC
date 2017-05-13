@@ -118,7 +118,7 @@ select.custom-select {
 
 #categories .btn {
 	cursor: pointer;
-	font-size: 1.1em;
+	font-size: 1.3em;
 }
 
 #item-container {
@@ -170,19 +170,25 @@ select.custom-select {
 #order {
 	background-color: $bg-color-very-light;
 	border-radius: 0;
-	height: 30em;
+	min-height: 30vh;
+	max-height: 60vh;
 	position: fixed;
 	right: 0;
 	top: 50%;
 	transform: translateY(-50%);
 	width: 22em;
+	transition: max-height 400ms ease-in-out;
 
-	.card-header {
-		background-color: $bg-color-light;
+	.nav-link {
+		font-size: 1.5em;
+		padding: .4em;
+		color: $snow;
 	}
 
-	.card-block {
-		padding: 0;
+	.tab-content {
+		max-height: calc(60vh - 5rem);
+		overflow-y: auto;
+		transition: max-height 400ms ease-in-out;
 	}
 
 	.list-group-item {
@@ -223,23 +229,14 @@ select.custom-select {
 			transition: width 900ms linear;
 		}
 	}
-}
 
-#order-inner {
-	max-height: 100%;
-	overflow-y: scroll;
-
-	.card:not(:first-of-type) {
-		margin-top: 4em;
+	> button {
+		bottom: 0;
+		font-size: 1.2em;
+		position: absolute;
+		right: 0;
+		transform: translateY(100%);
 	}
-}
-
-#confirm, #pay {
-	bottom: 0;
-	font-size: 1.2em;
-	position: absolute;
-	right: 0;
-	transform: translateY(100%);
 }
 
 #price {
@@ -336,5 +333,93 @@ select.custom-select {
 		color: $snow;
 		border-radius: 0;
 		border: 0;
+	}
+}
+
+.modal-content {
+	background-color: $bg-color;
+	color: $snow;
+
+	.modal-header {
+		border: 0;
+
+		h5 {
+			font-size: 1.7em;
+		}
+	}
+
+	.modal-body {
+		font-size: 1.2em;
+		width: 75%;
+		margin: auto;
+	}
+
+	.modal-footer {
+		border: 0;
+	}
+
+	button {
+		color: $snow;
+		opacity: 1;
+		text-shadow: none;
+		cursor: pointer;
+
+		&.close {
+			font-size: 1.5em;
+			padding-right: 1em;
+
+			&:hover {
+				color: darken($snow, 5%);
+			}
+		}
+
+		&.btn-secondary {
+			background-color: $bg-color-light;
+			border: 0;
+
+			&:hover {
+				color: $snow;
+				background-color: darken($bg-color-light, 2%);
+			}
+		}
+	}
+
+	.list-group-item {
+		background-color: lighten($bg-color-light, 2%);
+		border-radius: 0;
+		color: $snow;
+
+		button {
+			color: $snow;
+			opacity: 1;
+			padding-left: .5em;
+			text-shadow: none;
+		}
+
+		.item-left {
+			position: absolute;
+			top: .75rem;
+			right: 1rem;
+		}
+
+		ul {
+			color: $aluminum;
+		}
+
+		.badge {
+			font-size: 85%;
+			width: 5em;
+			background-color: $bg-color;
+		}
+
+		.progress {
+			margin-top: .5em;
+			background-color: $bg-color-very-light
+		}
+
+		.progress-bar {
+			height: 1em;
+			transition: width 900ms linear;
+		}
 	}
 }
