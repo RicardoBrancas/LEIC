@@ -88,6 +88,7 @@
 				Total: <span></span>
 			</div>
 			<button id="confirm" type="button" class="btn btn-primary">Confirmar</button>
+			<button id="pay" type="button" class="btn btn-primary">Pagar</button>
 		</div>
 	</div>
 
@@ -97,6 +98,7 @@
 	<script type="text/javascript" src="js/menu.js"></script>
 	<script type="text/javascript">
 	$(document).ready(function() {
+		ic = false;
 
 		Storage.prototype.getObject = function(key, failover = null) {
 			if(!this.getItem(key)) {
@@ -113,8 +115,14 @@
 			$(this).toggleClass("collapsed");
 		})
 
+		var timers = []
+
 		var update_order_common = function(order, $order, removable) {
 			$order.empty();
+			for(timer of timers) {
+				clearTimeout(timer);
+			}
+			timers = [];
 
 			let totalPrice = 0;
 			var length = order ? order.length : 0;
@@ -133,9 +141,9 @@
 					item_src += '</ul>'
 				}
 
-				if(!removable)
+				if(!removable && order[i][3] != order[i][2])
 					item_src += `<div class="progress w-100">
-									<div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" style="width: ` + Math.floor(Math.random() * 100) + `%"></div>
+									<div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" style="width: ` + Math.floor(order[i][3] / order[i][2] * 100) + `%"></div>
 								</div>`;
 
 				item_src += '<span class="item-left"><span class="badge badge-default">' + (item.price.toFixed(2) + " €") + '</span>';
@@ -151,6 +159,21 @@
 					return function() { remove_from_order(wrappedIndex); };
 				}(i));
 
+				var fnc = function($item, wrappedIndex) {
+					return function() {
+						var order2 = sessionStorage.getObject('order_2', []);
+						order2[wrappedIndex][3] = (order2[wrappedIndex][3] == order2[wrappedIndex][2]) ? order2[wrappedIndex][3] : order2[wrappedIndex][3]+1;
+						sessionStorage.setObject('order_2', order2);
+
+						if(order2[wrappedIndex][3] == order2[wrappedIndex][2])
+							$item.find('.progress-bar').hide();
+						else {
+							$item.find('.progress-bar').width((order2[wrappedIndex][3] / order2[wrappedIndex][2] * 100) + "%");
+						}
+					};
+				}($item, i);
+				timers.push(setInterval(fnc, 1000));
+
 				$order.append($item);
 			}
 
@@ -158,6 +181,12 @@
 				$('#confirm').show();
 			} else if (removable) {
 				$('#confirm').hide();
+			}
+
+			if (!removable && (length != 0)) {
+				$('#pay').show();
+			} else if (!removable) {
+				$('#pay').hide();
 			}
 
 			return totalPrice;
@@ -364,6 +393,10 @@
 							$item.click(item_clicked);
 						}
 					}
+					if(!ic) {
+						$item_container.find('.card:first').click();
+						ic = true;
+					}
 					$item_container.animate({
 						width: "61.8034%",
 						opacity: 1
@@ -380,7 +413,6 @@
 						e.stopPropagation();
 					});
 				});
-
 			}
 
 			let category_changed = function() {
@@ -391,11 +423,17 @@
 
 			$('#confirm').click(function() {
 				if(confirm('Tem a certeza que pretende efetuar o pedido?')) {
-					let currentOrder = JSON.parse(sessionStorage.getItem('order'));
-					let currentOrder2 = JSON.parse(sessionStorage.getItem('order_2'));
-					if(currentOrder2 == null) currentOrder2 = [];
-					sessionStorage.setItem('order_2', JSON.stringify(currentOrder2.concat(currentOrder)));
-					sessionStorage.setItem('order', JSON.stringify([]));
+					let currentOrder = sessionStorage.getObject('order');
+					let currentOrder2 = sessionStorage.getObject('order_2', []);
+
+					var length = currentOrder ? currentOrder.length : 0;
+					for(let i = 0; i < length; i++) {
+						currentOrder[i][2] = Math.floor(Math.random() * 500);
+						currentOrder[i][3] = 0;
+					}
+
+					sessionStorage.setObject('order_2', currentOrder2.concat(currentOrder));
+					sessionStorage.setObject('order', []);
 					update_order_total();
 				}
 			})

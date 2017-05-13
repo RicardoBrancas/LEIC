@@ -134,7 +134,7 @@ select.custom-select {
 	.card {
 		background-color: $bg-color-dark;
 		cursor: pointer;
-		max-width: 15rem;
+		max-width: 17.5rem;
 		transition: background 200ms;
 
 		&:hover {
@@ -157,7 +157,7 @@ select.custom-select {
 		}
 
 		img {
-			height: 10rem;
+			height: 11rem;
 			object-fit: contain;
 		}
 
@@ -175,7 +175,7 @@ select.custom-select {
 	right: 0;
 	top: 50%;
 	transform: translateY(-50%);
-	width: 20em;
+	width: 22em;
 
 	.card-header {
 		background-color: $bg-color-light;
@@ -209,6 +209,8 @@ select.custom-select {
 
 		.badge {
 			font-size: 85%;
+			width: 5em;
+			background-color: $bg-color;
 		}
 
 		.progress {
@@ -218,6 +220,7 @@ select.custom-select {
 
 		.progress-bar {
 			height: 1em;
+			transition: width 900ms linear;
 		}
 	}
 }
@@ -227,7 +230,7 @@ select.custom-select {
 	overflow-y: scroll;
 }
 
-#confirm {
+#confirm, #pay {
 	bottom: 0;
 	font-size: 1.2em;
 	position: absolute;
