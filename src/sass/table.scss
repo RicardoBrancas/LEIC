@@ -22,7 +22,7 @@ $black:        #000000;
 
 $bg-color:            #252c3c;
 $bg-color-light:      lighten($bg-color, 5%);
-$bg-color-very-light: lighten($bg-color, 20%);
+$bg-color-very-light: lighten($bg-color, 10%);
 $bg-color-dark:       darken($bg-color, 5%);
 
 $primary-color: #009688;
@@ -228,6 +228,10 @@ select.custom-select {
 #order-inner {
 	max-height: 100%;
 	overflow-y: scroll;
+
+	.card:not(:first-of-type) {
+		margin-top: 4em;
+	}
 }
 
 #confirm, #pay {
@@ -254,16 +258,6 @@ select.custom-select {
 
 	img {
 		max-height: calc(100vh - 4rem - 15rem - 1.5rem - 10rem);
-	}
-
-	.table-wrapper {
-		color: $white-smoke;
-
-		white-space: pre;
-
-		th {
-			padding-right: 1em;
-		}
 	}
 
 	button {
@@ -305,6 +299,7 @@ select.custom-select {
 	.table td {
 		vertical-align: middle;
 		border-top: 0;
+		white-space: pre;
 	}
 
 	.table.stripes tr:not(:first-of-type) {
