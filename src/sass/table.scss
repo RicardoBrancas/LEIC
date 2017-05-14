@@ -82,6 +82,10 @@ select.custom-select {
 	}
 }
 
+.modal-xl {
+	max-width: 70%;
+}
+
 #header {
 	height: 4rem;
 	width: 100%;
@@ -132,18 +136,7 @@ select.custom-select {
 
 
 	.card {
-		background-color: $bg-color-dark;
-		cursor: pointer;
 		max-width: 17.5rem;
-		transition: background 200ms;
-
-		&:hover {
-			background-color: darken($bg-color-dark, 2.5%);
-		}
-
-		&.selected {
-			background-color: darken($bg-color-dark, 7.5%);
-		}
 
 		button {
 			bottom: 0;
@@ -304,6 +297,20 @@ select.custom-select {
 	}
 }
 
+#pay-modal {
+
+	.price {
+		font-size: 1.1em;
+		margin-top: 1em;
+		float: right;
+		margin-right: calc((100% - 37em) / 2);
+
+		.label {
+			font-weight: 600;
+		}
+	}
+}
+
 .collapse-container {
 	a {
 		color: $snow;
@@ -337,6 +344,7 @@ select.custom-select {
 }
 
 .modal-content {
+	padding: 1.5em 3em;
 	background-color: $bg-color;
 	color: $snow;
 
@@ -348,10 +356,10 @@ select.custom-select {
 		}
 	}
 
-	.modal-body {
+	.list-group {
+		margin: 1rem auto;
 		font-size: 1.2em;
-		width: 75%;
-		margin: auto;
+		width: 35em;
 	}
 
 	.modal-footer {
@@ -421,5 +429,19 @@ select.custom-select {
 			height: 1em;
 			transition: width 900ms linear;
 		}
+	}
+}
+
+.card.selectable {
+	background-color: $bg-color-dark;
+	cursor: pointer;
+	transition: background 200ms;
+
+	&:hover {
+		background-color: darken($bg-color-dark, 2.5%);
+	}
+
+	&.selected {
+		background-color: darken($bg-color-dark, 7.5%);
 	}
 }

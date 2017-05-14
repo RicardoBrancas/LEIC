@@ -74,8 +74,8 @@
 			<div id="price">
 				Total: <span></span>
 			</div>
-			<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#confirm-order-modal">Pedir</button>
-			<button id="pay" type="button" class="btn btn-primary">Pagar</button>
+			<button id="order-confirm" type="button" class="btn btn-primary" data-toggle="modal" data-target="#confirm-order-modal">Pedir</button>
+			<button id="order-pay" type="button" class="btn btn-primary" data-toggle="modal" data-target="#pay-modal">Pagar</button>
 		</div>
 	</div>
 
@@ -94,6 +94,25 @@
 	      <div class="modal-footer">
 	        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
 	        <button id="confirm" type="button" class="btn btn-primary" data-dismiss="modal">Pedir</button>
+	      </div>
+	    </div>
+	  </div>
+	</div>
+
+	<div class="modal fade" id="pay-modal" tabindex="-1" role="dialog">
+	  <div class="modal-dialog modal-xl" role="document">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <h5 class="modal-title">Pretende finalizar a sua conta?</h5>
+	        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+	          <i class="fa fa-times"></i>
+	        </button>
+	      </div>
+	      <div class="modal-body order-like">
+	      </div>
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+	        <button id="pay-finalize" type="button" class="btn btn-primary">Finalizar</button>
 	      </div>
 	    </div>
 	  </div>
@@ -165,17 +184,17 @@
 								order2[wrappedIndex][3] = (order2[wrappedIndex][3] == order2[wrappedIndex][2]) ? order2[wrappedIndex][3] : order2[wrappedIndex][3]+1;
 								sessionStorage.setObject('order_2', order2);
 
-								if(order2[wrappedIndex][3] == order2[wrappedIndex][2])
-									wrappedItem.find('.progress-bar').hide();
-								else {
+								if(order2[wrappedIndex][3] == order2[wrappedIndex][2]) {
+									wrappedItem.find('.progress-bar').remove();
+									clearInterval(Orders._timers[wrappedIndex]);
+								} else {
 									wrappedItem.find('.progress-bar').width((order2[wrappedIndex][3] / order2[wrappedIndex][2] * 100) + "%");
 								}
 							};
 						}($item, i);
 						t = setInterval(fnc, 1000);
-						Orders._timers.push(t);
+						Orders._timers[i] = t;
 					}
-
 
 					$order.append($item);
 				}
@@ -193,7 +212,7 @@
 
 			Orders.updateConfirmed = function() {
 				for(timer of Orders._timers) {
-					clearTimeout(timer);
+					clearInterval(timer);
 				}
 				Orders._timers = [];
 
@@ -215,15 +234,15 @@
 				let order2 = sessionStorage.getObject('order_2', []);
 
 				if (order.length != 0 && $('#not-confirmed-nav').hasClass("active")) {
-					$('#confirm').show();
+					$('#order-confirm').show();
 				} else {
-					$('#confirm').hide();
+					$('#order-confirm').hide();
 				}
 
 				if (order2.length != 0 && $('#confirmed-nav').hasClass("active")) {
-					$('#pay').show();
+					$('#order-pay').show();
 				} else {
-					$('#pay').hide();
+					$('#order-pay').hide();
 				}
 			}
 			$('.nav-link').on('shown.bs.tab', Orders.updateButtons);
@@ -278,7 +297,26 @@
 				}, 400, function() {
 					$item_container.empty();
 					if(cat == "pratos-principais") {
-						$something = $('<div class="card card-inverse" data-cat="pratos-principais-carne"><img class="card-img-top img-fluid" src="img/items/Carne.png"><div class="card-block"><h4 class="card-title">Carne</h4></div></div><div class="card card-inverse" data-cat="pratos-principais-peixe"><img class="card-img-top img-fluid" src="img/items/Peixe.png"><div class="card-block"><h4 class="card-title">Peixe</h4></div></div><div class="card card-inverse" data-cat="pratos-principais-vegetariano"><img class="card-img-top img-fluid" src="img/items/Vegetariano.png" ><div class="card-block"><h4 class="card-title">Vegetariano</h4></div></div>')
+						$something = $(`
+							<div class="card card-inverse selectable" data-cat="pratos-principais-carne">
+								<img class="card-img-top img-fluid" src="img/items/Carne.png">
+								<div class="card-block">
+									<h4 class="card-title">Carne</h4>
+								</div>
+							</div>
+							<div class="card card-inverse selectable" data-cat="pratos-principais-peixe">
+								<img class="card-img-top img-fluid" src="img/items/Peixe.png">
+								<div class="card-block">
+									<h4 class="card-title">Peixe</h4>
+								</div>
+							</div>
+							<div class="card card-inverse selectable" data-cat="pratos-principais-vegetariano">
+								<img class="card-img-top img-fluid" src="img/items/Vegetariano.png" >
+								<div class="card-block">
+									<h4 class="card-title">Vegetariano</h4>
+									</div>
+							</div>`
+						);
 						$item_container.append($something);
 
 						$something.click(function() {
@@ -287,7 +325,7 @@
 						});
 					} else if(categories[cat] !== undefined) {
 						for(item of categories[cat]) {
-							$item = $("<div>", {class: "card card-inverse", 'data-item-id': item.id});
+							$item = $("<div>", {class: "card card-inverse selectable", 'data-item-id': item.id});
 
 							$img = $("<img>", {class: "card-img-top img-fluid", src: "img/items/" + item.name + ".png"});
 							$item.append($img);
@@ -436,7 +474,77 @@
 				$content.empty();
 				$content.html($('#not-confirmed-content').html())
 				$content.find('button').remove();
-			})
+			});
+
+			$('#pay-modal').on('show.bs.modal', function (e) {
+			  	$content = $(this).find('.modal-body');
+				$content.empty();
+				$content.html($('#confirmed-content').html());
+				$progresses = $content.find('.progress');
+
+				if($progresses.length > 0)
+					$content.append('Nota: Vai perder a capacidade de acompanhar o progresso do seu pedido.')
+
+				$progresses.remove();
+
+				var order = sessionStorage.getObject('order_2');
+				var total = 0;
+				for(item of order) {
+					total += menu.find(function(x) {return x.id == item[0]}).price;
+				}
+
+				$price = $('<span class="price"><span class="label">Total </span>' + (total.toFixed(2) + " €") + '</span>');
+				$content.append($price);
+			});
+
+			$('#pay-finalize').click(function() {
+				$(this).hide(); //TODO show after done
+				$modal = $('#pay-modal');
+				$content = $('#pay-modal').find('.modal-body');
+				$content.animate({
+					opacity: 0
+				}, 200, function() {
+					$content.empty();
+
+
+					$buttons = $(`
+						<div class="row">
+						  <div class="col-sm-4">
+						    <div class="card selectable">
+							  <img class="card-img-top img-fluid p-5" src="img/money.png">
+						      <div class="card-block">
+						        <h3 class="card-title">Dinheiro</h3>
+						      </div>
+						    </div>
+						  </div>
+						  <div class="col-sm-4">
+						    <div class="card selectable">
+							  <img class="card-img-top img-fluid p-5" src="img/card.png">
+						      <div class="card-block">
+						        <h3 class="card-title">Cartão Bancário</h3>
+						      </div>
+						    </div>
+						  </div>
+						  <div class="col-sm-4">
+  						    <div class="card selectable">
+  							  <img class="card-img-top img-fluid p-5" src="img/nfc.png">
+  						      <div class="card-block">
+  						        <h3 class="card-title">NFC</h3>
+  						      </div>
+  						    </div>
+						  </div>
+						</div>
+						`
+					);
+
+					$content.append($buttons);
+
+					$content.animate({
+						opacity: 1
+					}, 200);
+				});
+			});
+
 
 			$('#confirm').click(function() {
 				let currentOrder = sessionStorage.getObject('order');
