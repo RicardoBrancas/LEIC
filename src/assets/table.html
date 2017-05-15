@@ -103,7 +103,7 @@
 	  <div class="modal-dialog modal-xl" role="document">
 	    <div class="modal-content">
 	      <div class="modal-header">
-	        <h5 class="modal-title">Pretende finalizar a sua conta?</h5>
+	        <h5 class="modal-title"></h5>
 	        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
 	          <i class="fa fa-times"></i>
 	        </button>
@@ -113,6 +113,7 @@
 	      <div class="modal-footer">
 	        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
 	        <button id="pay-finalize" type="button" class="btn btn-primary">Finalizar</button>
+			<button id="pay-ignore" type="button" class="btn btn-primary hidden">Continuar</button>
 	      </div>
 	    </div>
 	  </div>
@@ -123,6 +124,11 @@
 	<script type="text/javascript" src="js/bootstrap.js"></script>
 	<script type="text/javascript" src="js/menu.js"></script>
 	<script type="text/javascript">
+		var popover_button_click = function(number) {
+			$nif = $('#nif');
+			$nif.val($nif.val() + number)
+		}
+
 		$(document).ready(function() {
 			Storage.prototype.getObject = function(key, failover = null) {
 				if(!this.getItem(key)) {
@@ -472,20 +478,23 @@
 			$('#confirm-order-modal').on('show.bs.modal', function (e) {
 			  	$content = $(this).find('.modal-body');
 				$content.empty();
-				$content.html($('#not-confirmed-content').html())
+				$content.append($('#not-confirmed-content').clone())
 				$content.find('button').remove();
 			});
 
-			$('#pay-modal').on('show.bs.modal', function (e) {
-			  	$content = $(this).find('.modal-body');
+			var pay_modal_2 = function() {
+				$('#pay-modal').find('.modal-title').text('Pretende finalizar a sua conta?');
+				$content = $('#pay-modal').find('.modal-body');
 				$content.empty();
-				$content.html($('#confirmed-content').html());
-				$progresses = $content.find('.progress');
 
-				if($progresses.length > 0)
-					$content.append('Nota: Vai perder a capacidade de acompanhar o progresso do seu pedido.')
+				$('#pay-ignore').hide();
+				$('#pay-finalize').show();
 
-				$progresses.remove();
+				if($('#confirmed-content').find('.progress').length > 0)
+					$content.append('Nota: Se o fizer, vai perder a capacidade de acompanhar o progresso do seu pedido.')
+
+				$content.append($('#confirmed-content').children().clone());
+				$content.find('.progress').remove();
 
 				var order = sessionStorage.getObject('order_2');
 				var total = 0;
@@ -495,7 +504,29 @@
 
 				$price = $('<span class="price"><span class="label">Total </span>' + (total.toFixed(2) + " €") + '</span>');
 				$content.append($price);
+			}
+
+			$('#pay-modal').on('show.bs.modal', function (e) {
+			  	$content = $(this).find('.modal-body');
+				$content.empty();
+
+				var pre_order = sessionStorage.getObject('order');
+				if(pre_order.length != 0) {
+					$(this).find('.modal-title').text('De certeza que pretende continuar?')
+					$content.append('Ainda tem itens no "Rascunho", se continuar, estes serão eliminados.')
+					$content.append($('#not-confirmed-content').children().clone())
+					$content.find('button').remove();
+
+					$('#pay-ignore').show();
+					$('#pay-finalize').hide();
+				} else {
+					pay_modal_2();
+				}
 			});
+
+			$('#pay-ignore').click(pay_modal_2);
+
+
 
 			$('#pay-finalize').click(function() {
 				$(this).hide(); //TODO show after done
@@ -505,7 +536,6 @@
 					opacity: 0
 				}, 200, function() {
 					$content.empty();
-
 
 					$buttons = $(`
 						<div class="row">
@@ -536,6 +566,68 @@
 						</div>
 						`
 					);
+
+					$buttons.find('.card').click(function() {
+						sessionStorage.removeItem('order');
+						sessionStorage.removeItem('order_2');
+						sessionStorage.removeItem('options');
+						location.reload();
+					})
+
+					$('#pay-modal').find('.modal-title').text('Escolha o seu método de pagamento');
+					$content.append(`
+						<div class="row mb-5">
+							<div class="form-group col-4 offset-4">
+								<input id="nif" class="form-control" placeholder="NIF" type="number">
+								<small id="emailHelp" class="form-text text-muted">Se pretender, pode inserir aqui o seu NIF</small>
+							</div>
+						</div>
+						`
+					);
+					$pop = $('#nif').popover({
+						trigger: 'click',
+						content: `<div class="row">
+									<div class="col-4">
+										<button onclick="popover_button_click(7)" class="btn btn-secondary">7</button>
+									</div>
+									<div class="col-4">
+										<button onclick="popover_button_click(8)" class="btn btn-secondary">8</button>
+									</div>
+									<div class="col-4">
+										<button onclick="popover_button_click(9)" class="btn btn-secondary">9</button>
+									</div>
+									<div class="col-4">
+										<button onclick="popover_button_click(4)" class="btn btn-secondary">4</button>
+									</div>
+									<div class="col-4">
+										<button onclick="popover_button_click(5)" class="btn btn-secondary">5</button>
+									</div>
+									<div class="col-4">
+										<button onclick="popover_button_click(6)" class="btn btn-secondary">6</button>
+									</div>
+									<div class="col-4">
+										<button onclick="popover_button_click(1)" class="btn btn-secondary">1</button>
+									</div>
+									<div class="col-4">
+										<button onclick="popover_button_click(2)" class="btn btn-secondary">2</button>
+									</div>
+									<div class="col-4">
+										<button onclick="popover_button_click(3)" class="btn btn-secondary">3</button>
+									</div>
+									<div class="col-4 offset-4">
+										<button onclick="popover_button_click(0)" class="btn btn-secondary">0</button>
+									</div>
+								</div>
+						`,
+						html: true,
+						placement: 'bottom'
+					});
+
+					console.log($pop)
+
+					$pop.find('button').click(function() {
+						console.log($(this).text())
+					})
 
 					$content.append($buttons);
 

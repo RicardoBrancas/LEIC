@@ -71,14 +71,43 @@ body {
 }
 
 select.custom-select {
-	background-color: lighten($bg-color-light, 2%);
 	background-image: url("data:image/svg+xml;charset=utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 5'><path fill='#f9f9f9' d='M2 0L0 2h4zm0 5L0 3h4z'/></svg>");
+}
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.form-control {
+	background-color: lighten($bg-color-light, 2%);
 	color: $snow;
 
 	&:focus {
 		background-color: $bg-color-very-light;
 		color: $snow;
 		border-color: $bg-color;
+	}
+}
+
+.popover.bs-tether-element-attached-top {
+	background-color: $bg-color-very-light;
+
+	&::after {
+		border-bottom-color: $bg-color-very-light;
+	}
+
+	.row > div {
+		padding: 1em 0;
+		text-align: center;
+	}
+
+	button {
+		background-color: $bg-color-light;
+		border: none;
+		color: $snow;
+		padding: 1.5em 2em;
 	}
 }
 
@@ -444,4 +473,8 @@ select.custom-select {
 	&.selected {
 		background-color: darken($bg-color-dark, 7.5%);
 	}
+}
+
+.hidden {
+	display: none;
 }
