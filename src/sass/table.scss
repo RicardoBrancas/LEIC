@@ -163,7 +163,6 @@ input[type="number"]::-webkit-inner-spin-button {
 	padding-top: .5rem;
 	width: 61.8034%;
 
-
 	.card {
 		max-width: 17.5rem;
 
@@ -281,7 +280,9 @@ input[type="number"]::-webkit-inner-spin-button {
 
 	button {
 		position: absolute;
-		right: 25%;
+		right: 30%;
+		top: 89%;
+		transform: translateY(-50%);
 	}
 
 }
@@ -304,10 +305,10 @@ input[type="number"]::-webkit-inner-spin-button {
 	transform: translateY(-50%);
 
 	.table {
-		max-width: calc(100% - 1rem);
-		width: calc(100% - 1rem);
+		max-width: calc(100% - 1.5rem);
+		width: calc(100% - 1.5rem);
 		margin-bottom: 0;
-		margin: .5rem;
+		margin: .75rem;
 	}
 
 	.card-header {
@@ -319,6 +320,7 @@ input[type="number"]::-webkit-inner-spin-button {
 		vertical-align: middle;
 		border-top: 0;
 		white-space: pre;
+		font-size: 1.1em;
 	}
 
 	.table.stripes tr:not(:first-of-type) {
