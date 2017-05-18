@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+	<meta charset="UTF-8">
+
+	<link rel="stylesheet" href="css/font-awesome.css">
+	<link rel="stylesheet" href="css/bootstrap-table.css">
+	<link rel="stylesheet" href="css/table.css">
+
+	<title>Com.ISTo</title>
+
+</head>
+
+<body>
+
+	<div id="header">
+		<div id="clock"></div>
+		<div id="help">
+			<button type="button" class="btn btn-secondary">Chamar o Empregado</button>
+		</div>
+	</div>
+
+
+	<div>
+		<div id="categories" class="d-flex justify-content-center">
+			<div class="btn-group" data-toggle="buttons">
+				<label class="btn btn-primary active">
+					<input type="radio" name="categories" id="btn-destaques" autocomplete="off" checked> Destaques
+				</label>
+				<label class="btn btn-primary">
+					<input type="radio" name="categories" id="btn-entradas" autocomplete="off"> Entradas
+				</label>
+				<label class="btn btn-primary">
+					<input type="radio" name="categories" id="btn-sopas" autocomplete="off"> Sopas
+				</label>
+				<label class="btn btn-primary">
+					<input type="radio" name="categories" id="btn-saladas" autocomplete="off"> Saladas
+				</label>
+				<label class="btn btn-primary">
+					<input type="radio" name="categories" id="btn-pratos-principais" autocomplete="off"> Pratos Principais
+				</label>
+				<label class="btn btn-primary">
+					<input type="radio" name="categories" id="btn-bebidas" autocomplete="off"> Bebidas
+				</label>
+				<label class="btn btn-primary">
+					<input type="radio" name="categories" id="btn-sobremesas" autocomplete="off"> Sobremesas
+				</label>
+			</div>
+		</div>
+
+		<div id="main">
+			<button id="go-back" type="button" class="btn btn-link"><i class="fa fa-arrow-left"></i></button>
+			<div id="item-container" class="card-deck"></div>
+			<div id="selected-item">
+			</div>
+		</div>
+
+		<div id="order" class="collapse-container">
+			<div id="order-inner" role="tablist">
+				<div class="card">
+					<a class="card-header-wrapper" data-toggle="collapse" href="#confirmed-content">
+						<div class="card-header" role="tab" id="confirmed">
+							<h5 class="mb-0"> Confirmado </h5>
+						</div>
+					</a>
+					<div id="confirmed-content" class="collapse show" role="tabpanel">
+						<div class="card-block">
+							<ul class="list-group"></ul>
+						</div>
+					</div>
+				</div>
+
+				<div class="card">
+					<a class="card-header-wrapper" data-toggle="collapse" href="#not-confirmed-content">
+						<div class="card-header" role="tab" id="not-confirmed">
+							<h5 class="mb-0">A confirmar</h5>
+						</div>
+					</a>
+					<div id="not-confirmed-content" class="collapse show" role="tabpanel">
+						<div class="card-block">
+							<ul class="list-group"></ul>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div id="price">
+				Total: <span></span>
+			</div>
+			<button id="confirm" type="button" class="btn btn-primary">Confirmar</button>
+		</div>
+	</div>
+
+	<script type="text/javascript" src="js/jquery.js"></script>
+	<script type="text/javascript" src="js/tether.js"></script>
+	<script type="text/javascript" src="js/bootstrap.js"></script>
+	<script type="text/javascript" src="js/menu.js"></script>
+	<script type="text/javascript">
+	$(document).ready(function() {
+
+		Storage.prototype.getObject = function(key, failover = null) {
+			if(!this.getItem(key)) {
+				return failover;
+			}
+			return JSON.parse(this.getItem(key));
+		}
+
+		Storage.prototype.setObject = function (key, obj) {
+			this.setItem(key, JSON.stringify(obj))
+		};
+
+		$('#order').find('.card-header-wrapper').click(function () {
+			$(this).toggleClass("collapsed");
+		})
+
+		var update_order_common = function(order, $order, removable) {
+			$order.empty();
+
+			let totalPrice = 0;
+			var length = order ? order.length : 0;
+			for(let i = 0; i < length; i++) {
+				item = menu.find(function(x) {return x.id == order[i][0]});
+
+				totalPrice += item.price;
+
+				item_src = '<li class="list-group-item d-flex"><span class="w-100">' + item.name + '</span>';
+
+				if(order[i][1] != undefined) {
+					item_src += '<ul class="list-unstyled pl-3">';
+					for(choice in order[i][1]) {
+						item_src += '<li><strong>' + choice + "</strong>: " + order[i][1][choice] + "</li>"
+					}
+					item_src += '</ul>'
+				}
+
+				item_src += '<span class="item-left"><span class="badge badge-default">' + (item.price.toFixed(2) + " €") + '</span>';
+
+				if(removable)
+					item_src += '<button type="button" class="close"><i class="fa fa-times"></i></button>';
+
+				item_src += '</span></li>';
+
+				$item = $(item_src);
+
+				$item.find('button.close').click(function(wrappedIndex) {
+					return function() { remove_from_order(wrappedIndex); };
+				}(i));
+
+				$order.append($item);
+			}
+
+			if (removable && (length != 0)) {
+				$('#confirm').show();
+			} else if (removable) {
+				$('#confirm').hide();
+			}
+
+			return totalPrice;
+		}
+
+		var update_order_not_confirmed = function() {
+			let order = JSON.parse(sessionStorage.getItem('order'));
+			$order = $('#not-confirmed-content').find('.card-block ul');
+			return update_order_common(order, $order, true);
+		}
+
+		var update_order_confirmed = function() {
+			let order = JSON.parse(sessionStorage.getItem('order_2'));
+			$order = $('#confirmed-content').find('.card-block ul');
+			return update_order_common(order, $order, false);
+		}
+
+		var update_order_total = function() {
+			let price1 = update_order_not_confirmed();
+			let price2 = update_order_confirmed();
+			let totalPrice = price1 + price2;
+
+			$('#price').find('span').empty().text(totalPrice.toFixed(2) + " €");
+		}
+
+		var add_to_order = function(item_id) {
+			let choices = sessionStorage.getObject('options', {});
+			let temp = sessionStorage.getObject('order', []);
+			temp.push([item_id, choices[item_id]]);
+			sessionStorage.setObject('order', temp);
+			update_order_total();
+		}
+
+		var remove_from_order = function(index) {
+			let temp = sessionStorage.getObject('order');
+			if(temp) {
+				temp.splice(index, 1);
+				sessionStorage.setObject('order', temp);
+				update_order_total();
+			}
+		}
+
+		var calculateNutrition = function(item, nutrition_line) {
+			var base = item.nutrition[nutrition_line][0];
+
+			try {
+				temp = sessionStorage.getObject('options', {});
+				for (var choice in item.choices) {
+					if(temp[item.id] != undefined && temp[item.id][choice] != undefined) {
+						if(item.choices[choice].options[temp[item.id][choice]][nutrition_line] != undefined)
+							base += item.choices[choice].options[temp[item.id][choice]][nutrition_line];
+					} else {
+						if(item.choices[choice].options[item.choices[choice].default][nutrition_line] != undefined)
+							base += item.choices[choice].options[item.choices[choice].default][nutrition_line];
+					}
+				}
+			} catch (err) {
+				console.log("Error parsing menu")
+			}
+
+			return base;
+		}
+
+		var item_clicked = function() {
+			$this = $(this);
+
+			$item_container = $('#item-container');
+			$item_container.find('.card').removeClass('selected');
+			$this.addClass('selected');
+
+			$selected_item = $('#selected-item');
+			$selected_item.empty();
+
+			$img = $('<img>', {class: 'img-fluid mx-auto d-block', src: "img/items/big/" + $this.attr('data-item-id') + ".png"})
+			$selected_item.append($img);
+
+			$button = $('<button type="button" class="btn btn-primary">Adicionar</button>');
+			$selected_item.append($button);
+
+			$button.click(function (wrappedID) {
+				return function() { add_to_order(wrappedID); }
+			}($this.attr('data-item-id')));
+
+			item = menu.find(function(x) {return x.id == $this.attr('data-item-id')});
+
+			$tables_wrapper = $(`
+				<div id="tables" role="tablist" class="collapse-container">
+					<div class="card">
+						<a class="card-header-wrapper" data-parent="#tables" data-toggle="collapse" href="#nutrition-table">
+							<div class="card-header" role="tab">
+								<h5 class="mb-0"> Informação Nutricional </h5>
+							</div>
+						</a>
+						<div id="nutrition-table" class="collapse show" role="tabpanel">
+							<table class="table table-sm stripes"><tbody></tbody></table>
+						</div>
+					</div>
+
+					<div class="card choices-card">
+						<a class="card-header-wrapper" data-parent="#tables" data-toggle="collapse" href="#options-table">
+							<div class="card-header" role="tab">
+								<h5 class="mb-0">Personalização</h5>
+							</div>
+						</a>
+						<div id="options-table" class="collapse" role="tabpanel">
+							<table class="table table-sm"><tbody></tbody></table>
+						</div>
+					</div>
+				</div>`);
+
+				$tbody = $tables_wrapper.find('#nutrition-table tbody');
+				for (var key in item.nutrition) {
+					$trow = $('<tr><th scope="row">' + key + '</th><td>' + calculateNutrition(item, key) + " " + item.nutrition[key][1] + '</td></tr>');
+					$tbody.append($trow);
+				}
+
+				$selected_item.append($tables_wrapper);
+
+				if(item.choices != undefined) {
+					$tbody = $tables_wrapper.find('#options-table tbody');
+					for (var choice in item.choices) {
+						trow = '<tr><th scope="row">' + choice + '</th><td><select class="form-control custom-select">'
+
+						temp = sessionStorage.getObject('options', {});
+						for (var option in item.choices[choice].options) {
+							if(temp[item.id] != undefined && temp[item.id][choice] != undefined) {
+								trow += '<option ' + (option == temp[item.id][choice] ? "selected" : "") + '>' + option + '</option>';
+							} else {
+								trow += '<option ' + (option == item.choices[choice].default ? "selected" : "") + '>' + option + '</option>';
+							}
+						}
+
+						trow += '</select></td></tr>';
+
+						$trow = $(trow);
+
+						$trow.find('select').change(function (item, choice) {
+							return function() {
+								temp = sessionStorage.getObject("options", {});
+
+								if(temp[item.id] == undefined)
+									temp[item.id] = {};
+
+								temp[item.id][choice] = this.value;
+								sessionStorage.setObject("options", temp)
+
+								$tbody = $tables_wrapper.find('#nutrition-table tbody');
+								$tbody.empty();
+								for (var key in item.nutrition) {
+									$trow = $('<tr><th scope="row">' + key + '</th><td>' + calculateNutrition(item, key) + " " + item.nutrition[key][1] + '</td></tr>');
+									$tbody.append($trow);
+								}
+							};
+						}(item, choice));
+
+						$tbody.append($trow);
+					}
+				} else {
+					$tables_wrapper.find('.choices-card').hide();
+				}
+			};
+
+
+			//Clock timer
+			let update_clock = function() {
+				let d = new Date();
+				let h = ("00" + d.getHours()).slice(-2)
+				let m = ("00" + d.getMinutes()).slice(-2)
+				$('#clock').html(h + " : " + m);
+			};
+			setInterval(update_clock, 1000);
+
+			let category_changed_inner = function(cat, is_sub_cat = false, parent_cat = undefined) {
+				let $item_container = $("#item-container");
+				$('#selected-item').empty();
+				$item_container.animate({
+					width: 0,
+					opacity: 0
+				}, 400, function() {
+					$item_container.empty();
+					if(cat == "pratos-principais") {
+						$something = $('<div class="card card-inverse" data-cat="pratos-principais-carne"><img class="card-img-top img-fluid" src="img/items/Carne.png"><div class="card-block"><h4 class="card-title">Carne</h4></div></div><div class="card card-inverse" data-cat="pratos-principais-peixe"><img class="card-img-top img-fluid" src="img/items/Peixe.png"><div class="card-block"><h4 class="card-title">Peixe</h4></div></div><div class="card card-inverse" data-cat="pratos-principais-vegetariano"><img class="card-img-top img-fluid" src="img/items/Vegetariano.png" ><div class="card-block"><h4 class="card-title">Vegetariano</h4></div></div>')
+						$item_container.append($something);
+
+						$something.click(function() {
+							$this = $(this);
+							category_changed_inner($this.attr('data-cat'), true, "pratos-principais");
+						});
+					} else if(categories[cat] !== undefined) {
+						for(item of categories[cat]) {
+							$item = $("<div>", {class: "card card-inverse", 'data-item-id': item.id});
+
+							$img = $("<img>", {class: "card-img-top img-fluid", src: "img/items/" + item.name + ".png"});
+							$item.append($img);
+
+							$text = $('<div class="card-block"><h5 class="card-title">' + item.name + '</h5><p class="card-text">' + (item.price.toFixed(2) + " €") + '</p>' + '<button type="button" class="quick-add btn btn-primary btn-sm"><i class="fa fa-plus"></i></button>' + '</div>');
+							$item.append($text);
+
+							$item_container.append($item);
+
+							$item.find('button.quick-add').click(function (wrappedID) {
+								return function() { add_to_order(wrappedID); }
+							}(item.id));
+							$item.click(item_clicked);
+						}
+					}
+					$item_container.animate({
+						width: "61.8034%",
+						opacity: 1
+					}, 400);
+					if (is_sub_cat) {
+						$('#go-back').show();
+						$('#go-back').click(function() {
+							category_changed_inner(parent_cat);
+						});
+					} else {
+						$('#go-back').hide();
+					}
+					$item_container.find('.card button').click(function(e) {
+						e.stopPropagation();
+					});
+				});
+
+			}
+
+			let category_changed = function() {
+				let cat = $('input[name=categories]:checked', '#categories').attr("id").slice(4);
+				category_changed_inner(cat);
+			};
+			$('#categories input').on('change', category_changed);
+
+			$('#confirm').click(function() {
+				if(confirm('Tem a certeza que pretende efetuar o pedido?')) {
+					let currentOrder = JSON.parse(sessionStorage.getItem('order'));
+					let currentOrder2 = JSON.parse(sessionStorage.getItem('order_2'));
+					if(currentOrder2 == null) currentOrder2 = [];
+					sessionStorage.setItem('order_2', JSON.stringify(currentOrder2.concat(currentOrder)));
+					sessionStorage.setItem('order', JSON.stringify([]));
+					update_order_total();
+				}
+			})
+
+			//Init
+			update_clock();
+			category_changed();
+			update_order_total();
+		});
+		</script>
+	</body>
+
+	</html>

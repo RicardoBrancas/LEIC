@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<meta charset="UTF-8">
+
+<link rel="stylesheet" href="css/bootstrap-reboot.css">
+<link rel="stylesheet" href="css/bootstrap.css">
+<link rel="stylesheet" href="css/table.css">
+
+</head>
+
+<body>
+
+<div id="header">
+  <div id="clock"></div>
+  <div id="help">
+    <button type="button" class="btn btn-secondary">AJUDA</button>
+  </div>
+</div>
+
+
+<div>
+  <div id="categories" class="d-flex justify-content-center">
+    <div class="btn-group" data-toggle="buttons">
+      <label class="btn btn-primary active">
+        <input type="radio" name="categories" id="btn-destaques" autocomplete="off" checked> Destaques
+      </label>
+      <label class="btn btn-primary">
+        <input type="radio" name="categories" id="btn-entradas" autocomplete="off"> Entradas
+      </label>
+      <label class="btn btn-primary">
+        <input type="radio" name="categories" id="btn-sopas" autocomplete="off"> Sopas
+      </label>
+      <label class="btn btn-primary">
+        <input type="radio" name="categories" id="btn-saladas" autocomplete="off"> Saladas
+      </label>
+      <label class="btn btn-primary">
+        <input type="radio" name="categories" id="btn-pratos-principais" autocomplete="off"> Pratos Principais
+      </label>
+      <label class="btn btn-primary">
+        <input type="radio" name="categories" id="btn-bebidas" autocomplete="off"> Bebidas
+      </label>
+      <label class="btn btn-primary">
+        <input type="radio" name="categories" id="btn-sobremesas" autocomplete="off"> Sobremesas
+      </label>
+    </div>
+  </div>
+
+  <div id="main">
+    <div id="item-container" class="card-deck">
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript" src="js/jquery-3.2.0.js"></script>
+<script type="text/javascript" src="js/bootstrap.js"></script>
+<script type="text/javascript" src="js/menu.js"></script>
+<script type="text/javascript">
+$(document).ready(function() {
+  //Clock timer
+  let update_clock = function() {
+    let d = new Date();
+    let h = ("00" + d.getHours()).slice(-2)
+    let m = ("00" + d.getMinutes()).slice(-2)
+    $('#clock').html(h + " : " + m);
+  };
+  update_clock();
+  setInterval(update_clock, 1000);
+
+  let category_changed = function() {
+    let cat = $('input[name=categories]:checked', '#categories').attr("id").slice(4);
+    let $item_container = $("#item-container");
+    $item_container.animate({
+      width: 0,
+      opacity: 0
+    }, 400, function() {
+      $item_container.html("");
+      if(categories[cat] !== undefined) {
+        for(item of categories[cat]) {
+          $item = $("<div>", {class: "card card-inverse"});
+
+          $img = $("<img>", {class: "card-img-top img-fluid", src: "img/items/" + item.name + ".png"});
+          $item.append($img);
+
+          $text = $('<div class="card-block"><h5 class="card-title">' + item.name + '</h5><p class="card-text">' + (item.price.toFixed(2) + " €") + '</p></div>')
+          $item.append($text);
+
+          $item_container.append($item);
+
+          $item_container.animate({
+            width: "70%",
+            opacity: 1
+          }, 400);
+        }
+      }
+    })
+
+  };
+  category_changed();
+  $('#categories input').on('change', category_changed);
+
+});
+</script>
+</body>
+
+</html>

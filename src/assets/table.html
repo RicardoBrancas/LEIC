@@ -111,9 +111,10 @@
 	      <div class="modal-body order-like">
 	      </div>
 	      <div class="modal-footer">
-	        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+	        <button id="pay-cancel" type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
 	        <button id="pay-finalize" type="button" class="btn btn-primary">Finalizar</button>
 			<button id="pay-ignore" type="button" class="btn btn-primary hidden">Continuar</button>
+			<button id="pay-final-ok" type="button" class="btn btn-primary hidden">OK</button>
 	      </div>
 	    </div>
 	  </div>
@@ -482,51 +483,101 @@
 				$content.find('button').remove();
 			});
 
-			var pay_modal_2 = function() {
-				$('#pay-modal').find('.modal-title').text('Pretende finalizar a sua conta?');
+			var pay_modal_1 = function() {
 				$content = $('#pay-modal').find('.modal-body');
-				$content.empty();
 
-				$('#pay-ignore').hide();
-				$('#pay-finalize').show();
+				$content.animate({
+					opacity: 0
+				}, 200, function() {
+					$content.empty();
 
-				if($('#confirmed-content').find('.progress').length > 0)
-					$content.append('Nota: Se o fizer, vai perder a capacidade de acompanhar o progresso do seu pedido.')
-
-				$content.append($('#confirmed-content').children().clone());
-				$content.find('.progress').remove();
-
-				var order = sessionStorage.getObject('order_2');
-				var total = 0;
-				for(item of order) {
-					total += menu.find(function(x) {return x.id == item[0]}).price;
-				}
-
-				$price = $('<span class="price"><span class="label">Total </span>' + (total.toFixed(2) + " €") + '</span>');
-				$content.append($price);
-			}
-
-			$('#pay-modal').on('show.bs.modal', function (e) {
-			  	$content = $(this).find('.modal-body');
-				$content.empty();
-
-				var pre_order = sessionStorage.getObject('order');
-				if(pre_order.length != 0) {
-					$(this).find('.modal-title').text('De certeza que pretende continuar?')
+					$('#pay-modal').find('.modal-title').text('De certeza que pretende continuar?')
 					$content.append('Ainda tem itens no "Rascunho", se continuar, estes serão eliminados.')
 					$content.append($('#not-confirmed-content').children().clone())
 					$content.find('button').remove();
 
 					$('#pay-ignore').show();
 					$('#pay-finalize').hide();
+					$('#pay-final-ok').hide();
+
+					$content.animate({
+						opacity: 1
+					}, 200);
+				});
+			}
+
+			var pay_modal_2 = function() {
+				$('#pay-modal').find('.modal-title').text('Pretende finalizar a sua conta?');
+				$content = $('#pay-modal').find('.modal-body');
+
+				$content.animate({
+					opacity: 0
+				}, 200, function() {
+					$content.empty();
+
+					$('#pay-ignore').hide();
+					$('#pay-finalize').show();
+					$('#pay-final-ok').hide();
+
+					if($('#confirmed-content').find('.progress').length > 0)
+						$content.append('Nota: Se o fizer, vai perder a capacidade de acompanhar o progresso do seu pedido.')
+
+					$content.append($('#confirmed-content').children().clone());
+					$content.find('.progress').remove();
+
+					var order = sessionStorage.getObject('order_2');
+					var total = 0;
+					for(item of order) {
+						total += menu.find(function(x) {return x.id == item[0]}).price;
+					}
+
+					$price = $('<span class="price"><span class="label">Total </span>' + (total.toFixed(2) + " €") + '</span>');
+					$content.append($price);
+
+					$content.animate({
+						opacity: 1
+					}, 200)
+				})
+			}
+
+			var pay_modal_4 = function() {
+				$('#pay-modal').find('.modal-title').text('O seu pagamento irá ser processado...');
+				$content = $('#pay-modal').find('.modal-body');
+
+				$content.animate({
+					opacity: 0
+				}, 200, function() {
+					$content.empty();
+
+					$content.append('<div class="text-center"><i class="fa fa-circle-o-notch fa-spin fa-5x fa-fw"></i></div>')
+
+					$('#pay-ignore').hide();
+					$('#pay-finalize').hide();
+					$('#pay-final-ok').show();
+
+					$content.animate({
+						opacity: 1
+					}, 200)
+				})
+			}
+
+			$('#pay-final-ok').click(function() {
+				sessionStorage.removeItem('order');
+				sessionStorage.removeItem('order_2');
+				sessionStorage.removeItem('options');
+				location.reload();
+			})
+
+			$('#pay-modal').on('show.bs.modal', function (e) {
+				var pre_order = sessionStorage.getObject('order');
+				if(pre_order.length != 0) {
+					pay_modal_1();
 				} else {
 					pay_modal_2();
 				}
 			});
 
 			$('#pay-ignore').click(pay_modal_2);
-
-
 
 			$('#pay-finalize').click(function() {
 				$(this).hide(); //TODO show after done
@@ -541,7 +592,7 @@
 						<div class="row">
 						  <div class="col-sm-4">
 						    <div class="card selectable">
-							  <img class="card-img-top img-fluid p-5" src="img/money.png">
+							  <img class="card-img-top img-fluid p-5 payment-option uncolorize" src="img/money.svg">
 						      <div class="card-block">
 						        <h3 class="card-title">Dinheiro</h3>
 						      </div>
@@ -549,7 +600,7 @@
 						  </div>
 						  <div class="col-sm-4">
 						    <div class="card selectable">
-							  <img class="card-img-top img-fluid p-5" src="img/card.png">
+							  <img class="card-img-top img-fluid payment-option p-5" src="img/card.svg">
 						      <div class="card-block">
 						        <h3 class="card-title">Cartão Bancário</h3>
 						      </div>
@@ -557,7 +608,7 @@
 						  </div>
 						  <div class="col-sm-4">
   						    <div class="card selectable">
-  							  <img class="card-img-top img-fluid p-5" src="img/nfc.png">
+  							  <img class="card-img-top payment-option p-5" src="img/nfc.svg">
   						      <div class="card-block">
   						        <h3 class="card-title">NFC</h3>
   						      </div>
@@ -568,22 +619,75 @@
 					);
 
 					$buttons.find('.card').click(function() {
-						sessionStorage.removeItem('order');
-						sessionStorage.removeItem('order_2');
-						sessionStorage.removeItem('options');
-						location.reload();
+						if(!$buttons.find('.card').hasClass('disabled'))
+							pay_modal_4();
 					})
 
 					$('#pay-modal').find('.modal-title').text('Escolha o seu método de pagamento');
-					$content.append(`
-						<div class="row mb-5">
+					$nifInputWrapper = $(`
+						<div class="row mb-4">
 							<div class="form-group col-4 offset-4">
 								<input id="nif" class="form-control" placeholder="NIF" type="number">
 								<small id="emailHelp" class="form-text text-muted">Se pretender, pode inserir aqui o seu NIF</small>
 							</div>
 						</div>
 						`
-					);
+					)
+					$content.append($nifInputWrapper);
+					$nifInputGroup = $nifInputWrapper.find('.form-group')
+					$nifInput = $nifInputWrapper.find('input');
+
+					var isValidNIF = function(nif) {
+						s = 0
+						for (i = 7; i >= 0; i--) {
+							s += nif[i] * (-i+9)
+						}
+						mod = s % 11
+
+						if (mod == 1 || mod == 0)
+							d = 0
+						else {
+							d = 11 - mod
+						}
+
+						return nif[8] == d
+					}
+
+
+					$nifInput.on("input", function () {
+						nif = $nifInput.val();
+
+						if(nif != "") {
+
+							if(nif.length < 9) {
+								$nifInputGroup.removeClass('has-danger has-success').addClass('has-warning')
+								$nifInput.removeClass('form-control-danger form-control-success').addClass('form-control-warning')
+								$buttons.find('.card').addClass('disabled');
+							} else if (nif.length > 9) {
+								$nifInputGroup.removeClass('has-warning has-success').addClass('has-danger')
+								$nifInput.removeClass('form-control-warning form-control-success').addClass('form-control-danger')
+								$buttons.find('.card').addClass('disabled');
+							} else {
+								if(isValidNIF(nif)) {
+									$nifInputGroup.removeClass('has-warning has-danger').addClass('has-success')
+									$nifInput.removeClass('form-control-warning form-control-danger').addClass('form-control-success')
+									$buttons.find('.card').removeClass('disabled');
+								} else {
+									$nifInputGroup.removeClass('has-warning has-success').addClass('has-danger')
+									$nifInput.removeClass('form-control-warning form-control-success').addClass('form-control-danger')
+									$buttons.find('.card').addClass('disabled');
+								}
+							}
+
+						} else {
+							$nifInputGroup.removeClass('has-warning has-success has-danger')
+							$nifInput.removeClass('form-control-warning form-control-danger form-control-success')
+							$buttons.find('.card').removeClass('disabled');
+						}
+
+
+					})
+
 					$pop = $('#nif').popover({
 						trigger: 'click',
 						content: `<div class="row">
@@ -622,12 +726,6 @@
 						html: true,
 						placement: 'bottom'
 					});
-
-					console.log($pop)
-
-					$pop.find('button').click(function() {
-						console.log($(this).text())
-					})
 
 					$content.append($buttons);
 

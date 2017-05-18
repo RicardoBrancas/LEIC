@@ -13,7 +13,7 @@ var menu = [
 			"\tdos quais saturados": [2.3, "g"],
 			"Colesterol": [99, "mg"],
 			"Hidratos de Carbono": [28.5, "g"],
-			"\tdos quais açucares": [3.2, "g"],
+			"\tdos quais açúcares": [3.2, "g"],
 			"Proteína": [53.6, "g"],
 			"Sódio": [648, "mg"]
 		},
@@ -72,7 +72,7 @@ var menu = [
 			"\tdos quais saturados": [7.5, "g"],
 			"Colesterol": [296, "mg"],
 			"Hidratos de Carbono": [49.5, "g"],
-			"\tdos quais açucares": [8, "g"],
+			"\tdos quais açúcares": [8, "g"],
 			"Proteína": [44, "g"],
 			"Sódio": "429 mg"
 		}
@@ -90,7 +90,7 @@ var menu = [
 			"\tdos quais saturados": [0, "g"],
 			"Colesterol": [0, "mg"],
 			"Hidratos de Carbono": [25.9, "g"],
-			"\tdos quais açucares": [20, "g"],
+			"\tdos quais açúcares": [20, "g"],
 			"Proteína": [1.3, "g"],
 			"Sódio": [2, "mg"]
 		},
@@ -101,12 +101,12 @@ var menu = [
 					"Normal": {
 						"Energia": 18,
 						"Hidratos de Carbono": 5,
-						"\tdos quais açucares": 5,
+						"\tdos quais açúcares": 5,
 					},
 					"Extra": {
 						"Energia": 36,
 						"Hidratos de Carbono": 10,
-						"\tdos quais açucares": 10,
+						"\tdos quais açúcares": 10,
 					}
 				},
 				default: "Normal"
@@ -126,7 +126,7 @@ var menu = [
 			"\tdos quais saturados": [0, "g"],
 			"Colesterol": [0, "mg"],
 			"Hidratos de Carbono": [4.9, "g"],
-			"\tdos quais açucares": [1.1, "g"],
+			"\tdos quais açúcares": [1.1, "g"],
 			"Proteína": [0.2, "g"],
 			"Sódio": [0, "mg"]
 		},
@@ -137,12 +137,12 @@ var menu = [
 					"Normal": {
 						"Energia": 18,
 						"Hidratos de Carbono": 5,
-						"\tdos quais açucares": 5,
+						"\tdos quais açúcares": 5,
 					},
 					"Extra": {
 						"Energia": 36,
 						"Hidratos de Carbono": 10,
-						"\tdos quais açucares": 10,
+						"\tdos quais açúcares": 10,
 					}
 				},
 				default: "Normal"
@@ -162,7 +162,7 @@ var menu = [
 			"\tdos quais saturados": [6.3, "g"],
 			"Colesterol": [156, "mg"],
 			"Hidratos de Carbono": [28.9, "g"],
-			"\tdos quais açucares": [7, "g"],
+			"\tdos quais açúcares": [7, "g"],
 			"Proteína": [15.3, "g"],
 			"Sódio": [219, "mg"]
 		}
@@ -180,7 +180,7 @@ var menu = [
 			"\tdos quais saturados": [0, "g"],
 			"Colesterol": [0, "mg"],
 			"Hidratos de Carbono": [19, "g"],
-			"\tdos quais açucares": [4, "g"],
+			"\tdos quais açúcares": [4, "g"],
 			"Proteína": [0, "g"],
 			"Sódio": [57, "mg"]
 		}
@@ -198,7 +198,7 @@ var menu = [
 			"\tdos quais saturados": [5.7, "g"],
 			"Colesterol": [210, "mg"],
 			"Hidratos de Carbono": [16.9, "g"],
-			"\tdos quais açucares": [1.5, "g"],
+			"\tdos quais açúcares": [1.5, "g"],
 			"Proteína": [27.3, "g"],
 			"Sódio": [836, "mg"]
 		}
@@ -216,7 +216,7 @@ var menu = [
 			"\tdos quais saturados": [9.7, "g"],
 			"Colesterol": [174, "mg"],
 			"Hidratos de Carbono": [9, "g"],
-			"\tdos quais açucares": [0.5, "g"],
+			"\tdos quais açúcares": [0.5, "g"],
 			"Proteína": [7.3, "g"],
 			"Sódio": [346, "mg"]
 		}
@@ -234,7 +234,7 @@ var menu = [
 			"\tdos quais saturados": [2, "g"],
 			"Colesterol": [79, "mg"],
 			"Hidratos de Carbono": [18, "g"],
-			"\tdos quais açucares": [1.5, "g"],
+			"\tdos quais açúcares": [1.5, "g"],
 			"Proteína": [0, "g"],
 			"Sódio": [77, "mg"]
 		}
@@ -252,7 +252,7 @@ var menu = [
 			"\tdos quais saturados": [5.7, "g"],
 			"Colesterol": [181, "mg"],
 			"Hidratos de Carbono": [18.9, "g"],
-			"\tdos quais açucares": [1.5, "g"],
+			"\tdos quais açúcares": [1.5, "g"],
 			"Proteína": [24.3, "g"],
 			"Sódio": [336, "mg"]
 		}
@@ -271,7 +271,7 @@ var menu = [
 			"\tdos quais saturados": [6.7, "g"],
 			"Colesterol": [234, "mg"],
 			"Hidratos de Carbono": [38.9, "g"],
-			"\tdos quais açucares": [6.5, "g"],
+			"\tdos quais açúcares": [6.5, "g"],
 			"Proteína": [29.3, "g"],
 			"Sódio": [476, "mg"]
 		}
@@ -289,7 +289,7 @@ var menu = [
 			"\tdos quais saturados": [6.1, "g"],
 			"Colesterol": [279, "mg"],
 			"Hidratos de Carbono": [41.7, "g"],
-			"\tdos quais açucares": [7.5, "g"],
+			"\tdos quais açúcares": [7.5, "g"],
 			"Proteína": [32.3, "g"],
 			"Sódio": [376, "mg"]
 		}
@@ -307,7 +307,7 @@ var menu = [
 			"\tdos quais saturados": [3.4, "g"],
 			"Colesterol": [173, "mg"],
 			"Hidratos de Carbono": [45.9, "g"],
-			"\tdos quais açucares": [7.8, "g"],
+			"\tdos quais açúcares": [7.8, "g"],
 			"Proteína": [13.7, "g"],
 			"Sódio": [217, "mg"]
 		}
@@ -326,7 +326,7 @@ var menu = [
 			"\tdos quais saturados": [8.4, "g"],
 			"Colesterol": [239, "mg"],
 			"Hidratos de Carbono": [41.3, "g"],
-			"\tdos quais açucares": [6.9, "g"],
+			"\tdos quais açúcares": [6.9, "g"],
 			"Proteína": [14.6, "g"],
 			"Sódio": [239, "mg"]
 		}
@@ -344,7 +344,7 @@ var menu = [
 			"\tdos quais saturados": [9.2, "g"],
 			"Colesterol": [267, "mg"],
 			"Hidratos de Carbono": [26.9, "g"],
-			"\tdos quais açucares": [18.8, "g"],
+			"\tdos quais açúcares": [18.8, "g"],
 			"Proteína": [4.7, "g"],
 			"Sódio": [12, "mg"]
 		}
@@ -362,7 +362,7 @@ var menu = [
 			"\tdos quais saturados": [11.3, "g"],
 			"Colesterol": [246, "mg"],
 			"Hidratos de Carbono": [24.6, "g"],
-			"\tdos quais açucares": [19.3, "g"],
+			"\tdos quais açúcares": [19.3, "g"],
 			"Proteína": [3.8, "g"],
 			"Sódio": [8, "mg"]
 		}

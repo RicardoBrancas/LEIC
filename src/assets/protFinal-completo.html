@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+
+	<link rel="stylesheet" href="css/font-awesome.css">
+	<link rel="stylesheet" href="css/bootstrap-table.css">
+	<link rel="stylesheet" href="css/table.css">
+
+	<title>Com.ISTo</title>
+</head>
+
+<body>
+	<div id="header">
+		<div id="clock"> </div>
+		<div id="help">
+			<button type="button" class="btn btn-secondary">Chamar o Empregado</button>
+		</div>
+	</div>
+
+
+	<div>
+		<div id="categories" class="d-flex justify-content-center">
+			<div class="btn-group" data-toggle="buttons">
+				<label class="btn btn-primary active">
+					<input type="radio" name="categories" id="btn-destaques" autocomplete="off" checked> Destaques
+				</label>
+				<label class="btn btn-primary">
+					<input type="radio" name="categories" id="btn-entradas" autocomplete="off"> Entradas
+				</label>
+				<label class="btn btn-primary">
+					<input type="radio" name="categories" id="btn-sopas" autocomplete="off"> Sopas
+				</label>
+				<label class="btn btn-primary">
+					<input type="radio" name="categories" id="btn-saladas" autocomplete="off"> Saladas
+				</label>
+				<label class="btn btn-primary">
+					<input type="radio" name="categories" id="btn-pratos-principais" autocomplete="off"> Pratos Principais
+				</label>
+				<label class="btn btn-primary">
+					<input type="radio" name="categories" id="btn-bebidas" autocomplete="off"> Bebidas
+				</label>
+				<label class="btn btn-primary">
+					<input type="radio" name="categories" id="btn-sobremesas" autocomplete="off"> Sobremesas
+				</label>
+			</div>
+		</div>
+
+		<div id="main">
+			<button id="go-back" type="button" class="btn btn-link"><i class="fa fa-arrow-left"></i></button>
+			<div id="item-container" class="card-deck"></div>
+			<div id="selected-item">
+			</div>
+		</div>
+
+		<div id="order">
+			<ul class="nav nav-pills nav-justified" role="tablist">
+			  <li class="nav-item">
+			    <a id="confirmed-nav" class="nav-link active" data-toggle="tab" href="#confirmed-content" role="tab">Pedido</a>
+			  </li>
+			  <li class="nav-item">
+			    <a id="not-confirmed-nav" class="nav-link" data-toggle="tab" href="#not-confirmed-content" role="tab">Rascunho</a>
+			  </li>
+			</ul>
+			<div class="tab-content" role="tablist">
+				<div id="confirmed-content" class="tab-pane fade show active" role="tabpanel">
+					<ul class="list-group"></ul>
+				</div>
+
+				<div id="not-confirmed-content" class="tab-pane fade" role="tabpanel">
+					<ul class="list-group"></ul>
+				</div>
+			</div>
+			<div id="price">
+				Total: <span></span>
+			</div>
+			<button id="order-confirm" type="button" class="btn btn-primary" data-toggle="modal" data-target="#confirm-order-modal">Pedir</button>
+			<button id="order-pay" type="button" class="btn btn-primary" data-toggle="modal" data-target="#pay-modal">Pagar</button>
+		</div>
+	</div>
+
+	<!-- Modals -->
+	<div class="modal fade" id="confirm-order-modal" tabindex="-1" role="dialog">
+	  <div class="modal-dialog modal-lg" role="document">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <h5 class="modal-title">Tem a certeza que pretende efetuar o seguinte pedido?</h5>
+	        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+	          <i class="fa fa-times"></i>
+	        </button>
+	      </div>
+	      <div class="modal-body order-like">
+	      </div>
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+	        <button id="confirm" type="button" class="btn btn-primary" data-dismiss="modal">Pedir</button>
+	      </div>
+	    </div>
+	  </div>
+	</div>
+
+	<div class="modal fade" id="pay-modal" tabindex="-1" role="dialog">
+	  <div class="modal-dialog modal-xl" role="document">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <h5 class="modal-title"></h5>
+	        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+	          <i class="fa fa-times"></i>
+	        </button>
+	      </div>
+	      <div class="modal-body order-like">
+	      </div>
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+	        <button id="pay-finalize" type="button" class="btn btn-primary">Finalizar</button>
+			<button id="pay-ignore" type="button" class="btn btn-primary hidden">Continuar</button>
+	      </div>
+	    </div>
+	  </div>
+	</div>
+
+	<script type="text/javascript" src="js/jquery.js"></script>
+	<script type="text/javascript" src="js/tether.js"></script>
+	<script type="text/javascript" src="js/bootstrap.js"></script>
+	<script type="text/javascript" src="js/menu.js"></script>
+	<script type="text/javascript">
+		var popover_button_click = function(number) {
+			$nif = $('#nif');
+			$nif.val($nif.val() + number)
+		}
+
+		$(document).ready(function() {
+			Storage.prototype.getObject = function(key, failover = null) {
+				if(!this.getItem(key)) {
+					return failover;
+				}
+				return JSON.parse(this.getItem(key));
+			}
+
+			Storage.prototype.setObject = function (key, obj) {
+				this.setItem(key, JSON.stringify(obj))
+			};
+
+			let Orders = {}
+
+			Orders._timers = []
+			Orders._update_common = function(order, $order, isNotConfirmed) {
+				$order.empty();
+
+
+				let totalPrice = 0;
+				var length = order ? order.length : 0;
+				for(let i = 0; i < length; i++) {
+					item = menu.find(function(x) {return x.id == order[i][0]});
+
+					totalPrice += item.price;
+
+					item_src = '<li class="list-group-item d-flex"><span class="w-100">' + item.name + '</span>';
+
+					if(order[i][1] != undefined) {
+						item_src += '<ul class="list-unstyled pl-3">';
+						for(choice in order[i][1]) {
+							item_src += '<li><strong>' + choice + "</strong>: " + order[i][1][choice] + "</li>"
+						}
+						item_src += '</ul>'
+					}
+
+					if(!isNotConfirmed && order[i][3] != order[i][2])
+						item_src += `<div class="progress w-100">
+										<div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" style="width: ` + Math.floor(order[i][3] / order[i][2] * 100) + `%"></div>
+									</div>`;
+
+					item_src += '<span class="item-left"><span class="badge badge-default">' + (item.price.toFixed(2) + " €") + '</span>';
+
+					if(isNotConfirmed)
+						item_src += '<button type="button" class="close"><i class="fa fa-times"></i></button>';
+
+					item_src += '</span></li>';
+
+					$item = $(item_src);
+
+					$item.find('button.close').click(function(wrappedIndex) {
+						return function() { Orders.remove(wrappedIndex); };
+					}(i));
+
+					if(!isNotConfirmed) {
+						var fnc = function(wrappedItem, wrappedIndex) {
+							return function() {
+								var order2 = sessionStorage.getObject('order_2', []);
+								order2[wrappedIndex][3] = (order2[wrappedIndex][3] == order2[wrappedIndex][2]) ? order2[wrappedIndex][3] : order2[wrappedIndex][3]+1;
+								sessionStorage.setObject('order_2', order2);
+
+								if(order2[wrappedIndex][3] == order2[wrappedIndex][2]) {
+									wrappedItem.find('.progress-bar').remove();
+									clearInterval(Orders._timers[wrappedIndex]);
+								} else {
+									wrappedItem.find('.progress-bar').width((order2[wrappedIndex][3] / order2[wrappedIndex][2] * 100) + "%");
+								}
+							};
+						}($item, i);
+						t = setInterval(fnc, 1000);
+						Orders._timers[i] = t;
+					}
+
+					$order.append($item);
+				}
+
+				Orders.updateButtons();
+
+				return totalPrice;
+			}
+
+			Orders.updateNotConfirmed = function() {
+				let order = sessionStorage.getObject('order', []);
+				$order = $('#not-confirmed-content').find('ul');
+				return Orders._update_common(order, $order, true);
+			}
+
+			Orders.updateConfirmed = function() {
+				for(timer of Orders._timers) {
+					clearInterval(timer);
+				}
+				Orders._timers = [];
+
+				let order = sessionStorage.getObject('order_2', []);
+				$order = $('#confirmed-content').find('ul');
+				return Orders._update_common(order, $order, false);
+			}
+
+			Orders.update = function() {  //TODO
+				let price1 = Orders.updateConfirmed();
+				let price2 = Orders.updateNotConfirmed();
+				let totalPrice = price1 + price2;
+
+				$('#price').find('span').empty().text(totalPrice.toFixed(2) + " €");
+			}
+
+			Orders.updateButtons = function() {
+				let order = sessionStorage.getObject('order', []);
+				let order2 = sessionStorage.getObject('order_2', []);
+
+				if (order.length != 0 && $('#not-confirmed-nav').hasClass("active")) {
+					$('#order-confirm').show();
+				} else {
+					$('#order-confirm').hide();
+				}
+
+				if (order2.length != 0 && $('#confirmed-nav').hasClass("active")) {
+					$('#order-pay').show();
+				} else {
+					$('#order-pay').hide();
+				}
+			}
+			$('.nav-link').on('shown.bs.tab', Orders.updateButtons);
+
+			Orders.add = function(item_id) {
+				let choices = sessionStorage.getObject('options', {});
+				let temp = sessionStorage.getObject('order', []);
+				temp.push([item_id, choices[item_id]]);
+				sessionStorage.setObject('order', temp);
+				Orders.updateNotConfirmed();
+				$('#not-confirmed-nav').tab('show');
+			}
+
+			Orders.remove = function(index) {
+				let temp = sessionStorage.getObject('order');
+				if(temp) {
+					temp.splice(index, 1);
+					sessionStorage.setObject('order', temp);
+					Orders.updateNotConfirmed();
+				}
+			}
+
+			$('#order').find('.card-header-wrapper').click(function () {
+				$(this).toggleClass("collapsed");
+			})
+
+			ic = false;
+
+			var calculateNutrition = function(item, nutrition_line) {
+				var base = item.nutrition[nutrition_line][0];
+
+				temp = sessionStorage.getObject('options', {});
+				for (var choice in item.choices) {
+					if(temp[item.id] != undefined && temp[item.id][choice] != undefined) {
+						if(item.choices[choice].options[temp[item.id][choice]][nutrition_line] != undefined)
+							base += item.choices[choice].options[temp[item.id][choice]][nutrition_line];
+					} else {
+						if(item.choices[choice].options[item.choices[choice].default][nutrition_line] != undefined)
+							base += item.choices[choice].options[item.choices[choice].default][nutrition_line];
+					}
+				}
+
+				return base;
+			}
+
+			let category_changed_inner = function(cat, is_sub_cat = false, parent_cat = undefined) {
+				let $item_container = $("#item-container");
+				$('#selected-item').empty();
+				$item_container.animate({
+					width: 0,
+					opacity: 0
+				}, 400, function() {
+					$item_container.empty();
+					if(cat == "pratos-principais") {
+						$something = $(`
+							<div class="card card-inverse selectable" data-cat="pratos-principais-carne">
+								<img class="card-img-top img-fluid" src="img/items/Carne.png">
+								<div class="card-block">
+									<h4 class="card-title">Carne</h4>
+								</div>
+							</div>
+							<div class="card card-inverse selectable" data-cat="pratos-principais-peixe">
+								<img class="card-img-top img-fluid" src="img/items/Peixe.png">
+								<div class="card-block">
+									<h4 class="card-title">Peixe</h4>
+								</div>
+							</div>
+							<div class="card card-inverse selectable" data-cat="pratos-principais-vegetariano">
+								<img class="card-img-top img-fluid" src="img/items/Vegetariano.png" >
+								<div class="card-block">
+									<h4 class="card-title">Vegetariano</h4>
+									</div>
+							</div>`
+						);
+						$item_container.append($something);
+
+						$something.click(function() {
+							$this = $(this);
+							category_changed_inner($this.attr('data-cat'), true, "pratos-principais");
+						});
+					} else if(categories[cat] !== undefined) {
+						for(item of categories[cat]) {
+							$item = $("<div>", {class: "card card-inverse selectable", 'data-item-id': item.id});
+
+							$img = $("<img>", {class: "card-img-top img-fluid", src: "img/items/" + item.name + ".png"});
+							$item.append($img);
+
+							$text = $('<div class="card-block"><h5 class="card-title">' + item.name + '</h5><p class="card-text">' + (item.price.toFixed(2) + " €") + '</p>' + '<button type="button" class="quick-add btn btn-primary btn-sm"><i class="fa fa-plus"></i></button>' + '</div>');
+							$item.append($text);
+
+							$item_container.append($item);
+
+							$item.find('button.quick-add').click(function (wrappedID) {
+								return function() { Orders.add(wrappedID); }
+							}(item.id));
+							$item.click(item_clicked);
+						}
+					}
+					if(!ic) {
+						$item_container.find('.card:first').click();
+						ic = true;
+					}
+					$item_container.animate({
+						width: "61.8034%",
+						opacity: 1
+					}, 400);
+					if (is_sub_cat) {
+						$('#go-back').show();
+						$('#go-back').click(function() {
+							category_changed_inner(parent_cat);
+						});
+					} else {
+						$('#go-back').hide();
+					}
+					$item_container.find('.card button').click(function(e) {
+						e.stopPropagation();
+					});
+				});
+			}
+
+			let category_changed = function() {
+				let cat = $('input[name=categories]:checked', '#categories').attr("id").slice(4);
+				category_changed_inner(cat);
+			};
+			$('#categories input').on('change', category_changed);
+
+			var item_clicked = function() {
+				$this = $(this);
+
+				$item_container = $('#item-container');
+				$item_container.find('.card').removeClass('selected');
+				$this.addClass('selected');
+
+				$selected_item = $('#selected-item');
+				$selected_item.empty();
+
+				$img = $('<img>', {class: 'img-fluid mx-auto d-block', src: "img/items/big/" + $this.attr('data-item-id') + ".png"})
+				$selected_item.append($img);
+
+				$button = $('<button type="button" class="btn btn-primary">Adicionar</button>');
+				$selected_item.append($button);
+
+				$button.click(function (wrappedID) {
+					return function() { Orders.add(wrappedID); }
+				}($this.attr('data-item-id')));
+
+				item = menu.find(function(x) {return x.id == $this.attr('data-item-id')});
+
+				$tables_wrapper = $(`
+					<div id="tables" role="tablist" class="collapse-container">
+						<div class="card">
+							<a class="card-header-wrapper" data-parent="#tables" data-toggle="collapse" href="#nutrition-table">
+								<div class="card-header" role="tab">
+									<h5 class="mb-0"> Informação Nutricional </h5>
+								</div>
+							</a>
+							<div id="nutrition-table" class="collapse show" role="tabpanel">
+								<table class="table table-sm stripes"><tbody></tbody></table>
+							</div>
+						</div>
+
+						<div class="card choices-card">
+							<a class="card-header-wrapper" data-parent="#tables" data-toggle="collapse" href="#options-table">
+								<div class="card-header" role="tab">
+									<h5 class="mb-0">Personalização</h5>
+								</div>
+							</a>
+							<div id="options-table" class="collapse" role="tabpanel">
+								<table class="table table-sm"><tbody></tbody></table>
+							</div>
+						</div>
+					</div>`
+				);
+
+				$tbody = $tables_wrapper.find('#nutrition-table tbody');
+				for (var key in item.nutrition) {
+					$trow = $('<tr><th scope="row">' + key + '</th><td>' + calculateNutrition(item, key) + " " + item.nutrition[key][1] + '</td></tr>');
+					$tbody.append($trow);
+				}
+
+				$selected_item.append($tables_wrapper);
+
+				if(item.choices != undefined) {
+					$tbody = $tables_wrapper.find('#options-table tbody');
+					for (var choice in item.choices) {
+						trow = '<tr><th scope="row">' + choice + '</th><td><select class="form-control custom-select">'
+
+						temp = sessionStorage.getObject('options', {});
+						for (var option in item.choices[choice].options) {
+							if(temp[item.id] != undefined && temp[item.id][choice] != undefined) {
+								trow += '<option ' + (option == temp[item.id][choice] ? "selected" : "") + '>' + option + '</option>';
+							} else {
+								trow += '<option ' + (option == item.choices[choice].default ? "selected" : "") + '>' + option + '</option>';
+							}
+						}
+
+						trow += '</select></td></tr>';
+
+						$trow = $(trow);
+
+						$trow.find('select').change(function (item, choice) {
+							return function() {
+								temp = sessionStorage.getObject("options", {});
+
+								if(temp[item.id] == undefined)
+									temp[item.id] = {};
+
+								temp[item.id][choice] = this.value;
+								sessionStorage.setObject("options", temp)
+
+								$tbody = $tables_wrapper.find('#nutrition-table tbody');
+								$tbody.empty();
+								for (var key in item.nutrition) {
+									$trow = $('<tr><th scope="row">' + key + '</th><td>' + calculateNutrition(item, key) + " " + item.nutrition[key][1] + '</td></tr>');
+									$tbody.append($trow);
+								}
+							};
+						}(item, choice));
+
+						$tbody.append($trow);
+					}
+				} else {
+					$tables_wrapper.find('.choices-card').hide();
+				}
+			};
+
+			$('#confirm-order-modal').on('show.bs.modal', function (e) {
+			  	$content = $(this).find('.modal-body');
+				$content.empty();
+				$content.append($('#not-confirmed-content').clone())
+				$content.find('button').remove();
+			});
+
+			var pay_modal_2 = function() {
+				$('#pay-modal').find('.modal-title').text('Pretende finalizar a sua conta?');
+				$content = $('#pay-modal').find('.modal-body');
+				$content.empty();
+
+				$('#pay-ignore').hide();
+				$('#pay-finalize').show();
+
+				if($('#confirmed-content').find('.progress').length > 0)
+					$content.append('Nota: Se o fizer, vai perder a capacidade de acompanhar o progresso do seu pedido.')
+
+				$content.append($('#confirmed-content').children().clone());
+				$content.find('.progress').remove();
+
+				var order = sessionStorage.getObject('order_2');
+				var total = 0;
+				for(item of order) {
+					total += menu.find(function(x) {return x.id == item[0]}).price;
+				}
+
+				$price = $('<span class="price"><span class="label">Total </span>' + (total.toFixed(2) + " €") + '</span>');
+				$content.append($price);
+			}
+
+			$('#pay-modal').on('show.bs.modal', function (e) {
+			  	$content = $(this).find('.modal-body');
+				$content.empty();
+
+				var pre_order = sessionStorage.getObject('order');
+				if(pre_order.length != 0) {
+					$(this).find('.modal-title').text('De certeza que pretende continuar?')
+					$content.append('Ainda tem itens no "Rascunho", se continuar, estes serão eliminados.')
+					$content.append($('#not-confirmed-content').children().clone())
+					$content.find('button').remove();
+
+					$('#pay-ignore').show();
+					$('#pay-finalize').hide();
+				} else {
+					pay_modal_2();
+				}
+			});
+
+			$('#pay-ignore').click(pay_modal_2);
+
+
+
+			$('#pay-finalize').click(function() {
+				$(this).hide(); //TODO show after done
+				$modal = $('#pay-modal');
+				$content = $('#pay-modal').find('.modal-body');
+				$content.animate({
+					opacity: 0
+				}, 200, function() {
+					$content.empty();
+
+					$buttons = $(`
+						<div class="row">
+						  <div class="col-sm-4">
+						    <div class="card selectable">
+							  <img class="card-img-top img-fluid p-5" src="img/money.png">
+						      <div class="card-block">
+						        <h3 class="card-title">Dinheiro</h3>
+						      </div>
+						    </div>
+						  </div>
+						  <div class="col-sm-4">
+						    <div class="card selectable">
+							  <img class="card-img-top img-fluid p-5" src="img/card.png">
+						      <div class="card-block">
+						        <h3 class="card-title">Cartão Bancário</h3>
+						      </div>
+						    </div>
+						  </div>
+						  <div class="col-sm-4">
+  						    <div class="card selectable">
+  							  <img class="card-img-top img-fluid p-5" src="img/nfc.png">
+  						      <div class="card-block">
+  						        <h3 class="card-title">NFC</h3>
+  						      </div>
+  						    </div>
+						  </div>
+						</div>
+						`
+					);
+
+					$buttons.find('.card').click(function() {
+						sessionStorage.removeItem('order');
+						sessionStorage.removeItem('order_2');
+						sessionStorage.removeItem('options');
+						location.reload();
+					})
+
+					$('#pay-modal').find('.modal-title').text('Escolha o seu método de pagamento');
+					$content.append(`
+						<div class="row mb-5">
+							<div class="form-group col-4 offset-4">
+								<input id="nif" class="form-control" placeholder="NIF" type="number">
+								<small id="emailHelp" class="form-text text-muted">Se pretender, pode inserir aqui o seu NIF</small>
+							</div>
+						</div>
+						`
+					);
+					$pop = $('#nif').popover({
+						trigger: 'click',
+						content: `<div class="row">
+									<div class="col-4">
+										<button onclick="popover_button_click(7)" class="btn btn-secondary">7</button>
+									</div>
+									<div class="col-4">
+										<button onclick="popover_button_click(8)" class="btn btn-secondary">8</button>
+									</div>
+									<div class="col-4">
+										<button onclick="popover_button_click(9)" class="btn btn-secondary">9</button>
+									</div>
+									<div class="col-4">
+										<button onclick="popover_button_click(4)" class="btn btn-secondary">4</button>
+									</div>
+									<div class="col-4">
+										<button onclick="popover_button_click(5)" class="btn btn-secondary">5</button>
+									</div>
+									<div class="col-4">
+										<button onclick="popover_button_click(6)" class="btn btn-secondary">6</button>
+									</div>
+									<div class="col-4">
+										<button onclick="popover_button_click(1)" class="btn btn-secondary">1</button>
+									</div>
+									<div class="col-4">
+										<button onclick="popover_button_click(2)" class="btn btn-secondary">2</button>
+									</div>
+									<div class="col-4">
+										<button onclick="popover_button_click(3)" class="btn btn-secondary">3</button>
+									</div>
+									<div class="col-4 offset-4">
+										<button onclick="popover_button_click(0)" class="btn btn-secondary">0</button>
+									</div>
+								</div>
+						`,
+						html: true,
+						placement: 'bottom'
+					});
+
+					console.log($pop)
+
+					$pop.find('button').click(function() {
+						console.log($(this).text())
+					})
+
+					$content.append($buttons);
+
+					$content.animate({
+						opacity: 1
+					}, 200);
+				});
+			});
+
+
+			$('#confirm').click(function() {
+				let currentOrder = sessionStorage.getObject('order');
+				let currentOrder2 = sessionStorage.getObject('order_2', []);
+
+				var length = currentOrder ? currentOrder.length : 0;
+				for(let i = 0; i < length; i++) {
+					currentOrder[i][2] = Math.floor(Math.random() * 500);
+					currentOrder[i][3] = 0;
+				}
+
+				sessionStorage.setObject('order_2', currentOrder2.concat(currentOrder));
+				sessionStorage.setObject('order', []);
+				Orders.update();
+				$('#confirmed-nav').tab('show');
+			});
+
+			let updateClock = function() {
+				let d = new Date();
+				let h = ("00" + d.getHours()).slice(-2)
+				let m = ("00" + d.getMinutes()).slice(-2)
+				$('#clock').html(h + " : " + m);
+			};
+			setInterval(updateClock, 1000);
+
+			//Init
+			updateClock();
+			category_changed();
+			Orders.update();
+		});
+	</script>
+</body>
+
+</html>
