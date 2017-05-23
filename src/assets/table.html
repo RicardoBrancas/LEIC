@@ -112,7 +112,7 @@
 	      </div>
 	      <div class="modal-footer">
 	        <button id="pay-cancel" type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-	        <button id="pay-finalize" type="button" class="btn btn-primary">Finalizar</button>
+	        <button id="pay-finalize" type="button" class="btn btn-primary">Seguinte</button>
 			<button id="pay-ignore" type="button" class="btn btn-primary hidden">Continuar</button>
 			<button id="pay-final-ok" type="button" class="btn btn-primary hidden">OK</button>
 	      </div>
@@ -553,11 +553,18 @@
 
 					$('#pay-ignore').hide();
 					$('#pay-finalize').hide();
-					$('#pay-final-ok').show();
+					$('#pay-final-ok').hide();
 
 					$content.animate({
 						opacity: 1
-					}, 200)
+					}, 200, function() {
+						setTimeout(function() {
+							sessionStorage.removeItem('order');
+							sessionStorage.removeItem('order_2');
+							sessionStorage.removeItem('options');
+							location.reload();
+						}, 7.5 * 1000);
+					});
 				})
 			}
 
