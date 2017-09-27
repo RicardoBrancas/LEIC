@@ -44,13 +44,17 @@ print("Connection established.")
 while True:
 	line = sys.stdin.readline()
 	lineLst = line.split()
-
-	if lineLst[0] == 'list':
-		print("Asking for list")
-		sock.sendall(b'LST\n')
-		result = sock.recv(1024)
-		print(result)
-	elif lineLst[0] == 'exit':
+	try:
+		if lineLst[0] == 'list':
+			print("Asking for list")
+			sock.sendall(b'LST\n')
+			result = sock.recv(1024)
+			print(result)
+		elif lineLst[0] == 'exit':
+			break
+	except OSError as ose:
+		print("Error while talking to server:")
+		print(ose)
 		break
 
 cleanup()
