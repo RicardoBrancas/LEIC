@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 import argparse
 import socket
 import select
@@ -10,6 +12,9 @@ tcpSock = None
 udpSock = None
 
 processingTasks = {}
+
+port = None
+hostname = ""  # meaning all available interfaces
 
 
 def cleanup():
@@ -40,24 +45,27 @@ def userConnection(sock):
 
 		while True:
 			try:
-				msg = sock.recv(1024)
+				msg = parseData(sock.recv(1024))
 
-				if msg != b'':
-					action = msg[0:3]
-					print('Request received from ', client_name, ': ', repr(action))
+				if msg is not None:
+					print('[', msg[0], '] request received from', client_name)
 
-					if msg == b"LST\n":
+					if msg[0] == "LST":
+						assert len(msg) == 1
+
 						if len(processingTasks) == 0:
 							sock.sendall("FTP EOF\n".encode('ascii'))
 						else:
-							response = "FPT " + str(len(processingTasks))
+							response = "FPT " + str(len(processingTasks)) + " "
 							for task in processingTasks.keys():
 								response += task + " "
 							response += "\n"
 							sock.sendall(response.encode('ascii'))
+
 				else:
 					print("Empty message received... Leaving connection")
 					userConnectionCleanup()
+
 
 			except socket.error:
 				print("Client", client_name, "lost...")
@@ -74,6 +82,7 @@ def prepareTcp():
 	print("Starting TCP server")
 	try:
 		tcpSock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+		tcpSock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 	except OSError:
 		print("Exception while creating TCP socket!")
 		exit()
@@ -85,7 +94,7 @@ def prepareTcp():
 		print("Error during TCP bind. Maybe the port is in use already?")
 		exit()
 
-	tcpSock.listen()
+	tcpSock.listen(5)
 
 
 def tcpAccept():
@@ -106,6 +115,7 @@ def prepareUdp():
 	print("Starting UDP server")
 	try:
 		udpSock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+		udpSock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 	except OSError:
 		print("Exception while creating UDP socket!")
 		exit()
@@ -121,38 +131,60 @@ def prepareUdp():
 def udpReceive():
 	try:
 		data, address = udpSock.recvfrom(1024)
-		print("UDP packet from", address, "received")
+		msg = data.decode('ascii').split(" ")
+
+		if msg[0] == 'REG':
+			try:
+				assert len(msg) > 3
+
+				print(address, "has asked to register with following PTCs:", msg[1:-2])
+
+				wsAddress = msg[-2]
+				wsPort = msg[-1]
+
+				for i in range(1, len(msg)-2):
+					assert msg[i] != ""
+
+					if not msg[i] in processingTasks:
+						processingTasks[msg[i]] = []
+					if not (wsAddress, wsPort) in processingTasks[msg[i]]:
+						processingTasks[msg[i]] += [(wsAddress, wsPort)]
+
+				print("Registration from", address, "accepted")
+				udpSock.sendto("RAK OK\n".encode('ascii'), address)
+			except Exception:
+				print("Registration from", address, "refused (protocol error)")
+				udpSock.sendto("RAK ERR\n".encode('ascii'), address)
+		else:
+			print("Unknown UDP message received. Ignoring...")
+
 	except OSError:
+		print("Error while receiving UDP message. Ignoring...")
 		pass
 
 
-# START MAIN
+if __name__ == '__main__':
+	try:
+		parser = argparse.ArgumentParser()
+		parser.add_argument('-p', metavar="CSport", default=defaultPort)
+		args = parser.parse_args()
 
-try:
-	parser = argparse.ArgumentParser()
-	parser.add_argument('-p', default=defaultPort)
-	args = parser.parse_args()
+		port = args.p
 
-	port = args.p
+		print("Starting central server on " + socket.gethostname())
 
-	hostname = ""  # meaning all available interfaces
+		prepareUdp()
+		prepareTcp()
 
-	print("Starting central server on " + socket.gethostname())
+		print("Waiting for connections...")
+		while True:
+			readable, _, _ = select.select([udpSock, tcpSock], [], [])
 
-	prepareUdp()
-	prepareTcp()
+			for sock in readable:
+				if sock == tcpSock:
+					tcpAccept()
+				elif sock == udpSock:
+					udpReceive()
 
-	print("Waiting for connections...")
-	while True:
-		readable, _, _ = select.select([udpSock, tcpSock], [], [])
-
-		for sock in readable:
-			if sock == tcpSock:
-				tcpAccept()
-			elif sock == udpSock:
-				udpReceive()
-
-except KeyboardInterrupt:
-	cleanup()
-
-# END MAIN
+	except KeyboardInterrupt:
+		cleanup()
