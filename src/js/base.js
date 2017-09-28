@@ -32,17 +32,24 @@ function addCheerio(parent, x, y, z) {
 
 function addCheerios(parent) {
 	for (var i = -96; i < 100; i = i + 8) {
-		addCheerio(parent, -96, i, 0);
-		addCheerio(parent, 96, i, 0);
-		addCheerio(parent, i, -96, 0);
-		addCheerio(parent, i, 96, 0);
+		addCheerio(parent, -96, i, 1);
+		addCheerio(parent, 96, i, 1);
+		addCheerio(parent, i, -96, 1);
+		addCheerio(parent, i, 96, 1);
+	}
+
+	for (var i = -64; i <= 64; i = i + 8) {
+		addCheerio(parent, -64, i, 1);
+		addCheerio(parent, 64, i, 1);
+		addCheerio(parent, i, -64, 1);
+		addCheerio(parent, i, 64, 1);
 	}
 }
 
 function createTrack(x, y, z) {
 	var track = new THREE.Object3D();
 
-	addGround(track, 0, 0, -2);
+	addGround(track, 0, 0, -1);
 	addCheerios(track);
 	scene.add(track);
 	track.position.x = x;
@@ -123,5 +130,3 @@ function createCamera() {
 	camera.up.set(0, 1, 0);
 	camera.lookAt(scene.position);
 }
-
-
