@@ -2,8 +2,81 @@
 
 var camera, scene, renderer;
 
-
 // SCENE INIT
+var carMaterial = new THREE.MeshBasicMaterial({
+  color: 0xffffff,
+  wireframe: false,
+});
+
+function createCar(x, y, z) {
+  var car = new THREE.Object3D();
+  addBody(car, x, y, z + 0.75);
+  addWheel(car, x + 1.55, y + 1.5, z);
+  addWheel(car, x + 1.55, y - 1.5, z);
+  addWheel(car, x - 1.55, y + 1.5, z);
+  addWheel(car, x - 1.55, y - 1.5, z);
+  scene.add(car);
+  car.position.x = x;
+  car.position.y = y;
+  car.position.z = z;
+}
+
+function addBody(parent, x, y, z) {
+  var geometry = new THREE.BoxGeometry(3, 5, 1);
+  var mesh = new THREE.Mesh(geometry, orangeMaterial);
+  mesh.position.set(x, y, z);
+  parent.add(mesh);
+  geometry = new THREE.BoxGeometry(3, 3, 0.75);
+  mesh = new THREE.Mesh(geometry, carMaterial);
+  mesh.position.set(x, y, z + 0.75);
+  parent.add(mesh);
+}
+
+function addWheel(parent, x, y, z) {
+  var geometry = new THREE.TorusGeometry(0.25, 0.1, 8, 16);
+  var torus = new THREE.Mesh(geometry, carMaterial);
+  torus.position.set(x, y, z);
+  parent.add(torus);
+}
+
+function addOrange(parent, x, y, z) {
+
+	var geometry = new THREE.SphereGeometry(6, 16, 16);
+	var mesh = new THREE.Mesh(geometry, orangeMaterial);
+	mesh.position.set(x, y, z);
+	parent.add(mesh);
+}
+
+var orangeMaterial = new THREE.MeshBasicMaterial({
+	color: 0xff8c00,
+	wireframe: true,
+});
+
+function addAllOrange(parent) {
+	addOrange(parent, -33, -29, 0.8);
+	addOrange(parent, 67, -78, 0.8);
+}
+
+function addButter(parent, x, y, z) {
+
+	var geometry = new THREE.BoxGeometry(7, 4, 1.2);
+	var mesh = new THREE.Mesh(geometry, buttterMaterial);
+	mesh.position.set(x, y, z);
+	parent.add(mesh);
+}
+
+var buttterMaterial = new THREE.MeshBasicMaterial({
+	color: 0xffffff,
+	wireframe: true,
+});
+
+function addAllButter(parent) {
+	addButter(parent, -49, 33, 0.8);
+	addButter(parent, -67, -78, 0.8);
+	addButter(parent, 30, -27, 0.8);
+	addButter(parent, 32, 45, 0.8);
+	addButter(parent, -14, 79, 0.8);
+}
 
 function addGround(parent, x, y, z) {
 	var material = new THREE.MeshBasicMaterial({
@@ -51,6 +124,7 @@ function createTrack(x, y, z) {
 
 	addGround(track, 0, 0, -1);
 	addCheerios(track);
+	addAllButter(track);
 	scene.add(track);
 	track.position.x = x;
 	track.position.y = y;
@@ -60,7 +134,8 @@ function createTrack(x, y, z) {
 function createScene() {
 	scene = new THREE.Scene();
 	scene.add(new THREE.AxisHelper(10));
-	createTrack(0, 0, 0);
+	 //createTrack(0, 0, 0);
+  createCar(0, 0, 0);
 }
 
 // SCENE INIT END
@@ -124,9 +199,9 @@ function init() {
 function createCamera() {
 	camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 1000);
 
-	camera.position.x = 0;
+	camera.position.x = 10;
 	camera.position.y = 0;
-	camera.position.z = 150;
+	camera.position.z = 0;
 	camera.up.set(0, 1, 0);
 	camera.lookAt(scene.position);
 }
