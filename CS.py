@@ -3,7 +3,6 @@
 import argparse
 import socket
 import select
-
 from multiprocessing import Process
 
 from common import *
@@ -19,60 +18,51 @@ hostname = ""  # meaning all available interfaces
 
 def cleanup():
 	print("\nCleaning up...")
-	try:
-		tcpSock.close()
-	except OSError:
-		pass
-	try:
-		udpSock.close()
-	except OSError:
-		pass
+	tryClose(tcpSock)
+	tryClose(udpSock)
 	print("Exiting")
 	exit()
 
 
 def userConnection(sock):
 	def userConnectionCleanup():
-		try:
-			sock.close()
-		except OSError:
-			pass
+		tryClose(sock)
 		exit()
 
+	tcpSock.close()
+	udpSock.close()
 	try:
-		client_name = sock.getpeername()
-		print("Forked")
+		clientAddress = sock.getpeername()
 
 		while True:
 			try:
 				msg = parseData(sock.recv(1024))
 
 				if msg is not None:
-					print('[', msg[0], '] request received from', client_name)
+					logMessage('IN', 'TCP', 'USER', clientAddress, msg)
 
 					if msg[0] == "LST":
 						assert len(msg) == 1
 
 						if len(processingTasks) == 0:
-							sock.sendall("FTP EOF\n".encode('ascii'))
+							response, encodedResponse = constructMessage('FPT', 'EOF')
 						else:
-							response = "FPT " + str(len(processingTasks)) + " "
-							for task in processingTasks.keys():
-								response += task + " "
-							response += "\n"
-							sock.sendall(response.encode('ascii'))
+							response, encodedResponse = constructMessage('FPT', len(processingTasks),
+																		 processingTasks.keys())
+
+						logMessage('OUT', 'TCP', 'USER', clientAddress, response)
+						sock.sendall(encodedResponse)
 
 				else:
-					print("Empty message received... Leaving connection")
+					print("Empty message received... Leaving connection", clientAddress)
 					userConnectionCleanup()
 
-
 			except socket.error:
-				print("Client", client_name, "lost...")
+				print("Client", clientAddress, "lost...")
 				userConnectionCleanup()
 
 	except KeyboardInterrupt:
-		print("\nTCP connection exiting")
+		print("\nTCP connection", clientAddress, "exiting")
 		userConnectionCleanup()
 
 
@@ -82,7 +72,7 @@ def prepareTcp():
 	print("Starting TCP server")
 	try:
 		tcpSock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-		tcpSock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+		tcpSock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)  # ignore system TIME_WAIT
 	except OSError:
 		print("Exception while creating TCP socket!")
 		exit()
@@ -115,7 +105,7 @@ def prepareUdp():
 	print("Starting UDP server")
 	try:
 		udpSock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-		udpSock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+		udpSock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)  # ignore system TIME_WAIT
 	except OSError:
 		print("Exception while creating UDP socket!")
 		exit()
@@ -131,18 +121,17 @@ def prepareUdp():
 def udpReceive():
 	try:
 		data, address = udpSock.recvfrom(1024)
-		msg = data.decode('ascii').split(" ")
+		msg = parseData(data)
+		logMessage('IN', 'UDP', 'WS', address, msg)
 
 		if msg[0] == 'REG':
 			try:
 				assert len(msg) > 3
 
-				print(address, "has asked to register with following PTCs:", msg[1:-2])
-
 				wsAddress = msg[-2]
 				wsPort = msg[-1]
 
-				for i in range(1, len(msg)-2):
+				for i in range(1, len(msg) - 2):
 					assert msg[i] != ""
 
 					if not msg[i] in processingTasks:
@@ -150,11 +139,13 @@ def udpReceive():
 					if not (wsAddress, wsPort) in processingTasks[msg[i]]:
 						processingTasks[msg[i]] += [(wsAddress, wsPort)]
 
-				print("Registration from", address, "accepted")
-				udpSock.sendto("RAK OK\n".encode('ascii'), address)
+				msg, encodedMsg = constructMessage('RAK', 'OK')
 			except Exception:
-				print("Registration from", address, "refused (protocol error)")
-				udpSock.sendto("RAK ERR\n".encode('ascii'), address)
+				msg, encodedMsg = constructMessage('RAK', 'ERR')
+			finally:
+				logMessage('OUT', 'UDP', 'WS', address, msg)
+				udpSock.sendto(encodedMsg, address)
+
 		else:
 			print("Unknown UDP message received. Ignoring...")
 

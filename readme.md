@@ -3,10 +3,11 @@
 ## (probably) DONE
 - REG
 - RAK
-
-## IN PROGRESS
 - LST
 - FPT
+
+## IN PROGRESS
+
 
 ## TO DO
 - REQ
