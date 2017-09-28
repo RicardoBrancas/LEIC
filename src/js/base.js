@@ -22,7 +22,6 @@ var cheerioMaterial = new THREE.MeshBasicMaterial({
 	color: 0xffff00,
 	wireframe: true
 });
-uma linha de merda
 
 function addCheerio(parent, x, y, z) {
 	var geometry = new THREE.TorusGeometry(2, 1, 8, 16);
