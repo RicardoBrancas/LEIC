@@ -19,7 +19,7 @@ function VariablyAcceleratableObject3D() {
 	this.scalarVelocity = 0;
 	this.angularVelocity = 0;
 	this.angle = 0;
-	this.baseVelocityDirection = new THREE.Vector3(0, -1, 0);
+	this.baseVelocityDirection = new THREE.Vector3(0, 1, 0);
 
 }
 
@@ -31,7 +31,7 @@ VariablyAcceleratableObject3D.prototype = Object.assign(Object.create(THREE.Obje
 		this.angle += this.angularVelocity * delta;
 		this.quaternion.setFromAxisAngle(this.up, this.angle);
 		var dv = this.baseVelocityDirection.clone().applyQuaternion(this.quaternion);
-		dv.multiplyScalar(-this.scalarVelocity * delta);
+		dv.multiplyScalar(this.scalarVelocity * delta);
 		this.position.add(dv);
 	}
 });
