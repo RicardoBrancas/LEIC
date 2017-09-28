@@ -10,11 +10,11 @@ var carMaterial = new THREE.MeshBasicMaterial({
 
 function createCar(x, y, z) {
   var car = new THREE.Object3D();
-  addBody(car, x, y, z + 0.95);
-  addWheel(car, x + 1.55, y + 1.5, z + 0.45);
-  addWheel(car, x + 1.55, y - 1.5, z + 0.45);
-  addWheel(car, x - 1.55, y + 1.5, z + 0.45);
-  addWheel(car, x - 1.55, y - 1.5, z + 0.45);
+  addBody(car, 0, 0 ,0.95);
+  addWheel(car, 1.55, 1.5, 0.45);
+  addWheel(car, -1.55, -1.5, 0.45);
+  addWheel(car, -1.55, 1.5, 0.45);
+  addWheel(car, 1.55, -1.5, 0.45);
   scene.add(car);
   car.position.x = x;
   car.position.y = y;
@@ -137,7 +137,7 @@ function createScene() {
   scene = new THREE.Scene();
   scene.add(new THREE.AxisHelper(10));
   createTrack(0, 0, 0);
-  createCar(40, -40, 0);
+  createCar(74, -70, 0);
 }
 
 // SCENE INIT END
@@ -203,7 +203,7 @@ function createCamera() {
 
   camera.position.x = 0;
   camera.position.y = 0;
-  camera.position.z = 200;
+  camera.position.z = 150;
   camera.up.set(0, 1, 0);
   camera.lookAt(scene.position);
 }
