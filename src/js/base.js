@@ -1,10 +1,11 @@
 'use strict';
 
 var camera, scene, renderer;
-var material;
 var clock;
 
 var car;
+
+var carMaterial, groundMaterial, orangeMaterial, butterMaterial, cheerioMaterial;
 
 var tableLength = 200;
 var tableHeight = 2;
@@ -55,7 +56,7 @@ VariablyAcceleratableObject3D.prototype = Object.assign(Object.create(THREE.Obje
 // SCENE INIT
 
 function createCar(x, y, z) {
-	material = new THREE.MeshBasicMaterial({color: 0xffffff, wireframe: true});
+	carMaterial = new THREE.MeshBasicMaterial({color: 0xffffff, wireframe: true});
 
 	car = new VariablyAcceleratableObject3D();
 	addBody(car, 0, 0, 0.95);
@@ -69,36 +70,36 @@ function createCar(x, y, z) {
 
 function addBody(parent, x, y, z) {
 	var geometry = new THREE.BoxGeometry(3, 5, 1);
-	var mesh = new THREE.Mesh(geometry, material);
+	var mesh = new THREE.Mesh(geometry, carMaterial);
 	mesh.position.set(x, y, z);
 	parent.add(mesh);
 	geometry = new THREE.BoxGeometry(3, 3, 0.5);
-	mesh = new THREE.Mesh(geometry, material);
+	mesh = new THREE.Mesh(geometry, carMaterial);
 	mesh.position.set(x, y, z + 0.75);
 	parent.add(mesh);
 }
 
 function addWheel(parent, x, y, z) {
 	var geometry = new THREE.TorusGeometry(0.30, 0.15, 8, 16);
-	var torus = new THREE.Mesh(geometry, material);
+	var torus = new THREE.Mesh(geometry, carMaterial);
 	torus.rotateY(Math.PI / 2);
 	torus.position.set(x, y, z);
 	parent.add(torus);
 }
 
 function addGround(parent, x, y, z) {
-	material = new THREE.MeshBasicMaterial({color: 0x00fff0, wireframe: true});
+	groundMaterial = new THREE.MeshBasicMaterial({color: 0x00fff0, wireframe: true});
 	var geometry = new THREE.BoxGeometry(tableLength, tableLength, tableHeight);
-	var mesh = new THREE.Mesh(geometry, material);
+	var mesh = new THREE.Mesh(geometry, groundMaterial);
 	mesh.name = "Ground";
 	mesh.position.set(x, y, z - tableHeight / 2);
 	parent.add(mesh);
 }
 
 function addCheerios(parent) {
-	material = new THREE.MeshBasicMaterial({color: 0xffff00, wireframe: true});
+	cheerioMaterial = new THREE.MeshBasicMaterial({color: 0xffff00, wireframe: true});
 	var geometry = new THREE.TorusGeometry(cheerioSize, cheerioSize / 2, 8, 16);
-	var baseCheerio = new THREE.Mesh(geometry, material);
+	var baseCheerio = new THREE.Mesh(geometry, cheerioMaterial);
 
 	var cheerios = new THREE.Group();
 	cheerios.name = "Cheerios";
@@ -117,8 +118,8 @@ function addCheerios(parent) {
 
 function addButters(parent) {
 	var geometry = new THREE.BoxGeometry(7, 4, 1.2);
-	material = new THREE.MeshBasicMaterial({color: 0xffffff, wireframe: true});
-	var baseButter = new THREE.Mesh(geometry, material);
+	butterMaterial = new THREE.MeshBasicMaterial({color: 0xffffff, wireframe: true});
+	var baseButter = new THREE.Mesh(geometry, butterMaterial);
 	baseButter.name = "Butter";
 
 	addCloneAtPosition(parent, baseButter, -49, 33, 0.8);
@@ -130,8 +131,8 @@ function addButters(parent) {
 
 function addOranges(parent) {
 	var geometry = new THREE.SphereGeometry(6, 16, 16);
-	material = new THREE.MeshBasicMaterial({color: 0xff8c00, wireframe: true});
-	var baseOrange = new THREE.Mesh(geometry, material);
+	orangeMaterial = new THREE.MeshBasicMaterial({color: 0xff8c00, wireframe: true});
+	var baseOrange = new THREE.Mesh(geometry, orangeMaterial);
 	baseOrange.name = 'Orange';
 
 	addCloneAtPosition(parent, baseOrange, -33, -29, 0.8);
@@ -194,11 +195,11 @@ function onKeyDown(e) {
 	switch (e.keyCode) {
 		case 65:
 		case 97:
-			scene.traverse(function (node) {
-				if (node instanceof THREE.Mesh) {
-					node.material.wireframe = !node.material.wireframe;
-				}
-			});
+			groundMaterial.wireframe = !groundMaterial.wireframe;
+			carMaterial.wireframe = !carMaterial.wireframe;
+			orangeMaterial.wireframe = !orangeMaterial.wireframe;
+			butterMaterial.wireframe = !butterMaterial.wireframe;
+			cheerioMaterial.wireframe = !cheerioMaterial.wireframe;
 			break;
 		case 38: //up
 			car.acceleration = 20;
