@@ -11,6 +11,13 @@ ptcDescriptions = {
 }
 
 
+def tryClose(closeable):
+	try:
+		closeable.close()
+	except Exception:
+		pass
+
+
 class ProtocolError(Exception):
 	pass
 
@@ -18,13 +25,6 @@ class ProtocolError(Exception):
 def protocolAssert(predicate):
 	if not predicate:
 		raise ProtocolError
-
-
-def tryClose(closeable):
-	try:
-		closeable.close()
-	except Exception:
-		pass
 
 
 def readWord(bufferedReader: BufferedReader):  # reads chars until the next space or \n is found
@@ -47,7 +47,7 @@ def readWord(bufferedReader: BufferedReader):  # reads chars until the next spac
 def readNumber(bufferedReader: BufferedReader):
 	digits = readWord(bufferedReader)
 	if not digits.isdigit():
-		raise Exception('Tried to read a number but found', digits)
+		raise ProtocolError('Tried to read a number but found', digits)
 
 	return int(digits)
 
@@ -57,24 +57,6 @@ def assertEndOfMessage(bufferedReader: BufferedReader):
 	char = byte.decode('ascii')
 	if not char == '\n':
 		raise ProtocolError()
-
-
-def receiveMsg(bufferedReader: BufferedReader):
-	parsedMsg = None
-
-	msgType = readWord(bufferedReader)
-
-	if msgType == 'LST':
-		rest = bufferedReader.read(1)
-		assert rest.decode('ascii') == "\n"
-		parsedMsg = ['LST']
-	elif msgType == 'FPT':
-		parsedMsg = ['FPT']
-		n = readNumber(bufferedReader)
-		for i in range(n):
-			fpt = readWord(bufferedReader)
-
-	return parsedMsg
 
 
 def parseData(data):

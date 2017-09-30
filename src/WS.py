@@ -41,10 +41,10 @@ def registerUDP():
 	for i in range(1, 6):
 		try:
 			udpSock.sendto(encoded, (csName, csPort))
-			response = parseData(udpSock.recv(64))
+			response = parseData(udpSock.recv(1024))
 
-			assert len(response) == 2
-			assert response[0] == "RAK"
+			protocolAssert(len(response) == 2)
+			protocolAssert(response[0] == "RAK")
 			if response[1] == "OK":
 				print("Central server accepted registration.")
 				return
@@ -55,11 +55,12 @@ def registerUDP():
 				print("Central server found protocol error in registration. Exiting...")
 				exit()
 			else:
-				print("Unknown error while registering. Exiting...")
-				exit()
+				raise ProtocolError
 
 		except OSError:
 			print("Try", i, "failed, trying again...")
+		except ProtocolError:
+			print("Protocol error. Trying again...")
 		else:
 			success = True
 			break

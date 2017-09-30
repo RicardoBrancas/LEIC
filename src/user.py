@@ -69,12 +69,15 @@ if __name__ == '__main__':
 					if msg2 == 'EOF':
 						assertEndOfMessage(bufferedReader)
 						print('No tasks available')
+
 					elif msg2 == 'ERR':
 						assertEndOfMessage(bufferedReader)
 						print('Server complained about protocol error.')
+
 					else:
 						protocolAssert(msg2.isdigit())
 						n = int(msg2)
+
 						ptcs = []
 						for i in range(n):
 							ptcs += [readWord(bufferedReader)]
@@ -83,6 +86,7 @@ if __name__ == '__main__':
 						print("Server supports the following tasks:")
 						for i, ptc in enumerate(ptcs):
 							print(str(i + 1) + ". " + ptc + ": " + ptcDescriptions[ptc])
+						
 				except ProtocolError:
 					print("Protocol error while communicating with server.")
 
