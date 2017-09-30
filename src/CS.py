@@ -3,6 +3,7 @@
 import argparse
 import socket
 import select
+import sys
 from multiprocessing import Process
 
 from common import *
@@ -24,41 +25,54 @@ def cleanup():
 	exit()
 
 
-def userConnection(sock):
+def userConnection(sock: socket.SocketType):
 	def userConnectionCleanup():
 		tryClose(sock)
-		exit()
+		sys.exit()
 
 	tcpSock.close()
 	udpSock.close()
 	try:
 		clientAddress = sock.getpeername()
+		bufferedReader = sock.makefile('rb', buffering=1024)
 
 		while True:
+			select.select([bufferedReader], [], [])
 			try:
-				msg = parseData(sock.recv(1024))
+				if bufferedReader.peek() == b'':
+					raise EOFError()
 
-				if msg is not None:
-					logMessage('IN', 'TCP', 'USER', clientAddress, msg)
+				msgType = readWord(bufferedReader)
+				print("[" + msgType + "] request from", clientAddress)
 
-					if msg[0] == "LST":
-						assert len(msg) == 1
+				if msgType == 'LST':
+					try:
+						assertEndOfMessage(bufferedReader)
 
 						if len(processingTasks) == 0:
-							response, encodedResponse = constructMessage('FPT', 'EOF')
+							print('Sending list of PTCs (empty)')
+							sendMsg(sock, 'FPT', 'EOF')
 						else:
-							response, encodedResponse = constructMessage('FPT', len(processingTasks),
-																		 processingTasks.keys())
+							print('Sending list of PTCs')
+							print(list(processingTasks))
+							sendMsg(sock, 'FPT', len(processingTasks), list(processingTasks))
 
-						logMessage('OUT', 'TCP', 'USER', clientAddress, response)
-						sock.sendall(encodedResponse)
+					except ProtocolError:
+						print('Incorrectly formulated LST request. Replying ERR')
+						sendMsg(sock, 'FPT', 'ERR')
 
-				else:
-					print("Empty message received... Leaving connection", clientAddress)
-					userConnectionCleanup()
+				elif msgType == 'REQ':
+					try:
+						ptf = readWord(bufferedReader)
+						size = readNumber(bufferedReader)
+						data = bufferedReader.read(size)
+						assertEndOfMessage(bufferedReader)
+					except ProtocolError:
+						print('Incorrectly formulated REQ request. Replying ERR')
+						sendMsg(sock, 'REP', 'ERR')
 
-			except socket.error:
-				print("Client", clientAddress, "lost...")
+			except EOFError:
+				print("End of stream. Client", clientAddress, "lost.")
 				userConnectionCleanup()
 
 	except KeyboardInterrupt:
@@ -120,9 +134,9 @@ def prepareUdp():
 
 def udpReceive():
 	try:
-		data, address = udpSock.recvfrom(1024)
+		data, address = udpSock.recvfrom(4096)
 		msg = parseData(data)
-		logMessage('IN', 'UDP', 'WS', address, msg)
+		print("[" + msg[0] + "] received via UDP from", address)
 
 		if msg[0] == 'REG':
 			try:
@@ -143,7 +157,7 @@ def udpReceive():
 			except Exception:
 				msg, encodedMsg = constructMessage('RAK', 'ERR')
 			finally:
-				logMessage('OUT', 'UDP', 'WS', address, msg)
+				print("Replying via UDP with", msg[1])
 				udpSock.sendto(encodedMsg, address)
 
 		else:

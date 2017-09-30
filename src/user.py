@@ -2,12 +2,14 @@
 
 import argparse
 import socket
+import sys
 
 from common import *
 
 host = None
 port = None
 sock = None
+bufferedReader
 
 
 def cleanup():
@@ -17,7 +19,7 @@ def cleanup():
 
 
 def prepareTCP():
-	global sock
+	global sock, bufferedReader
 
 	print("Starting TCP server")
 	try:
@@ -31,6 +33,7 @@ def prepareTCP():
 	print("Trying to connect to host '" + host + "' on port " + str(port))
 	try:
 		sock.connect((host, port))
+		bufferedReader = sock.makefile('rb', buffering=1024)
 	except OSError:
 		print("Could not establish connection. Maybe server is offline?")
 		cleanup()
@@ -55,37 +58,52 @@ if __name__ == '__main__':
 		lineLst = line.split()
 		try:
 			if lineLst[0] == 'list':
-				msg, encoded = constructMessage('LST')
-				sock.sendall(encoded)
+				sendMsg(sock, 'LST')
 
-				response = parseData(sock.recv(1024))
+				try:
+					msgType = readWord(bufferedReader)
 
-				assert response[0] == 'FPT'
+					protocolAssert(msgType == 'FPT')
 
-				if response[1] == 'EOF':
-					assert len(response) == 2
+					msg2 = readWord(bufferedReader)
+					if msg2 == 'EOF':
+						assertEndOfMessage(bufferedReader)
+						print('No tasks available')
+					elif msg2 == 'ERR':
+						assertEndOfMessage(bufferedReader)
+						print('Server complained about protocol error.')
+					else:
+						protocolAssert(msg2.isdigit())
+						n = int(msg2)
+						ptcs = []
+						for i in range(n):
+							ptcs += [readWord(bufferedReader)]
+						assertEndOfMessage(bufferedReader)
 
-					print('No tasks available')
-				elif response[1].isdigit():
-					n = int(response[1])
-					assert len(response[2:]) == n
+						print("Server supports the following tasks:")
+						for i, ptc in enumerate(ptcs):
+							print(str(i + 1) + ". " + ptc + ": " + ptcDescriptions[ptc])
+				except ProtocolError:
+					print("Protocol error while communicating with server.")
 
-					print('Server supports the following tasks:')
-					i = 1
-					for ptc in response[2:]:
-						print(str(i) + ". " + ptc + ": " + ptcDescriptions[ptc])
-						i += 1
+			elif lineLst[0] == 'request':
+				ptc = lineLst[1]
+				filename = lineLst[2]
 
-				elif response[1] == 'ERR':
-					print("Server complained about protocol error.")
-				else:
-					print("Server replied with garbage")
+				file = open(filename, 'r')
+				fileData = file.read()
+				dataSize = len(fileData.encode('ascii'))
+
+				sendMsg(sock, 'REQ', ptc, dataSize, fileData)
 
 			elif lineLst[0] == 'exit':
 				break
-		except OSError as ose:
+
+			else:
+				print("Unknown command. Please try again.")
+
+		except OSError:
 			print("Error while talking to server:")
-			print(ose)
 			break
 
 	cleanup()

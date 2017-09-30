@@ -35,16 +35,12 @@ def registerUDP():
 
 	print("Trying to register in central server...")
 
-	registerMsg = "REG "
-	for ptc in PTCs:
-		registerMsg += ptc + " "
-	registerMsg += address + " "
-	registerMsg += str(port) + "\n"
-
+	registerMsg = "REG " + " ".join(PTCs) + " " + address + " " + str(port) + "\n"
+	encoded = registerMsg.encode('ascii')
 	success = False
 	for i in range(1, 6):
 		try:
-			udpSock.sendto(registerMsg.encode('ascii'), (csName, csPort))
+			udpSock.sendto(encoded, (csName, csPort))
 			response = parseData(udpSock.recv(64))
 
 			assert len(response) == 2

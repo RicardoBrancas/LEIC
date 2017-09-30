@@ -1,6 +1,4 @@
-import collections
-
-import sys
+from io import BufferedReader
 
 GN = 16
 defaultPort = 58000 + GN
@@ -13,11 +11,70 @@ ptcDescriptions = {
 }
 
 
-def tryClose(socket):
+class ProtocolError(Exception):
+	pass
+
+
+def protocolAssert(predicate):
+	if not predicate:
+		raise ProtocolError
+
+
+def tryClose(closeable):
 	try:
-		socket.close()
+		closeable.close()
 	except Exception:
 		pass
+
+
+def readWord(bufferedReader: BufferedReader):  # reads chars until the next space or \n is found
+	string = ''
+	spaceRead = False
+	while not spaceRead:
+		bytes = bufferedReader.peek(1)[:1]  # we may have gotten more than we wanted. Ignore the rest
+		char = bytes.decode('ascii')
+		if char == ' ':
+			bufferedReader.read(1)  # remove from buffer
+			spaceRead = True
+		elif char == '\n':
+			spaceRead = True  # leave in buffer
+		else:
+			bufferedReader.read(1)  # remove from buffer
+			string += char
+	return string
+
+
+def readNumber(bufferedReader: BufferedReader):
+	digits = readWord(bufferedReader)
+	if not digits.isdigit():
+		raise Exception('Tried to read a number but found', digits)
+
+	return int(digits)
+
+
+def assertEndOfMessage(bufferedReader: BufferedReader):
+	byte = bufferedReader.read(1)
+	char = byte.decode('ascii')
+	if not char == '\n':
+		raise ProtocolError()
+
+
+def receiveMsg(bufferedReader: BufferedReader):
+	parsedMsg = None
+
+	msgType = readWord(bufferedReader)
+
+	if msgType == 'LST':
+		rest = bufferedReader.read(1)
+		assert rest.decode('ascii') == "\n"
+		parsedMsg = ['LST']
+	elif msgType == 'FPT':
+		parsedMsg = ['FPT']
+		n = readNumber(bufferedReader)
+		for i in range(n):
+			fpt = readWord(bufferedReader)
+
+	return parsedMsg
 
 
 def parseData(data):
@@ -33,7 +90,7 @@ def parseData(data):
 def constructMessage(*args):
 	msg = []
 	for arg in args:
-		if isinstance(arg, collections.Iterable) and not isinstance(arg, str):
+		if isinstance(arg, list) or isinstance(arg, tuple):
 			msg += arg
 		else:
 			msg += [arg]
@@ -43,12 +100,6 @@ def constructMessage(*args):
 	return msg, string.encode('ascii')
 
 
-def logMessage(io, protocol, tofrom, address, msg, stream=sys.stdout):
-	log = io.center(3)
-	log += "[" + protocol + "]"
-	log += "[" + tofrom.center(4) + "]"
-	log += "[" + msg[0] + "]"
-	log += "[" + address[0] + "," + str(address[1]) + "]"
-	log += "{" + str(msg[1:]) + "}"
-
-	stream.write(log + "\n")
+def sendMsg(socket, *args):
+	_, encoded = constructMessage(*args)
+	socket.sendall(encoded)
