@@ -7,10 +7,9 @@
 - FPT
 
 ## IN PROGRESS
-
+- REQ
 
 ## TO DO
-- REQ
 - REP
 - WRQ
 - REP
