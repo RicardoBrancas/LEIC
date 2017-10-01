@@ -9,7 +9,7 @@ from common import *
 host = None
 port = None
 sock = None
-bufferedReader
+bufferedReader = None
 
 
 def cleanup():
