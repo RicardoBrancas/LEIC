@@ -12,6 +12,7 @@ tcpSock = None
 udpSock = None
 
 processingTasks = {}
+requestNumber = 0
 
 port = None
 hostname = ""  # meaning all available interfaces
@@ -25,59 +26,63 @@ def cleanup():
 	exit()
 
 
-def userConnection(sock: socket.SocketType):
-	def userConnectionCleanup():
-		tryClose(sock)
-		sys.exit()
-
+def userConnection(sock: socket.SocketType, requestNumber: int):
 	tcpSock.close()
 	udpSock.close()
 	try:
 		clientAddress = sock.getpeername()
 		bufferedReader = sock.makefile('rb', buffering=1024)
 
-		while True:
-			select.select([bufferedReader], [], [])
-			try:
-				if bufferedReader.peek() == b'':
-					raise EOFError()
+		select.select([bufferedReader], [], [])
+		try:
+			if bufferedReader.peek() == b'':
+				raise EOFError()
 
-				msgType = readWord(bufferedReader)
-				print("[" + msgType + "] request from", clientAddress)
+			msgType = readWord(bufferedReader)
+			print("[" + msgType + "] request from", clientAddress)
 
-				if msgType == 'LST':
-					try:
-						assertEndOfMessage(bufferedReader)
+			if msgType == 'LST':
+				try:
+					assertEndOfMessage(bufferedReader)
 
-						if len(processingTasks) == 0:
-							print('Sending list of PTCs (empty)')
-							sendMsg(sock, 'FPT', 'EOF')
-						else:
-							print('Sending list of PTCs')
-							print(list(processingTasks))
-							sendMsg(sock, 'FPT', len(processingTasks), list(processingTasks))
+					if len(processingTasks) == 0:
+						print('Sending list of PTCs (empty)')
+						sendMsg(sock, 'FPT', 'EOF')
+					else:
+						print('Sending list of PTCs')
+						print(list(processingTasks))
+						sendMsg(sock, 'FPT', len(processingTasks), list(processingTasks))
 
-					except ProtocolError:
-						print('Incorrectly formulated LST request. Replying ERR')
-						sendMsg(sock, 'FPT', 'ERR')
+				except ProtocolError:
+					print('Incorrectly formulated LST request. Replying ERR')
+					sendMsg(sock, 'FPT', 'ERR')
 
-				elif msgType == 'REQ':
-					try:
-						ptf = readWord(bufferedReader)
-						size = readNumber(bufferedReader)
-						data = bufferedReader.read(size)
-						assertEndOfMessage(bufferedReader)
-					except ProtocolError:
-						print('Incorrectly formulated REQ request. Replying ERR')
-						sendMsg(sock, 'REP', 'ERR')
+			elif msgType == 'REQ':
+				try:
+					ptf = readWord(bufferedReader)
+					size = readNumber(bufferedReader)
+					data = bufferedReader.read(size)
+					assertEndOfMessage(bufferedReader)
+					
+					f = open(str(requestNumber).rjust(5, '0') + ".txt", 'wb')
+					f.write(data)
+					f.close()
+					
+				except ProtocolError:
+					print('Incorrectly formulated REQ request. Replying ERR')
+					sendMsg(sock, 'REP', 'ERR')
+			else:
+				print("Unknown message received.")
+				sendMsg(sock, 'ERR')
 
-			except EOFError:
-				print("End of stream. Client", clientAddress, "lost.")
-				userConnectionCleanup()
+		except EOFError:
+			print("End of stream. Client", clientAddress, "lost.")
 
 	except KeyboardInterrupt:
 		print("\nTCP connection", clientAddress, "exiting")
-		userConnectionCleanup()
+	finally:
+		tryClose(sock)
+		sys.exit()
 
 
 def prepareTcp():
@@ -102,11 +107,13 @@ def prepareTcp():
 
 
 def tcpAccept():
+	global requestNumber
 	try:
 		newSock, address = tcpSock.accept()
 		print("Connection from client", address, "accepted, forking...")
 
-		Process(target=userConnection, args=(newSock,), daemon=True).start()
+		Process(target=userConnection, args=(newSock,requestNumber), daemon=True).start()
+		requestNumber += 1
 
 		newSock.close()
 	except OSError:
@@ -161,7 +168,9 @@ def udpReceive():
 				udpSock.sendto(encodedMsg, address)
 
 		else:
-			print("Unknown UDP message received. Ignoring...")
+			print("Unknown UDP message received")
+			msg, encodedMsg = constructMessage('ERR')
+			udpSock.sendto(encodedMsg, address)
 
 	except OSError:
 		print("Error while receiving UDP message. Ignoring...")

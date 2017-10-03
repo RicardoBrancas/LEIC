@@ -20,8 +20,7 @@ def cleanup():
 
 def prepareTCP():
 	global sock, bufferedReader
-
-	print("Starting TCP server")
+	
 	try:
 		sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)  # ignore system TIME_WAIT
@@ -29,8 +28,7 @@ def prepareTCP():
 		print("Exception while creating socket!")
 		cleanup()
 		exit()
-
-	print("Trying to connect to host '" + host + "' on port " + str(port))
+	
 	try:
 		sock.connect((host, port))
 		bufferedReader = sock.makefile('rb', buffering=1024)
@@ -39,7 +37,10 @@ def prepareTCP():
 		cleanup()
 		exit()
 
-	print("Connection established.")
+
+def tryTCPClose():
+	global sock
+	tryClose(sock)
 
 
 if __name__ == '__main__':
@@ -51,16 +52,15 @@ if __name__ == '__main__':
 	host = args.n
 	port = int(args.p)
 
-	prepareTCP()
-
 	while True:
 		line = sys.stdin.readline()
 		lineLst = line.split()
 		try:
 			if lineLst[0] == 'list':
-				sendMsg(sock, 'LST')
+				prepareTCP()
 
 				try:
+					sendMsg(sock, 'LST')
 					msgType = readWord(bufferedReader)
 
 					protocolAssert(msgType == 'FPT')
@@ -89,6 +89,8 @@ if __name__ == '__main__':
 						
 				except ProtocolError:
 					print("Protocol error while communicating with server.")
+				finally:
+					tryTCPClose()
 
 			elif lineLst[0] == 'request':
 				ptc = lineLst[1]
@@ -97,8 +99,14 @@ if __name__ == '__main__':
 				file = open(filename, 'r')
 				fileData = file.read()
 				dataSize = len(fileData.encode('ascii'))
-
-				sendMsg(sock, 'REQ', ptc, dataSize, fileData)
+				
+				prepareTCP()
+				try:
+					sendMsg(sock, 'REQ', ptc, dataSize, fileData)
+				except ProtocolError:
+					pass
+				finally:
+					tryTCPClose()
 
 			elif lineLst[0] == 'exit':
 				break
