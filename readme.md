@@ -6,12 +6,16 @@
 - LST
 - FPT
 
-## IN PROGRESS
+## (kinda probably) DONE
 - REQ
-
-## TO DO
 - REP
 - WRQ
 - REP
+
+## IN PROGRESS
+
+
+## TO DO
+
 - UNR
 - UAK

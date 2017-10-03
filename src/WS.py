@@ -9,13 +9,36 @@ udpSock = None
 udpTimeout = 10
 
 hostname = ''  # meaning all available interfaces
-address = socket.gethostbyname(hostname)
+address = socket.gethostbyname(socket.gethostname())
 port = None
 
 csName = None
 csPort = None
 
 PTCs = None
+
+
+def work(ptc, data: str):
+	if ptc == 'WCT':
+		return len(data.split()), 'R'
+
+	elif ptc == 'FLW':
+		greatestWord = ''
+		wordLen = 0
+		for word in data.split():
+			temp = len(word)
+			if temp > wordLen:
+				greatestWord = word
+				wordLen = temp
+		return greatestWord, 'R'
+
+	elif ptc == 'UPP':
+		return data.upper(), 'F'
+
+	elif ptc == 'LOW':
+		return data.lower(), 'F'
+
+	return "", "R"
 
 
 def prepareUDP():
@@ -70,6 +93,29 @@ def registerUDP():
 		exit(-1)
 
 
+def prepareTCP():
+	tcpSock = None
+
+	print("Starting TCP server")
+	try:
+		tcpSock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+		tcpSock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)  # ignore system TIME_WAIT
+	except OSError:
+		print("Exception while creating TCP socket!")
+		exit()
+
+	try:
+		host = (hostname, port)
+		tcpSock.bind(host)
+	except OSError:
+		print("Error during TCP bind. Maybe the port is in use already?")
+		exit()
+
+	tcpSock.listen(2)
+
+	return tcpSock
+
+
 if __name__ == '__main__':
 	try:
 		parser = argparse.ArgumentParser()
@@ -79,14 +125,53 @@ if __name__ == '__main__':
 		parser.add_argument('ptcs', metavar="PTC", nargs='+')
 		args = parser.parse_args()
 
-		port = args.p
+		port = int(args.p)
 		csName = args.n
-		csPort = args.e
+		csPort = int(args.e)
 
 		PTCs = args.ptcs
 
 		prepareUDP()
 		registerUDP()
+
+		tcpSock = prepareTCP()
+
+		while tcpSock:
+			try:
+				newSock, address = tcpSock.accept()
+				print("Accepted connection from:", address)
+				bufferedReader = newSock.makefile('rb', 1024)
+
+				msgType = readWord(bufferedReader)
+
+				if msgType == 'WRQ':
+					try:
+						ptc = readWord(bufferedReader)
+						if ptc not in PTCs:
+							print("Unknown PTC sent by server:", ptc)
+							sendMsg(newSock, 'WRP', 'EOF')
+
+						filename = readWord(bufferedReader)
+						size = readNumber(bufferedReader)
+						data = bufferedReader.read(size).decode('ascii')
+
+						result, type = work(ptc, data)
+
+						replySize = len(result.encode('ascii'))
+
+						sendMsg(newSock, 'REP', type, replySize, result)
+
+					except ProtocolError:
+						print("Request not correctly formulated. Replying with WRP ERR")
+						sendMsg(newSock, 'WRP', 'ERR')
+				else:
+					print("Unknown message from server:", msgType)
+					sendMsg(newSock, 'ERR')
+
+			except OSError:
+				pass
+			finally:
+				tryClose(newSock)
 
 	except KeyboardInterrupt:
 		pass

@@ -1,3 +1,4 @@
+import socket
 from io import BufferedReader
 
 GN = 16
@@ -82,6 +83,66 @@ def constructMessage(*args):
 	return msg, string.encode('ascii')
 
 
+def encodeElem(elem):
+	if isinstance(elem, bytes) or isinstance(elem, bytearray):
+		return elem
+	else:
+		return str(elem).encode('ascii')
+
+
 def sendMsg(socket, *args):
-	_, encoded = constructMessage(*args)
+	encoded = b''
+	first = True
+	for arg in args:
+		if not first:
+			encoded += b' '
+		else:
+			first = False
+
+		if isinstance(arg, list) or isinstance(arg, tuple):
+			first = True
+			for argElem in arg:
+				if not first:
+					encoded += b' '
+				else:
+					first = False
+				encoded += encodeElem(argElem)
+		else:
+			encoded += encodeElem(arg)
+
+	encoded += b'\n'
+
 	socket.sendall(encoded)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+def prepare_tcp_client(address):
+	sock = None
+
+	try:
+		sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+		sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)  # ignore system TIME_WAIT
+	except OSError:
+		print("Exception while creating socket!")
+		tryClose(sock)
+
+	try:
+		sock.connect(address)
+	except OSError:
+		print("Could not establish connection. Maybe server is offline?")
+		tryClose(sock)
+
+	return sock

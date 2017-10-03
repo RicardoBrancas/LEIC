@@ -6,7 +6,13 @@ import select
 import sys
 from multiprocessing import Process
 
+import os
+
+import errno
+
 from common import *
+
+inputFilesPath = "input_files/"
 
 tcpSock = None
 udpSock = None
@@ -24,6 +30,43 @@ def cleanup():
 	tryClose(udpSock)
 	print("Exiting")
 	exit()
+
+
+def split(data: str, ptc):
+	numberOfWSs = len(processingTasks[ptc])
+	approximateCharsPerPart = int(len(data) / numberOfWSs)
+
+	result = {}
+	i = 0
+	last = 0
+
+	for i in range(numberOfWSs - 1):
+		nearest_space = data.rfind(' ', last, (i + 1) * approximateCharsPerPart)
+		result[str(i).rjust(3, '0')] = data[last:nearest_space]
+		last = nearest_space + 1
+
+	i += 1
+	result[str(i).rjust(3, '0')] = data[last:]
+
+	return result
+
+
+def assembleBack(replies, ptc):
+	if ptc == 'WCT':
+		return sum(map(int, replies.values())), 'R'
+	elif ptc == 'FLW':
+		greatestWord = ''
+		wordLen = 0
+		for word in replies.values():
+			temp = len(word)
+			if temp > wordLen:
+				greatestWord = word
+				wordLen = temp
+		return greatestWord, 'R'
+	elif ptc == 'UPP' or ptc == 'LOW':
+		return ' '.join(sorted(replies.keys)), 'F'
+
+	return "", "R"
 
 
 def userConnection(sock: socket.SocketType, requestNumber: int):
@@ -59,15 +102,51 @@ def userConnection(sock: socket.SocketType, requestNumber: int):
 
 			elif msgType == 'REQ':
 				try:
-					ptf = readWord(bufferedReader)
+					ptc = readWord(bufferedReader)
 					size = readNumber(bufferedReader)
 					data = bufferedReader.read(size)
 					assertEndOfMessage(bufferedReader)
-					
-					f = open(str(requestNumber).rjust(5, '0') + ".txt", 'wb')
+
+					f = open(inputFilesPath + str(requestNumber).rjust(5, '0') + ".txt", 'wb')
 					f.write(data)
 					f.close()
-					
+
+					splitData = split(data.decode('ascii'), ptc)
+
+					socketList = []
+					partNumbers = {}
+					for address, dataPart in zip(processingTasks[ptc], splitData.items()):
+						partNumber = dataPart[0]
+						data = dataPart[1]
+						dataSize = len(data)
+						filename = str(requestNumber).rjust(5, '0') + partNumber + ".txt"
+
+						wsSock = prepare_tcp_client(address)
+						partNumbers[wsSock] = partNumber
+						sendMsg(wsSock, 'WRQ', ptc, filename, dataSize, data)
+						socketList += [wsSock]
+
+					replies = {}
+					while len(socketList) != 0:
+						readable, _, _ = select.select(socketList, [], [])
+
+						for wsSock in readable:
+							socketList.remove(wsSock)
+
+							bufferedReader = wsSock.makefile('rb', buffering=1024)
+							msgType = readWord(bufferedReader)
+							protocolAssert(msgType == 'REP')
+							replyType = readWord(bufferedReader)
+							size = readNumber(bufferedReader)
+							replies[partNumbers[wsSock]] = bufferedReader.read(size).decode('ascii')
+
+							bufferedReader.close()
+							wsSock.close()
+
+					finalReply, finalReplyType = assembleBack(replies, ptc)
+					replySize = len(finalReply.encode('ascii'))
+					sendMsg(sock, 'REP', finalReplyType, replySize, finalReply)
+
 				except ProtocolError:
 					print('Incorrectly formulated REQ request. Replying ERR')
 					sendMsg(sock, 'REP', 'ERR')
@@ -112,7 +191,7 @@ def tcpAccept():
 		newSock, address = tcpSock.accept()
 		print("Connection from client", address, "accepted, forking...")
 
-		Process(target=userConnection, args=(newSock,requestNumber), daemon=True).start()
+		Process(target=userConnection, args=(newSock, requestNumber), daemon=True).start()
 		requestNumber += 1
 
 		newSock.close()
@@ -150,7 +229,7 @@ def udpReceive():
 				assert len(msg) > 3
 
 				wsAddress = msg[-2]
-				wsPort = msg[-1]
+				wsPort = int(msg[-1])
 
 				for i in range(1, len(msg) - 2):
 					assert msg[i] != ""
@@ -186,6 +265,12 @@ if __name__ == '__main__':
 		port = args.p
 
 		print("Starting central server on " + socket.gethostname())
+
+		try:
+			os.makedirs(inputFilesPath)
+		except OSError as e:
+			if e.errno != errno.EEXIST:  # else, directory already exists. Continue
+				raise
 
 		prepareUdp()
 		prepareTcp()

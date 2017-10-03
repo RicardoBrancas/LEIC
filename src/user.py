@@ -52,6 +52,11 @@ if __name__ == '__main__':
 	host = args.n
 	port = int(args.p)
 
+	print("Checking if server is online...")
+	prepareTCP()
+	tryTCPClose()
+
+	print("Waiting for commands...")
 	while True:
 		line = sys.stdin.readline()
 		lineLst = line.split()
@@ -99,12 +104,28 @@ if __name__ == '__main__':
 				file = open(filename, 'r')
 				fileData = file.read()
 				dataSize = len(fileData.encode('ascii'))
+				file.close()
 				
 				prepareTCP()
 				try:
 					sendMsg(sock, 'REQ', ptc, dataSize, fileData)
+
+					msgType = readWord(bufferedReader)
+					protocolAssert(msgType == 'REP')
+					replyType = readWord(bufferedReader)
+					size = readNumber(bufferedReader)
+					data = bufferedReader.read(size)
+
+					if replyType == 'R':
+						print("Server replied with", data.decode('ascii'))
+					elif replyType == 'F':
+						print("Saving server reply in", filename)
+						file = open(filename, 'wb')
+						file.write(data)
+						file.close()
+
 				except ProtocolError:
-					pass
+					print("Protocol error while communicating with server.")
 				finally:
 					tryTCPClose()
 
