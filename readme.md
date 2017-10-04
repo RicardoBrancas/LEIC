@@ -7,13 +7,13 @@
 - FPT
 
 ## (kinda probably) DONE
+
+
+## IN PROGRESS
 - REQ
 - REP
 - WRQ
 - REP
-
-## IN PROGRESS
-
 
 ## TO DO
 
