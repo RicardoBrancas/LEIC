@@ -12,7 +12,7 @@ var tableHeight = 2;
 
 var cheerioSize = 1;
 
-// HELPER FUNCTIONS
+// === HELPER FUNCTIONS ===
 
 function addCloneAtPosition(parent, object, x, y, z) {
 	var clone = object.clone();
@@ -20,10 +20,10 @@ function addCloneAtPosition(parent, object, x, y, z) {
 	parent.add(clone);
 }
 
-// END HELPER FUNCTIONS
+// === HELPER FUNCTIONS END ===
 
 
-// OBJECTS
+// === OBJECTS ===
 
 function VariablyAcceleratableObject3D() {
 	THREE.Object3D.call(this);
@@ -50,45 +50,70 @@ VariablyAcceleratableObject3D.prototype = Object.assign(Object.create(THREE.Obje
 	}
 });
 
-// OBJECTS
 
+function Car(width, length, wheel_external_diameter, wheel_width) {
+	VariablyAcceleratableObject3D.call(this);
+	this.type = 'Car';
 
-// SCENE INIT
-
-function createCar(x, y, z) {
 	carMaterial = new THREE.MeshBasicMaterial({color: 0xffffff, wireframe: true});
 
-	car = new VariablyAcceleratableObject3D();
-	addBody(car, 0, 0, 0.95);
-	addWheel(car, 1.55, 1.5, 0.45);
-	addWheel(car, -1.55, -1.5, 0.45);
-	addWheel(car, -1.55, 1.5, 0.45);
-	addWheel(car, 1.55, -1.5, 0.45);
+	this.width = width;
+	this.length = length;
+	this.part1_height = 1;
+	this.part2_height = 0.5;
+
+	this.axle_height = wheel_external_diameter / 2;
+	this.wheel_radius = (wheel_external_diameter - wheel_width) / 2;
+	this.wheel_tube = wheel_width / 2;
+	this.total_axle_length = this.width + this.wheel_tube*2;
+
+	this.addBody();
+	this.addWheels();
+}
+
+Car.prototype = Object.assign(Object.create(VariablyAcceleratableObject3D.prototype), {
+
+	addBody: function() {
+		var part1_geom = new THREE.BoxGeometry(this.width, this.length, this.part1_height);
+		var part1 = new THREE.Mesh(part1_geom, carMaterial);
+		var part2_geom = new THREE.BoxGeometry(this.width, this.width, this.part2_height);
+		var part2 = new THREE.Mesh(part2_geom, carMaterial);
+
+		part1.position.y = -this.width / 2; //move back so that car center is the front axel
+		part1.position.z = this.part1_height/2 + this.axle_height;
+		this.add(part1);
+
+		part2.position.y = -this.width / 2; //move back so that car center is the front axel
+		part2.position.z = this.part2_height/2 + this.part1_height + this.axle_height;
+		this.add(part2);
+	},
+
+	addWheels: function() {
+		var geometry = new THREE.TorusGeometry(this.wheel_radius, this.wheel_tube, 16, 32);
+		var wheel = new THREE.Mesh(geometry, carMaterial);
+		wheel.rotateY(Math.PI / 2);
+
+		addCloneAtPosition(this, wheel,  this.total_axle_length / 2, 0,           this.axle_height);
+		addCloneAtPosition(this, wheel, -this.total_axle_length / 2, 0,           this.axle_height);
+		addCloneAtPosition(this, wheel, -this.total_axle_length / 2, -this.width, this.axle_height);
+		addCloneAtPosition(this, wheel,  this.total_axle_length / 2, -this.width, this.axle_height);
+	}
+
+});
+
+// === OBJECTS END ===
+
+
+// === SCENE INIT ===
+
+function createCar(x, y, z) {
+	car = new Car(3, 5, 0.9, 0.3);
 	car.position.set(x, y, z);
 	scene.add(car);
 }
 
-function addBody(parent, x, y, z) {
-	var geometry = new THREE.BoxGeometry(3, 5, 1);
-	var mesh = new THREE.Mesh(geometry, carMaterial);
-	mesh.position.set(x, y, z);
-	parent.add(mesh);
-	geometry = new THREE.BoxGeometry(3, 3, 0.5);
-	mesh = new THREE.Mesh(geometry, carMaterial);
-	mesh.position.set(x, y, z + 0.75);
-	parent.add(mesh);
-}
-
-function addWheel(parent, x, y, z) {
-	var geometry = new THREE.TorusGeometry(0.30, 0.15, 8, 16);
-	var torus = new THREE.Mesh(geometry, carMaterial);
-	torus.rotateY(Math.PI / 2);
-	torus.position.set(x, y, z);
-	parent.add(torus);
-}
-
 function addGround(parent, x, y, z) {
-	groundMaterial = new THREE.MeshBasicMaterial({color: 0x00fff0, wireframe: true});
+	groundMaterial = new THREE.MeshBasicMaterial({color: 0x45525F, wireframe: true});
 	var geometry = new THREE.BoxGeometry(tableLength, tableLength, tableHeight);
 	var mesh = new THREE.Mesh(geometry, groundMaterial);
 	mesh.name = "Ground";
@@ -155,21 +180,12 @@ function createScene() {
 	scene.add(new THREE.AxisHelper(10));
 	createTrack(0, 0, 0);
 	createCar(65, -65, 0);
-
-	//TODO DEBUG
-	(function printGraph(obj) {
-		console.group(obj.name + ' <%o> ', obj);
-
-		obj.children.forEach(printGraph);
-
-		console.groupEnd();
-	}(scene));
 }
 
-// SCENE INIT END
+// === SCENE INIT END ===
 
 
-// EVENT LISTENERS
+// === EVENT LISTENERS ===
 
 function onResize() {
 	renderer.setSize(window.innerWidth, window.innerHeight);
@@ -229,7 +245,7 @@ function onKeyUp(e) {
 	}
 }
 
-// EVENT LISTENERS END
+// === EVENT LISTENERS END ===
 
 function render() {
 	renderer.render(scene, camera);
