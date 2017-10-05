@@ -1,46 +1,106 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 
 import argparse
-import socket
-import sys
+import readline  # do not remove
+import os
 
 from common import *
 
-host = None
-port = None
-sock = None
-bufferedReader = None
 
+def action_list():
+	sock = prepare_tcp_client((host, port))
+	bufferedReader = sock.makefile('rb', buffer_size)
 
-def cleanup():
-	print("Cleaning up")
-	tryClose(sock)
-	exit()
-
-
-def prepareTCP():
-	global sock, bufferedReader
-	
 	try:
-		sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-		sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)  # ignore system TIME_WAIT
-	except OSError:
-		print("Exception while creating socket!")
-		cleanup()
-		exit()
-	
+		sendMsg(sock, 'LST')
+
+		protocol_message = readWord(bufferedReader)
+		protocolAssert(protocol_message == 'FPT')
+
+		word = readWord(bufferedReader)
+		if word == 'EOF':
+			assertEndOfMessage(bufferedReader)
+			print('No tasks available')
+
+		elif word == 'ERR':
+			assertEndOfMessage(bufferedReader)
+			print('Server complained about protocol error.')
+
+		else:
+			protocolAssert(word.isdigit())
+			n = int(word)
+
+			print("Server supports the following tasks:")
+			for i in range(n):
+				ptc = readWord(bufferedReader)
+				print(str(i + 1) + ". " + ptc + ": " + ptcDescriptions[ptc])
+
+	except ProtocolError:
+		print("Protocol error while communicating with server.")
+	finally:
+		bufferedReader.close()
+		sock.close()
+
+
+def action_request(input_parts):
+	if len(input_parts) != 3:
+		print("Syntax error. Please try again")
+
+	ptc = input_parts[1]
+	filename = input_parts[2]
+
+	if not os.path.isfile(filename):
+		print("File", filename, "does not exist.")
+		return
+
+	file = open(filename, 'rb')
+	file_size = os.path.getsize(filename)
+
+	sock = prepare_tcp_client((host, port))
+	bufferedReader = sock.makefile('rb', buffer_size)
+
 	try:
-		sock.connect((host, port))
-		bufferedReader = sock.makefile('rb', buffering=1024)
-	except OSError:
-		print("Could not establish connection. Maybe server is offline?")
-		cleanup()
-		exit()
+		sendMsg(sock, 'REQ', ptc, file_size, tail=' ')
 
+		readFileToSocket(file, sock, file_size)
+		file.close()
+		sock.sendall(b'\n')
 
-def tryTCPClose():
-	global sock
-	tryClose(sock)
+		protocol_message = readWord(bufferedReader)
+		protocolAssert(protocol_message == 'REP')
+
+		msg = readWord(bufferedReader)
+		if msg == 'EOF':
+			assertEndOfMessage(bufferedReader)
+			print("Server does not support", ptc, "please use 'list' to get supported operations.")
+
+		elif msg == 'ERR':
+			assertEndOfMessage(bufferedReader)
+			raise ProtocolError
+
+		elif msg == 'R' or msg == 'F':
+			reply_type = msg
+			size = readNumber(bufferedReader)
+
+			if reply_type == 'R':
+				data = bufferedReader.read(size)
+				assertEndOfMessage(bufferedReader)
+				print('Reply:', data.decode('ascii'))
+
+			else:
+				print('Saving reply to', filename + ".new")
+				file_out = open(filename + ".new", 'wb')
+				readSocketToFile(bufferedReader, file_out, size)
+				file_out.close()
+				assertEndOfMessage(bufferedReader)
+		else:
+			raise ProtocolError
+
+	except ProtocolError:
+		print("Protocol error while communicating with server.")
+	finally:
+		bufferedReader.close()
+		sock.close()
 
 
 if __name__ == '__main__':
@@ -53,90 +113,35 @@ if __name__ == '__main__':
 	port = int(args.p)
 
 	print("Checking if server is online...")
-	prepareTCP()
-	tryTCPClose()
+	tempSock = prepare_tcp_client((host, port))
+	tempSock.close()
 
 	print("Waiting for commands...")
-	while True:
-		line = sys.stdin.readline()
-		lineLst = line.split()
-		try:
-			if lineLst[0] == 'list':
-				prepareTCP()
+	try:
+		while True:
+			line = input('> ')
+			line_parts = line.split()
+			try:
+				if len(line_parts) < 1:
+					print("Unknown command. Please try again.")
+					continue
 
-				try:
-					sendMsg(sock, 'LST')
-					msgType = readWord(bufferedReader)
+				if line_parts[0] == 'list':
+					action_list()
 
-					protocolAssert(msgType == 'FPT')
+				elif line_parts[0] == 'request':
+					action_request(line_parts)
 
-					msg2 = readWord(bufferedReader)
-					if msg2 == 'EOF':
-						assertEndOfMessage(bufferedReader)
-						print('No tasks available')
+				elif line_parts[0] == 'exit':
+					break
 
-					elif msg2 == 'ERR':
-						assertEndOfMessage(bufferedReader)
-						print('Server complained about protocol error.')
+				else:
+					print("Unknown command. Please try again.")
 
-					else:
-						protocolAssert(msg2.isdigit())
-						n = int(msg2)
-
-						ptcs = []
-						for i in range(n):
-							ptcs += [readWord(bufferedReader)]
-						assertEndOfMessage(bufferedReader)
-
-						print("Server supports the following tasks:")
-						for i, ptc in enumerate(ptcs):
-							print(str(i + 1) + ". " + ptc + ": " + ptcDescriptions[ptc])
-						
-				except ProtocolError:
-					print("Protocol error while communicating with server.")
-				finally:
-					tryTCPClose()
-
-			elif lineLst[0] == 'request':
-				ptc = lineLst[1]
-				filename = lineLst[2]
-
-				file = open(filename, 'r')
-				fileData = file.read()
-				dataSize = len(fileData.encode('ascii'))
-				file.close()
-				
-				prepareTCP()
-				try:
-					sendMsg(sock, 'REQ', ptc, dataSize, fileData)
-
-					msgType = readWord(bufferedReader)
-					protocolAssert(msgType == 'REP')
-					replyType = readWord(bufferedReader)
-					size = readNumber(bufferedReader)
-					data = bufferedReader.read(size)
-
-					if replyType == 'R':
-						print("Server replied with", data.decode('ascii'))
-					elif replyType == 'F':
-						print("Saving server reply in", filename)
-						file = open(filename, 'wb')
-						file.write(data)
-						file.close()
-
-				except ProtocolError:
-					print("Protocol error while communicating with server.")
-				finally:
-					tryTCPClose()
-
-			elif lineLst[0] == 'exit':
+			except OSError:
+				print("Error while talking to server. Exiting.")
 				break
+	except KeyboardInterrupt:
+		pass
 
-			else:
-				print("Unknown command. Please try again.")
-
-		except OSError:
-			print("Error while talking to server:")
-			break
-
-	cleanup()
+	exit()

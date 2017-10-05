@@ -1,15 +1,13 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 
 import argparse
-import socket
+
+import os
 
 from common import *
 
-udpSock = None
-udpTimeout = 10
-
-hostname = ''  # meaning all available interfaces
-address = socket.gethostbyname(socket.gethostname())
+hostname = ''
+address = socket.gethostbyname(hostname)
 port = None
 
 csName = None
@@ -18,44 +16,69 @@ csPort = None
 PTCs = None
 
 
-def work(ptc, data: str):
+def work(ptc, file: BufferedIOBase, file_size: int):
 	if ptc == 'WCT':
-		return len(data.split()), 'R'
+		wct = 0
+
+		last_byte = file.read(1)
+		if not last_byte.isspace(): wct += 1  # starts with a word
+		while file.tell() < file_size:
+			new_byte = file.read(1)
+			if last_byte.isspace() and not new_byte.isspace():
+				wct += 1
+			last_byte = new_byte
+
+		return wct, 'R'
 
 	elif ptc == 'FLW':
-		greatestWord = ''
-		wordLen = 0
-		for word in data.split():
-			temp = len(word)
-			if temp > wordLen:
-				greatestWord = word
-				wordLen = temp
-		return greatestWord, 'R'
+		greatest_word = b''
+		gw_len = 0
+
+		current_word = b''
+		current_len = 0
+
+		last_byte = file.read(1)
+		while file.tell() < file_size:
+			new_byte = file.read(1)
+
+			if not last_byte.isspace() and new_byte.isspace:  # end of word
+				if current_len > gw_len:
+					greatest_word = current_word
+					gw_len = current_len
+				current_word = b''
+				current_len = 0
+
+			elif new_byte.isspace():
+				pass
+
+			else:  # middle/start of word
+				current_word += new_byte
+				current_len += 1
+
+		return greatest_word, 'R'
 
 	elif ptc == 'UPP':
-		return data.upper(), 'F'
+		while file.tell() < size:
+			data = file.read(min(buffer_size, size-file.tell()))
+			file.seek(-len(data), os.SEEK_CUR)
+			data.upper()
+			file.write(data)
+
+		return '', 'F'
 
 	elif ptc == 'LOW':
-		return data.lower(), 'F'
+		while file.tell() < size:
+			data = file.read(min(buffer_size, size-file.tell()))
+			file.seek(-len(data), os.SEEK_CUR)
+			data.lower()
+			file.write(data)
+
+		return '', 'F'
 
 	return "", "R"
 
 
-def prepareUDP():
-	global udpSock
-
-	print("Starting UDP server")
-	try:
-		udpSock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-		udpSock.settimeout(udpTimeout)
-	except OSError:
-		print("Exception while creating UDP socket!")
-		exit()
-
-
-def registerUDP():
-	global udpSock
-
+def register(sock, address, port):
 	print("Trying to register in central server...")
 
 	registerMsg = "REG " + " ".join(PTCs) + " " + address + " " + str(port) + "\n"
@@ -63,8 +86,8 @@ def registerUDP():
 	success = False
 	for i in range(1, 6):
 		try:
-			udpSock.sendto(encoded, (csName, csPort))
-			response = parseData(udpSock.recv(1024))
+			sock.sendto(encoded, (csName, csPort))
+			response = parseData(sock.recv(buffer_size))
 
 			protocolAssert(len(response) == 2)
 			protocolAssert(response[0] == "RAK")
@@ -93,54 +116,73 @@ def registerUDP():
 		exit(-1)
 
 
-def prepareTCP():
-	tcpSock = None
+def unregister(sock):
+	print("Trying to unregister from central server...")
 
-	print("Starting TCP server")
-	try:
-		tcpSock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-		tcpSock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)  # ignore system TIME_WAIT
-	except OSError:
-		print("Exception while creating TCP socket!")
-		exit()
+	message = "UNR " + address + " " + str(port) + "\n"
+	encoded = message.encode('ascii')
+	success = False
+	for i in range(1, 6):
+		try:
+			sock.sendto(encoded, (csName, csPort))
+			response = parseData(sock.recv(buffer_size))
 
-	try:
-		host = (hostname, port)
-		tcpSock.bind(host)
-	except OSError:
-		print("Error during TCP bind. Maybe the port is in use already?")
-		exit()
+			protocolAssert(len(response) == 2)
+			protocolAssert(response[0] == "UAK")
+			if response[1] == "OK":
+				print("Central server accepted unregistration.")
+				return
+			elif response[1] == "NOK":
+				print("Central server refused unregistration. Exiting anyway...")
+				exit()
+			elif response[1] == "ERR":
+				print("Central server found protocol error in registration. Exiting anyway...")
+				exit()
+			else:
+				raise ProtocolError
 
-	tcpSock.listen(2)
+		except OSError:
+			print("Try", i, "failed, trying again...")
+		except ProtocolError:
+			print("Protocol error. Trying again...")
+		else:
+			success = True
+			break
 
-	return tcpSock
-
+	if not success:
+		print("Failed to unregister from central server. Exiting anyway...")
+		exit(-1)
 
 if __name__ == '__main__':
+
+	parser = argparse.ArgumentParser()
+	parser.add_argument('-p', type=int, metavar="WSport", default=59000)
+	parser.add_argument('-n', metavar="CSname", default='')
+	parser.add_argument('-e', type=int, metavar="CSport", default=defaultPort)
+	parser.add_argument('ptcs', metavar="PTC", nargs='+')
+	args = parser.parse_args()
+
+	port = args.p
+	csName = args.n
+	csPort = args.e
+
+	PTCs = args.ptcs
+
+	udp_sock = prepare_udp_client(20)
+	tcp_sock = prepare_tcp_server((address, port))
+
 	try:
-		parser = argparse.ArgumentParser()
-		parser.add_argument('-p', metavar="WSport", default=59000)
-		parser.add_argument('-n', metavar="CSname", default='')
-		parser.add_argument('-e', metavar="CSport", default=defaultPort)
-		parser.add_argument('ptcs', metavar="PTC", nargs='+')
-		args = parser.parse_args()
+		if address.startswith('127.') or address == '0.0.0.0':
+			address = get_ip()
 
-		port = int(args.p)
-		csName = args.n
-		csPort = int(args.e)
+		register(udp_sock, address, port)
 
-		PTCs = args.ptcs
-
-		prepareUDP()
-		registerUDP()
-
-		tcpSock = prepareTCP()
-
-		while tcpSock:
+		while tcp_sock:
+			newSock = None
 			try:
-				newSock, address = tcpSock.accept()
+				newSock, address = tcp_sock.accept()
 				print("Accepted connection from:", address)
-				bufferedReader = newSock.makefile('rb', 1024)
+				bufferedReader = newSock.makefile('rb', buffer_size)
 
 				msgType = readWord(bufferedReader)
 
@@ -150,16 +192,33 @@ if __name__ == '__main__':
 						if ptc not in PTCs:
 							print("Unknown PTC sent by server:", ptc)
 							sendMsg(newSock, 'WRP', 'EOF')
+						else:
+							print("Request PTC is", ptc)
 
-						filename = readWord(bufferedReader)
-						size = readNumber(bufferedReader)
-						data = bufferedReader.read(size).decode('ascii')
+							filename = readWord(bufferedReader) + ".ws"
+							size = readNumber(bufferedReader)
 
-						result, type = work(ptc, data)
+							file = open(filename, 'w+b')
+							readSocketToFile(bufferedReader, file, size)
+							assertEndOfMessage(bufferedReader)
 
-						replySize = len(result.encode('ascii'))
+							file.seek(0)
 
-						sendMsg(newSock, 'REP', type, replySize, result)
+							result, type = work(ptc, file, size)
+
+							if type == 'R':
+								file.close()
+								replySize = len(str(result).encode('ascii'))
+
+								sendMsg(newSock, 'REP', type, replySize, result)
+							elif type == 'F':
+								file.seek(0)
+
+								sendMsg(newSock, 'REP', type, size, tail=' ')
+								readFileToSocket(file, newSock, size)
+								newSock.sendall(b'\n')
+
+								file.close()
 
 					except ProtocolError:
 						print("Request not correctly formulated. Replying with WRP ERR")
@@ -171,7 +230,13 @@ if __name__ == '__main__':
 			except OSError:
 				pass
 			finally:
-				tryClose(newSock)
+				if newSock:
+					newSock.close()
 
 	except KeyboardInterrupt:
 		pass
+	finally:
+		tcp_sock.close()
+		unregister(udp_sock)
+		udp_sock.close()
+

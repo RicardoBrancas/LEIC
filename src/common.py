@@ -1,8 +1,11 @@
-import socket
 from io import BufferedReader
+
+from socket_utils import *
 
 GN = 16
 defaultPort = 58000 + GN
+
+hostname = socket.gethostname()
 
 ptcDescriptions = {
 	'WCT': 'word count',
@@ -90,7 +93,7 @@ def encodeElem(elem):
 		return str(elem).encode('ascii')
 
 
-def sendMsg(socket, *args):
+def sendMsg(socket, *args, tail='\n'):
 	encoded = b''
 	first = True
 	for arg in args:
@@ -110,39 +113,22 @@ def sendMsg(socket, *args):
 		else:
 			encoded += encodeElem(arg)
 
-	encoded += b'\n'
+	encoded += tail.encode('ascii')
 
 	socket.sendall(encoded)
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-def prepare_tcp_client(address):
-	sock = None
-
+def get_ip():
+	"""
+		Used just in case if the IP associated with the host is a loopback address
+	"""
+	s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 	try:
-		sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-		sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)  # ignore system TIME_WAIT
-	except OSError:
-		print("Exception while creating socket!")
-		tryClose(sock)
-
-	try:
-		sock.connect(address)
-	except OSError:
-		print("Could not establish connection. Maybe server is offline?")
-		tryClose(sock)
-
-	return sock
+		# doesn't have to be reachable
+		s.connect(('10.255.255.255', 1))
+		IP = s.getsockname()[0]
+	except:
+		IP = '127.0.0.1'
+	finally:
+		s.close()
+	return IP
