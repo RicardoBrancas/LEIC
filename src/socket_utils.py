@@ -12,17 +12,14 @@ def readFileToSocket(file: BufferedIOBase, sock: socket, size):
 	logProgress = False
 	if size > 1000000:  # 1M
 		logProgress = True
-		buffer_size = 2 << 14
-	else:
-		buffer_size = 4096
 
 	try:
 		while file.tell() < size:
-			if logProgress:
-				print("Sending file", file.tell(), "/", size, "bytes sent", end='\r')
 			bytes = file.read(buffer_size)
 			sock.sendall(bytes)
-		print()
+			if logProgress:
+				print("Sending file", file.tell(), "/", size, "bytes sent", end='\r')
+		if logProgress: print()
 	except Exception:
 		print("Error while sending file. Maybe the other side refused?")
 
@@ -31,19 +28,16 @@ def readSocketToFile(bufferedReader: BufferedReader, file: BufferedIOBase, size)
 	logProgress = False
 	if size > 1000000:  # 1M
 		logProgress = True
-		buffer_size = 2 << 14
-	else:
-		buffer_size = 4096
 
 	try:
 		pointer = 0
 		while pointer < size:
-			if logProgress:
-				print("Receiving file", pointer, "/", size, "bytes received", end='\r')
-			data = bufferedReader.read(min(buffer_size, size-pointer))
+			data = bufferedReader.read(min(buffer_size, size - pointer))
 			file.write(data)
 			pointer += len(data)
-		print()
+			if logProgress:
+				print("Receiving file", pointer, "/", size, "bytes received", end='\r')
+		if logProgress: print()
 	except Exception:
 		print("Error while receiving file.")
 

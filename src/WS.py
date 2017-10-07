@@ -41,19 +41,18 @@ def work(ptc, file: BufferedIOBase, file_size: int):
 		while file.tell() < file_size:
 			new_byte = file.read(1)
 
-			if not last_byte.isspace() and new_byte.isspace:  # end of word
+			if not last_byte.isspace():
+				current_word += last_byte
+				current_len += 1
+
+			if not last_byte.isspace() and new_byte.isspace():  # end of word
 				if current_len > gw_len:
 					greatest_word = current_word
 					gw_len = current_len
 				current_word = b''
 				current_len = 0
 
-			elif new_byte.isspace():
-				pass
-
-			else:  # middle/start of word
-				current_word += new_byte
-				current_len += 1
+			last_byte = new_byte
 
 		return greatest_word, 'R'
 
@@ -208,7 +207,10 @@ if __name__ == '__main__':
 
 							if type == 'R':
 								file.close()
-								replySize = len(str(result).encode('ascii'))
+								if isinstance(result, bytes):
+									replySize = len(result)
+								else:
+									replySize = len(str(result).encode('ascii'))
 
 								sendMsg(newSock, 'REP', type, replySize, result)
 							elif type == 'F':

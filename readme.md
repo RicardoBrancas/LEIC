@@ -10,6 +10,7 @@
 - action UPP
 - action LOW
 - action WCT
+- action FLW
 
 ## (kinda probably) DONE
 - REQ (user->CS)
@@ -18,5 +19,5 @@
 - REP (WS->CS)
 
 ## IN PROGRESS
-- action FLW
+
 
