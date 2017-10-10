@@ -128,6 +128,17 @@ def action_req(sock: socket, bufferedReader: BufferedReader, request_number: int
 			size = os.path.getsize(part_filename)
 
 			wsSock = prepare_tcp_client(address)
+
+			if not wsSock:
+				print("WS not responding!")
+				processingTasks[ptc].remove(address)
+				for alternativeAddress in processingTasks[ptc]:
+					wsSock = prepare_tcp_client(alternativeAddress)
+					if wsSock:
+						break
+				if not wsSock:
+					print("No WSs available")
+
 			sock_filenames_dict[wsSock] = part_filename
 			sendMsg(wsSock, 'WRQ', ptc, part_filename, size, tail=' ')
 			readFileToSocket(file, wsSock, size)

@@ -4,6 +4,8 @@ import argparse
 
 import os
 
+from multiprocessing import Process
+
 from common import *
 
 hostname = ''
@@ -54,27 +56,87 @@ def work(ptc, file: BufferedIOBase, file_size: int):
 
 			last_byte = new_byte
 
+		if not last_byte.isspace():
+			current_word += last_byte
+			current_len += 1
+			if current_len > gw_len:
+				greatest_word = current_word
+
 		return greatest_word, 'R'
 
 	elif ptc == 'UPP':
-		while file.tell() < size:
-			data = file.read(min(buffer_size, size-file.tell()))
+		while file.tell() < file_size:
+			data = file.read(min(buffer_size, file_size - file.tell()))
 			file.seek(-len(data), os.SEEK_CUR)
-			data.upper()
+			data = data.upper()
 			file.write(data)
 
 		return '', 'F'
 
 	elif ptc == 'LOW':
-		while file.tell() < size:
-			data = file.read(min(buffer_size, size-file.tell()))
+		while file.tell() < file_size:
+			data = file.read(min(buffer_size, file_size - file.tell()))
 			file.seek(-len(data), os.SEEK_CUR)
-			data.lower()
+			data = data.lower()
 			file.write(data)
 
 		return '', 'F'
 
 	return "", "R"
+
+
+def process(sock):
+	udp_sock.close()
+	tcp_sock.close()
+
+	bufferedReader = sock.makefile('rb', buffer_size)
+
+	try:
+		msgType = readWord(bufferedReader)
+
+		if msgType == 'WRQ':
+
+			ptc = readWord(bufferedReader)
+			if ptc not in PTCs:
+				print("Unknown PTC sent by server:", ptc)
+				sendMsg(sock, 'WRP', 'EOF')
+			else:
+				print("Request PTC is", ptc)
+
+				filename = readWord(bufferedReader) + ".ws"
+				size = readNumber(bufferedReader)
+
+				file = open(filename, 'w+b')
+				readSocketToFile(bufferedReader, file, size)
+				assertEndOfMessage(bufferedReader)
+
+				file.seek(0)
+
+				result, type = work(ptc, file, size)
+
+				if type == 'R':
+					file.close()
+					if isinstance(result, bytes):
+						replySize = len(result)
+					else:
+						replySize = len(str(result).encode('ascii'))
+
+					sendMsg(sock, 'REP', type, replySize, result)
+				elif type == 'F':
+					file.seek(0)
+
+					sendMsg(sock, 'REP', type, size, tail=' ')
+					readFileToSocket(file, sock, size)
+					sock.sendall(b'\n')
+
+					file.close()
+		else:
+			print("Unknown message from server:", msgType)
+			sendMsg(sock, 'ERR')
+
+	except ProtocolError:
+		print("Request not correctly formulated. Replying with WRP ERR")
+		sendMsg(sock, 'WRP', 'ERR')
 
 
 def register(sock, address, port):
@@ -115,7 +177,7 @@ def register(sock, address, port):
 		exit(-1)
 
 
-def unregister(sock):
+def unregister(sock, address, port):
 	print("Trying to unregister from central server...")
 
 	message = "UNR " + address + " " + str(port) + "\n"
@@ -152,6 +214,7 @@ def unregister(sock):
 		print("Failed to unregister from central server. Exiting anyway...")
 		exit(-1)
 
+
 if __name__ == '__main__':
 
 	parser = argparse.ArgumentParser()
@@ -180,54 +243,11 @@ if __name__ == '__main__':
 			newSock = None
 			try:
 				newSock, address = tcp_sock.accept()
-				print("Accepted connection from:", address)
-				bufferedReader = newSock.makefile('rb', buffer_size)
+				print("Accepted connection from:", address, ". Forking...")
 
-				msgType = readWord(bufferedReader)
+				Process(target=process, args=(newSock,), daemon=True).start()
 
-				if msgType == 'WRQ':
-					try:
-						ptc = readWord(bufferedReader)
-						if ptc not in PTCs:
-							print("Unknown PTC sent by server:", ptc)
-							sendMsg(newSock, 'WRP', 'EOF')
-						else:
-							print("Request PTC is", ptc)
-
-							filename = readWord(bufferedReader) + ".ws"
-							size = readNumber(bufferedReader)
-
-							file = open(filename, 'w+b')
-							readSocketToFile(bufferedReader, file, size)
-							assertEndOfMessage(bufferedReader)
-
-							file.seek(0)
-
-							result, type = work(ptc, file, size)
-
-							if type == 'R':
-								file.close()
-								if isinstance(result, bytes):
-									replySize = len(result)
-								else:
-									replySize = len(str(result).encode('ascii'))
-
-								sendMsg(newSock, 'REP', type, replySize, result)
-							elif type == 'F':
-								file.seek(0)
-
-								sendMsg(newSock, 'REP', type, size, tail=' ')
-								readFileToSocket(file, newSock, size)
-								newSock.sendall(b'\n')
-
-								file.close()
-
-					except ProtocolError:
-						print("Request not correctly formulated. Replying with WRP ERR")
-						sendMsg(newSock, 'WRP', 'ERR')
-				else:
-					print("Unknown message from server:", msgType)
-					sendMsg(newSock, 'ERR')
+				newSock.close()
 
 			except OSError:
 				pass
@@ -236,9 +256,8 @@ if __name__ == '__main__':
 					newSock.close()
 
 	except KeyboardInterrupt:
-		pass
+		print()
 	finally:
 		tcp_sock.close()
-		unregister(udp_sock)
+		unregister(udp_sock, address, port)
 		udp_sock.close()
-
