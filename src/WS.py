@@ -1,21 +1,10 @@
 #!/usr/bin/env python3
 
 import argparse
-
 import os
-
 from multiprocessing import Process
 
 from common import *
-
-hostname = ''
-address = socket.gethostbyname(hostname)
-port = None
-
-csName = None
-csPort = None
-
-PTCs = None
 
 
 def work(ptc, file: BufferedIOBase, file_size: int):
@@ -92,23 +81,23 @@ def process(sock):
 	bufferedReader = sock.makefile('rb', buffer_size)
 
 	try:
-		msgType = readWord(bufferedReader)
+		msgType = read_word(bufferedReader)
 
 		if msgType == 'WRQ':
 
-			ptc = readWord(bufferedReader)
+			ptc = read_word(bufferedReader)
 			if ptc not in PTCs:
 				print("Unknown PTC sent by server:", ptc)
-				sendMsg(sock, 'WRP', 'EOF')
+				send_msg(sock, 'WRP', 'EOF')
 			else:
 				print("Request PTC is", ptc)
 
-				filename = readWord(bufferedReader) + ".ws"
-				size = readNumber(bufferedReader)
+				filename = read_word(bufferedReader) + ".ws"
+				size = read_number(bufferedReader)
 
 				file = open(filename, 'w+b')
-				readSocketToFile(bufferedReader, file, size)
-				assertEndOfMessage(bufferedReader)
+				read_socket_to_file(bufferedReader, file, size)
+				assert_end_of_message(bufferedReader)
 
 				file.seek(0)
 
@@ -121,37 +110,37 @@ def process(sock):
 					else:
 						replySize = len(str(result).encode('ascii'))
 
-					sendMsg(sock, 'REP', type, replySize, result)
+					send_msg(sock, 'REP', type, replySize, result)
 				elif type == 'F':
 					file.seek(0)
 
-					sendMsg(sock, 'REP', type, size, tail=' ')
-					readFileToSocket(file, sock, size)
+					send_msg(sock, 'REP', type, size, tail=' ')
+					read_file_to_socket(file, sock, size)
 					sock.sendall(b'\n')
 
 					file.close()
 		else:
 			print("Unknown message from server:", msgType)
-			sendMsg(sock, 'ERR')
+			send_msg(sock, 'ERR')
 
 	except ProtocolError:
 		print("Request not correctly formulated. Replying with WRP ERR")
-		sendMsg(sock, 'WRP', 'ERR')
+		send_msg(sock, 'WRP', 'ERR')
 
 
 def register(sock, address, port):
 	print("Trying to register in central server...")
 
-	registerMsg = "REG " + " ".join(PTCs) + " " + address + " " + str(port) + "\n"
-	encoded = registerMsg.encode('ascii')
+	encoded = construct_message('REG', PTCs, address, port)
+
 	success = False
 	for i in range(1, 6):
 		try:
 			sock.sendto(encoded, (csName, csPort))
-			response = parseData(sock.recv(buffer_size))
+			response = parse_data(sock.recv(buffer_size))
 
-			protocolAssert(len(response) == 2)
-			protocolAssert(response[0] == "RAK")
+			protocol_assert(len(response) == 2)
+			protocol_assert(response[0] == "RAK")
 			if response[1] == "OK":
 				print("Central server accepted registration.")
 				return
@@ -180,16 +169,16 @@ def register(sock, address, port):
 def unregister(sock, address, port):
 	print("Trying to unregister from central server...")
 
-	message = "UNR " + address + " " + str(port) + "\n"
-	encoded = message.encode('ascii')
+	encoded = construct_message('UNR', address, port)
+
 	success = False
 	for i in range(1, 6):
 		try:
 			sock.sendto(encoded, (csName, csPort))
-			response = parseData(sock.recv(buffer_size))
+			response = parse_data(sock.recv(buffer_size))
 
-			protocolAssert(len(response) == 2)
-			protocolAssert(response[0] == "UAK")
+			protocol_assert(len(response) == 2)
+			protocol_assert(response[0] == "UAK")
 			if response[1] == "OK":
 				print("Central server accepted unregistration.")
 				return
@@ -220,7 +209,7 @@ if __name__ == '__main__':
 	parser = argparse.ArgumentParser()
 	parser.add_argument('-p', type=int, metavar="WSport", default=59000)
 	parser.add_argument('-n', metavar="CSname", default='')
-	parser.add_argument('-e', type=int, metavar="CSport", default=defaultPort)
+	parser.add_argument('-e', type=int, metavar="CSport", default=default_port)
 	parser.add_argument('ptcs', metavar="PTC", nargs='+')
 	args = parser.parse_args()
 
@@ -229,6 +218,9 @@ if __name__ == '__main__':
 	csPort = args.e
 
 	PTCs = args.ptcs
+
+	hostname = ''
+	address = socket.gethostbyname(hostname)
 
 	udp_sock = prepare_udp_client(20)
 	tcp_sock = prepare_tcp_server((address, port))
@@ -242,8 +234,8 @@ if __name__ == '__main__':
 		while tcp_sock:
 			newSock = None
 			try:
-				newSock, address = tcp_sock.accept()
-				print("Accepted connection from:", address, ". Forking...")
+				newSock, tcp_address = tcp_sock.accept()
+				print("Accepted connection from:", tcp_address, ". Forking...")
 
 				Process(target=process, args=(newSock,), daemon=True).start()
 
@@ -259,5 +251,8 @@ if __name__ == '__main__':
 		print()
 	finally:
 		tcp_sock.close()
-		unregister(udp_sock, address, port)
+		try:
+			unregister(udp_sock, address, port)
+		except KeyboardInterrupt:
+			print("\nKeyboard interrupt found while trying to unregister... CS may have been left in unusable state.")
 		udp_sock.close()

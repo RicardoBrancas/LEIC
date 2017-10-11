@@ -11,33 +11,45 @@ import errno
 
 from common import *
 
-inputFilesPath = "input_files/"
-
 processingTasks = {}
-requestNumber = 0
+request_number = 0
 
 
-def split_by_files(file: BufferedIOBase, file_size: int, ptc, request_id):
+def split_by_files(request_id, file: BufferedIOBase, file_size: int, ptc):
+	"""
+		Splits a file in several parts. As many as there are working servers for that specific task.
+
+	:param file: BufferedReader that wraps a file descriptor for the file received.
+	:param file_size: File size in bytes
+	:param ptc: PTC requested by user
+	:param request_id:
+	:return: an ordered list of filenames
+	"""
 	ws_number = len(processingTasks[ptc])
 	approx_chars_per_part = int(file_size / ws_number)
+
+	print("Splitting request #" + str(request_id), "in", ws_number, "parts. Approximately", approx_chars_per_part,
+		  "chars per part.")
 
 	file_names = []
 
 	last_pos = 0
 	i = 1
 	while last_pos < file_size:
-		part_filename = inputFilesPath + str(request_id).rjust(5, '0') + str(i).rjust(3, '0') + ".txt"
+		part_filename = make_filename(request_id, i)
 
-		if i != ws_number:
+		if i < ws_number:  # if this is not the last part
 			file.seek(i * approx_chars_per_part)
-		else:
-			file.seek(file_size)
-		if i < ws_number:
-			while True:
+
+			while True:  # now go back until we find a space
 				b = file.read(1)
 				if b.isspace():
 					break
 				file.seek(-2, os.SEEK_CUR)
+
+		else:  # go to end of file
+			file.seek(file_size)
+
 		new_pos = file.tell()
 		file.seek(last_pos)
 
@@ -45,9 +57,10 @@ def split_by_files(file: BufferedIOBase, file_size: int, ptc, request_id):
 
 		pos = last_pos
 		while pos < new_pos:
-			data = file.read(min(buffer_size, new_pos-pos))
+			data = file.read(min(buffer_size, new_pos - pos))
 			bytes_written = file_part.write(data)
 			pos += bytes_written
+
 		file_part.close()
 		last_pos = pos
 		i += 1
@@ -57,9 +70,20 @@ def split_by_files(file: BufferedIOBase, file_size: int, ptc, request_id):
 	return file_names
 
 
-def assembleBack(replies, ptc, result_filename='', input_filenames=None):
+def assemble_back(replies, input_filenames, ptc, result_filename=''):
+	"""
+		Assembles back a set of replies or files. Into a single response. Generally only one of (replies|input_filenames) is used.
+
+	:param replies: A dictionary of pairs (index, reply)
+	:param input_filenames: A list of filenames where each element is a filename where a reply was saved
+	:param ptc:
+	:param result_filename: where we should store the result
+
+	:return: Returns a tuple where the first element is the reply type and the second is the reply. The second element is only used in replies of type R
+	"""
 	if ptc == 'WCT':
-		return sum(map(int, replies.values())), 'R'
+		return 'R', sum(map(int, replies.values()))
+
 	elif ptc == 'FLW':
 		greatestWord = ''
 		wordLen = 0
@@ -68,80 +92,81 @@ def assembleBack(replies, ptc, result_filename='', input_filenames=None):
 			if temp > wordLen:
 				greatestWord = word
 				wordLen = temp
-		return greatestWord, 'R'
+		return 'R', greatestWord
+
 	elif ptc == 'UPP' or ptc == 'LOW':
 		file = open(result_filename, 'wb')
 
-		for part_filename in sorted(input_filenames):
+		for part_filename in sorted(input_filenames):  # concat files
 			part_file = open(part_filename, 'rb')
 			part_file_size = os.path.getsize(part_filename)
 			while part_file.tell() < part_file_size:
 				bytes = part_file.read(buffer_size)
 				file.write(bytes)
+		return 'F', ""
 
-		return "", "F"
-
-	return "", "R"
+	return None
 
 
-def action_lst(sock: socket, bufferedReader: BufferedReader):
+def do_lst(sock: socket, bufferedReader: BufferedReader):
 	try:
-		assertEndOfMessage(bufferedReader)
+		assert_end_of_message(bufferedReader)
 
 		if len(processingTasks) == 0:
 			print('Sending list of PTCs (empty)')
-			sendMsg(sock, 'FPT', 'EOF')
+			send_msg(sock, 'FPT', 'EOF')
 		else:
 			print('Sending list of PTCs')
 			print(list(processingTasks))
-			sendMsg(sock, 'FPT', len(processingTasks), list(processingTasks))
+			send_msg(sock, 'FPT', len(processingTasks), list(processingTasks))
 
 	except ProtocolError:
 		print('Incorrectly formulated LST request. Replying ERR')
-		sendMsg(sock, 'FPT', 'ERR')
+		send_msg(sock, 'FPT', 'ERR')
 
 
-def action_req(sock: socket, bufferedReader: BufferedReader, request_number: int):
+def do_req(sock: socket, bufferedReader: BufferedReader, request_number: int):
 	try:
-		filename = inputFilesPath + str(request_number).rjust(5, '0') + '.txt'
+		filename = make_filename(request_number)
 
-		ptc = readWord(bufferedReader)
-		size = readNumber(bufferedReader)
+		ptc = read_word(bufferedReader)
+		size = read_number(bufferedReader)
 
 		file = open(filename, 'w+b')
-		readSocketToFile(bufferedReader, file, size)
-		assertEndOfMessage(bufferedReader)
+		read_socket_to_file(bufferedReader, file, size)
+		assert_end_of_message(bufferedReader)
 
 		if ptc not in processingTasks.keys():
 			print(ptc, "PTC not currently supported.")
-			sendMsg(sock, "REP", "EOF")
+			send_msg(sock, "REP", "EOF")
 			return
 
 		file.seek(0)
 
-		filenames = split_by_files(file, size, ptc, requestNumber)
+		filenames = split_by_files(request_number, file, size, ptc)
 
 		socketList = []
-		sock_filenames_dict = {}
-		for address, part_filename in zip(processingTasks[ptc], filenames):
-			file = open(part_filename, 'rb')
+		index_by_sock = {}
+		for index, (address, part_filename) in enumerate(zip(processingTasks[ptc], filenames), start=1):
+			part_file = open(part_filename, 'rb')
 			size = os.path.getsize(part_filename)
 
 			wsSock = prepare_tcp_client(address)
 
-			if not wsSock:
+			if not wsSock:  # if WS went offline without unregistering try to send this part to some other WS
 				print("WS not responding!")
 				processingTasks[ptc].remove(address)
 				for alternativeAddress in processingTasks[ptc]:
 					wsSock = prepare_tcp_client(alternativeAddress)
 					if wsSock:
+						print("Alternative WS found.")
 						break
 				if not wsSock:
 					print("No WSs available")
 
-			sock_filenames_dict[wsSock] = part_filename
-			sendMsg(wsSock, 'WRQ', ptc, part_filename, size, tail=' ')
-			readFileToSocket(file, wsSock, size)
+			index_by_sock[wsSock] = index  # used later to known which parts come from which WS
+			send_msg(wsSock, 'WRQ', ptc, part_filename, size, tail=' ')
+			read_file_to_socket(part_file, wsSock, size)
 			wsSock.sendall(b'\n')
 			socketList += [wsSock]
 
@@ -154,49 +179,56 @@ def action_req(sock: socket, bufferedReader: BufferedReader, request_number: int
 				socketList.remove(wsSock)
 
 				bufferedReader = wsSock.makefile('rb', buffering=buffer_size)
-				protocol_message = readWord(bufferedReader)
-				protocolAssert(protocol_message == 'REP')
-				reply_type = readWord(bufferedReader)
-				protocolAssert(reply_type == 'R' or reply_type == 'F')
-				size = readNumber(bufferedReader)
+				protocol_message = read_word(bufferedReader)
+				protocol_assert(protocol_message == 'REP')
+				reply_type = read_word(bufferedReader)
+				protocol_assert(reply_type == 'R' or reply_type == 'F')
+				size = read_number(bufferedReader)
 
 				if reply_type == 'R':
-					replies[sock_filenames_dict[wsSock]] = bufferedReader.read(size).decode('ascii')
-					assertEndOfMessage(bufferedReader)
+					replies[index_by_sock[wsSock]] = bufferedReader.read(size).decode('ascii')
+					assert_end_of_message(bufferedReader)
 
 				else:
-					out_filename = sock_filenames_dict[wsSock] + '.out'
-					out_filenames.append(out_filename)
+					out_filename = make_filename(request_number, index_by_sock[wsSock], ext='.out')
 					out_file = open(out_filename, 'wb')
 
-					readSocketToFile(bufferedReader, out_file, size)
-					assertEndOfMessage(bufferedReader)
+					read_socket_to_file(bufferedReader, out_file, size)
+					assert_end_of_message(bufferedReader)
 
+					out_filenames.append(out_filename)
 					out_file.close()
+
 				bufferedReader.close()
 				wsSock.close()
 
-		out_filename = filename + '.out'
+		out_filename = make_filename(request_number, ext='.out')
 
-		finalReply, finalReplyType = assembleBack(replies, ptc, out_filename, out_filenames)
+		final_reply_type, final_reply = assemble_back(replies, out_filenames, ptc, out_filename)
 
-		if finalReplyType == 'R':
-			replySize = len(str(finalReply).encode('ascii'))
-			sendMsg(sock, 'REP', finalReplyType, replySize, finalReply)
-		elif finalReplyType == 'F':
+		if final_reply_type == 'R':
+			replySize = len(str(final_reply).encode('ascii'))
+			send_msg(sock, 'REP', final_reply_type, replySize, final_reply)
+
+		elif final_reply_type == 'F':
 			out_file = open(out_filename, 'rb')
 
 			size = os.path.getsize(out_filename)
-			sendMsg(sock, 'REP', finalReplyType, size, tail=' ')
-			readFileToSocket(out_file, sock, size)
+			send_msg(sock, 'REP', final_reply_type, size, tail=' ')
+			read_file_to_socket(out_file, sock, size)
 			sock.sendall(b'\n')
+
+			out_file.close()
 
 	except ProtocolError:
 		print('Incorrectly formulated REQ request. Replying ERR')
-		sendMsg(sock, 'REP', 'ERR')
+		send_msg(sock, 'REP', 'ERR')
 
 
-def userConnection(sock: socket.SocketType, requestNumber: int):
+def user_connection(sock: socket, request_number: int):
+	"""
+		Function corresponding to the child process created when a user connects.
+	"""
 	tcpSock.close()
 	udpSock.close()
 	try:
@@ -205,21 +237,21 @@ def userConnection(sock: socket.SocketType, requestNumber: int):
 
 		select.select([bufferedReader], [], [])
 		try:
-			if bufferedReader.peek() == b'':
+			if bufferedReader.peek() == b'':  # nothing left
 				raise EOFError()
 
-			msgType = readWord(bufferedReader)
+			msgType = read_word(bufferedReader)
 			print("[" + msgType + "] request from", clientAddress)
 
 			if msgType == 'LST':
-				action_lst(sock, bufferedReader)
+				do_lst(sock, bufferedReader)
 
 			elif msgType == 'REQ':
-				action_req(sock, bufferedReader, requestNumber)
+				do_req(sock, bufferedReader, request_number)
 
 			else:
 				print("Unknown message received.")
-				sendMsg(sock, 'ERR')
+				send_msg(sock, 'ERR')
 
 		except EOFError:
 			print("End of stream. Client", clientAddress, "lost.")
@@ -227,32 +259,34 @@ def userConnection(sock: socket.SocketType, requestNumber: int):
 	except KeyboardInterrupt:
 		print("\nTCP connection", clientAddress, "exiting")
 	finally:
-		tryClose(sock)
+		try_close(sock)
 		sys.exit()
 
 
-def tcpAccept():
-	global requestNumber
+def tcp_accept():
+	global request_number
 	try:
 		newSock, address = tcpSock.accept()
 		print("Connection from client", address, "accepted, forking...")
 
-		Process(target=userConnection, args=(newSock, requestNumber), daemon=True).start()
-		requestNumber += 1
+		Process(target=user_connection, args=(newSock, request_number), daemon=True).start()
+		request_number += 1
 
 		newSock.close()
 	except OSError:
 		pass
 
 
-def udpReceive():
+def udp_receive():
+	global processingTasks
+
 	try:
 		data, address = udpSock.recvfrom(buffer_size)
-		msg = parseData(data)
+		msg = parse_data(data)
 
 		if msg[0] == 'REG':
 			try:
-				protocolAssert(len(msg) > 3)
+				protocol_assert(len(msg) > 3)
 
 				wsAddress = msg[-2]
 				wsPort = int(msg[-1])
@@ -261,48 +295,57 @@ def udpReceive():
 				print("Registration request received with address", wsHost, end='... ')
 
 				for i in range(1, len(msg) - 2):
-					protocolAssert(msg[i] != '')
+					protocol_assert(msg[i] != '')
 
 					ptcHosts = processingTasks.setdefault(msg[i], [])
 					if wsHost not in ptcHosts:
 						ptcHosts.append(wsHost)
 
-				msg, encodedMsg = constructMessage('RAK', 'OK')
+				encodedMsg = construct_message('RAK', 'OK')
 				print("OK")
 				udpSock.sendto(encodedMsg, address)
 
 			except ProtocolError:
-				msg, encodedMsg = constructMessage('RAK', 'ERR')
+				encodedMsg = construct_message('RAK', 'ERR')
 				print("ERR")
 				udpSock.sendto(encodedMsg, address)
 
 		elif msg[0] == 'UNR':
 			try:
-				protocolAssert(len(msg) == 3)
+				protocol_assert(len(msg) == 3)
 
 				wsAddress = msg[1]
 				wsPort = int(msg[2])
 				wsHost = (wsAddress, wsPort)
 
+				print("Unregistration request received with address", wsHost, end='... ')
+
+				found = False
 				for ptc in list(processingTasks.keys()):
 					if wsHost in processingTasks[ptc]:
+						found = True
 						processingTasks[ptc].remove(wsHost)
 
-					if len(processingTasks[ptc]) == 0:
-						del processingTasks[ptc]
+						if len(processingTasks[ptc]) == 0:
+							del processingTasks[ptc]
 
-				msg, encodedMsg = constructMessage('UAK', 'OK')
-				print("Replying via UDP with", msg[1])
-				udpSock.sendto(encodedMsg, address)
+				if found:
+					print("OK")
+					encodedMsg = construct_message('UAK', 'OK')
+					udpSock.sendto(encodedMsg, address)
+				else:
+					print("NOK. No server with that address found.")
+					encodedMsg = construct_message('UAK', 'NOK')
+					udpSock.sendto(encodedMsg, address)
 
 			except ProtocolError:
-				msg, encodedMsg = constructMessage('UAK', 'ERR')
-				print("Replying via UDP with", msg[1])
+				encodedMsg = construct_message('UAK', 'ERR')
+				print("Replying via UDP with ERR")
 				udpSock.sendto(encodedMsg, address)
 
 		else:
 			print("Unknown UDP message received")
-			msg, encodedMsg = constructMessage('ERR')
+			encodedMsg = construct_message('ERR')
 			udpSock.sendto(encodedMsg, address)
 
 	except OSError:
@@ -316,7 +359,7 @@ if __name__ == '__main__':
 
 	try:
 		parser = argparse.ArgumentParser()
-		parser.add_argument('-p', type=int, metavar="CSport", default=defaultPort)
+		parser.add_argument('-p', type=int, metavar="CSport", default=default_port)
 		args = parser.parse_args()
 
 		hostname = ''  # meaning all available interfaces
@@ -325,7 +368,7 @@ if __name__ == '__main__':
 		print("Starting central server on " + hostname)
 
 		try:
-			os.makedirs(inputFilesPath)
+			os.makedirs(input_files_path)
 		except OSError as e:
 			if e.errno != errno.EEXIST:  # else, directory already exists. Continue
 				raise
@@ -339,9 +382,9 @@ if __name__ == '__main__':
 
 			for sock in readable:
 				if sock == tcpSock:
-					tcpAccept()
+					tcp_accept()
 				elif sock == udpSock:
-					udpReceive()
+					udp_receive()
 
 	except KeyboardInterrupt:
 		print("\nCleaning up...")

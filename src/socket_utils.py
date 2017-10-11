@@ -3,14 +3,15 @@ from io import BufferedReader, BufferedIOBase
 
 buffer_size = 4096
 
-
-def ownHostname():
-	return socket.gethostname()
+big_file_threshold = 1 << 20  # 1MiB
 
 
-def readFileToSocket(file: BufferedIOBase, sock: socket, size):
+def read_file_to_socket(file: BufferedIOBase, sock: socket, size):
+	"""
+		Copies an entire file to a socket, logging progress if file is big.
+	"""
 	logProgress = False
-	if size > 1000000:  # 1M
+	if size > big_file_threshold:
 		logProgress = True
 
 	try:
@@ -24,9 +25,12 @@ def readFileToSocket(file: BufferedIOBase, sock: socket, size):
 		print("Error while sending file. Maybe the other side refused?")
 
 
-def readSocketToFile(bufferedReader: BufferedReader, file: BufferedIOBase, size):
+def read_socket_to_file(bufferedReader: BufferedReader, file: BufferedIOBase, size):
+	"""
+		Reads data from a socket to a file, logging progress if data is big.
+	"""
 	logProgress = False
-	if size > 1000000:  # 1M
+	if size > big_file_threshold:
 		logProgress = True
 
 	try:
@@ -109,6 +113,7 @@ def prepare_udp_client(timeout=0) -> socket:
 	print("Starting UDP server")
 	try:
 		udpSock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+		udpSock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)  # ignore system TIME_WAIT
 		udpSock.settimeout(timeout)
 	except OSError:
 		print("Exception while creating UDP socket!")

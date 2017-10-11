@@ -11,12 +11,13 @@
 - action LOW
 - action WCT
 - action FLW
-
-## (kinda probably) DONE
 - REQ (user->CS)
 - REP (CS->user)
 - WRQ (CS->WS)
 - REP (WS->CS)
+
+## (kinda probably) DONE
+
 
 ## IN PROGRESS
 

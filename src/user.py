@@ -7,33 +7,35 @@ import os
 from common import *
 
 
-def action_list():
+def do_list():
 	sock = prepare_tcp_client((host, port))
 	bufferedReader = sock.makefile('rb', buffer_size)
 
 	try:
-		sendMsg(sock, 'LST')
+		send_msg(sock, 'LST')
 
-		protocol_message = readWord(bufferedReader)
-		protocolAssert(protocol_message == 'FPT')
+		protocol_message = read_word(bufferedReader)
+		protocol_assert(protocol_message == 'FPT')
 
-		word = readWord(bufferedReader)
+		word = read_word(bufferedReader)
 		if word == 'EOF':
-			assertEndOfMessage(bufferedReader)
+			assert_end_of_message(bufferedReader)
 			print('No tasks available')
 
 		elif word == 'ERR':
-			assertEndOfMessage(bufferedReader)
+			assert_end_of_message(bufferedReader)
 			print('Server complained about protocol error.')
 
 		else:
-			protocolAssert(word.isdigit())
+			protocol_assert(word.isdigit())
 			n = int(word)
 
 			print("Server supports the following tasks:")
 			for i in range(n):
-				ptc = readWord(bufferedReader)
-				print(str(i + 1) + ". " + ptc + ": " + ptcDescriptions[ptc])
+				ptc = read_word(bufferedReader)
+				print(str(i + 1) + ". " + ptc + ": " + ptc_descriptions[ptc])
+
+			assert_end_of_message(bufferedReader)
 
 	except ProtocolError:
 		print("Protocol error while communicating with server.")
@@ -42,7 +44,7 @@ def action_list():
 		sock.close()
 
 
-def action_request(input_parts):
+def do_request(input_parts):
 	if len(input_parts) != 3:
 		print("Syntax error. Please try again")
 
@@ -60,39 +62,39 @@ def action_request(input_parts):
 	bufferedReader = sock.makefile('rb', buffer_size)
 
 	try:
-		sendMsg(sock, 'REQ', ptc, file_size, tail=' ')
+		send_msg(sock, 'REQ', ptc, file_size, tail=' ')
 
-		readFileToSocket(file, sock, file_size)
+		read_file_to_socket(file, sock, file_size)
 		file.close()
 		sock.sendall(b'\n')
 
-		protocol_message = readWord(bufferedReader)
-		protocolAssert(protocol_message == 'REP')
+		protocol_message = read_word(bufferedReader)
+		protocol_assert(protocol_message == 'REP')
 
-		msg = readWord(bufferedReader)
+		msg = read_word(bufferedReader)
 		if msg == 'EOF':
-			assertEndOfMessage(bufferedReader)
+			assert_end_of_message(bufferedReader)
 			print("Server does not support", ptc, "please use 'list' to get supported operations.")
 
 		elif msg == 'ERR':
-			assertEndOfMessage(bufferedReader)
+			assert_end_of_message(bufferedReader)
 			raise ProtocolError
 
 		elif msg == 'R' or msg == 'F':
 			reply_type = msg
-			size = readNumber(bufferedReader)
+			size = read_number(bufferedReader)
 
 			if reply_type == 'R':
 				data = bufferedReader.read(size)
-				assertEndOfMessage(bufferedReader)
+				assert_end_of_message(bufferedReader)
 				print('Reply:', data.decode('ascii'))
 
 			else:
 				print('Saving reply to', filename + ".new")
 				file_out = open(filename + ".new", 'wb')
-				readSocketToFile(bufferedReader, file_out, size)
+				read_socket_to_file(bufferedReader, file_out, size)
 				file_out.close()
-				assertEndOfMessage(bufferedReader)
+				assert_end_of_message(bufferedReader)
 		else:
 			raise ProtocolError
 
@@ -106,7 +108,7 @@ def action_request(input_parts):
 if __name__ == '__main__':
 	parser = argparse.ArgumentParser()
 	parser.add_argument('-n', metavar="CSname", default='')
-	parser.add_argument('-p', metavar="CSport", default=defaultPort)
+	parser.add_argument('-p', metavar="CSport", default=default_port)
 	args = parser.parse_args()
 
 	host = args.n
@@ -127,10 +129,10 @@ if __name__ == '__main__':
 					continue
 
 				if line_parts[0] == 'list':
-					action_list()
+					do_list()
 
 				elif line_parts[0] == 'request':
-					action_request(line_parts)
+					do_request(line_parts)
 
 				elif line_parts[0] == 'exit':
 					break

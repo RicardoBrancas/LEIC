@@ -1,21 +1,19 @@
-from io import BufferedReader
-
 from socket_utils import *
 
 GN = 16
-defaultPort = 58000 + GN
+default_port = 58000 + GN
 
-hostname = socket.gethostname()
-
-ptcDescriptions = {
+ptc_descriptions = {
 	'WCT': 'word count',
 	'FLW': 'find longest word',
 	'UPP': 'convert text to uppercase',
 	'LOW': 'convert text to lowercase'
 }
 
+input_files_path = "input_files/"
 
-def tryClose(closeable):
+
+def try_close(closeable):
 	try:
 		closeable.close()
 	except Exception:
@@ -26,44 +24,76 @@ class ProtocolError(Exception):
 	pass
 
 
-def protocolAssert(predicate):
+def protocol_assert(predicate):
+	"""
+		If predicate is False, raise an exception.
+		Used to detect protocol errors.
+	"""
 	if not predicate:
 		raise ProtocolError
 
 
-def readWord(bufferedReader: BufferedReader):  # reads chars until the next space or \n is found
-	string = ''
-	spaceRead = False
-	while not spaceRead:
-		bytes = bufferedReader.peek(1)[:1]  # we may have gotten more than we wanted. Ignore the rest
-		char = bytes.decode('ascii')
-		if char == ' ':
-			bufferedReader.read(1)  # remove from buffer
-			spaceRead = True
-		elif char == '\n':
-			spaceRead = True  # leave in buffer
-		else:
-			bufferedReader.read(1)  # remove from buffer
-			string += char
+def make_filename(request_id: int, part_number: int = None, ext='.txt') -> str:
+	filename = input_files_path + str(request_id).rjust(5, '0')
+
+	if part_number is not None:
+		filename += str(part_number).rjust(3, '0')
+	filename += ext
+
+	return filename
+
+
+def read_word(bufferedReader: BufferedReader):  # reads chars until the next space or \n is found
+	"""
+		Reads a full word (every byte until a space/newline is found), removing it and the (single!) space from the buffer.
+		If a new line is found instead of a space it is left in the buffer so that it can be checked later.
+	"""
+	try:
+		string = ''
+		spaceRead = False
+		while not spaceRead:
+			bytes = bufferedReader.peek(1)[:1]  # we may have gotten more than we wanted. Ignore the rest
+			char = bytes.decode('ascii')
+			if char == ' ':
+				bufferedReader.read(1)  # remove from buffer
+				spaceRead = True
+			elif char == '\n':
+				spaceRead = True
+			else:
+				bufferedReader.read(1)  # remove from buffer
+				string += char
+	except Exception:
+		raise ProtocolError()
+
 	return string
 
 
-def readNumber(bufferedReader: BufferedReader):
-	digits = readWord(bufferedReader)
+def read_number(bufferedReader: BufferedReader):
+	"""
+		Tries to read a word (space delimited) and parse it as an integer.
+	"""
+	digits = read_word(bufferedReader)
 	if not digits.isdigit():
 		raise ProtocolError('Tried to read a number but found', digits)
 
 	return int(digits)
 
 
-def assertEndOfMessage(bufferedReader: BufferedReader):
+def assert_end_of_message(bufferedReader: BufferedReader):
+	"""
+		Asserts that we are at the end of a message and discards the corresponding byte.
+		Stream may be left in unusable state if we are not at end.
+	"""
 	byte = bufferedReader.read(1)
-	char = byte.decode('ascii')
-	if not char == '\n':
+	if not byte == b'\n':
 		raise ProtocolError()
 
 
-def parseData(data):
+def parse_data(data):
+	"""
+		Simple parsing intended for UDP messages. Minimal error checking.
+		:return: Array of strings. Each with a part of a message. Space delimited.
+	"""
 	if data != b'':
 		msg = data.decode('ascii')
 		if msg[-1] != "\n":
@@ -73,7 +103,11 @@ def parseData(data):
 		return None
 
 
-def constructMessage(*args):
+def construct_message(*args):
+	"""
+		Constructs a space delimited message terminating with '\n' from vararg strings.
+		To be used primarily with UDP.
+	"""
 	msg = []
 	for arg in args:
 		if isinstance(arg, list) or isinstance(arg, tuple):
@@ -83,17 +117,24 @@ def constructMessage(*args):
 
 	string = ' '.join(str(e) for e in msg) + "\n"
 
-	return msg, string.encode('ascii')
+	return string.encode('ascii')
 
 
-def encodeElem(elem):
+def encode_elem(elem):
+	"""
+		:return: a byte representation of the elem.
+	"""
 	if isinstance(elem, bytes) or isinstance(elem, bytearray):
 		return elem
 	else:
 		return str(elem).encode('ascii')
 
 
-def sendMsg(socket, *args, tail='\n'):
+def send_msg(socket, *args, tail='\n'):
+	"""
+		Constructs a space delimited message terminating with '\n' from vararg strings, and sends it via the socket.
+		To be used primarily with TCP.
+	"""
 	encoded = b''
 	first = True
 	for arg in args:
@@ -109,9 +150,9 @@ def sendMsg(socket, *args, tail='\n'):
 					encoded += b' '
 				else:
 					first = False
-				encoded += encodeElem(argElem)
+				encoded += encode_elem(argElem)
 		else:
-			encoded += encodeElem(arg)
+			encoded += encode_elem(arg)
 
 	encoded += tail.encode('ascii')
 
