@@ -7,7 +7,7 @@ from multiprocessing import Process
 from common import *
 
 
-def work(ptc, file: BufferedIOBase, file_size: int):
+def do_work(ptc, file: BufferedIOBase, file_size: int):
 	if ptc == 'WCT':
 		wct = 0
 
@@ -101,7 +101,7 @@ def process(sock):
 
 				file.seek(0)
 
-				result, type = work(ptc, file, size)
+				result, type = do_work(ptc, file, size)
 
 				if type == 'R':
 					file.close()
@@ -126,6 +126,11 @@ def process(sock):
 	except ProtocolError:
 		print("Request not correctly formulated. Replying with WRP ERR")
 		send_msg(sock, 'WRP', 'ERR')
+	except KeyboardInterrupt:
+		print()
+	finally:
+		bufferedReader.close()
+		try_close(sock)
 
 
 def register(sock, address, port):
@@ -245,14 +250,14 @@ if __name__ == '__main__':
 				pass
 			finally:
 				if newSock:
-					newSock.close()
+					try_close(newSock)
 
 	except KeyboardInterrupt:
 		print()
 	finally:
-		tcp_sock.close()
+		try_close(tcp_sock)
 		try:
 			unregister(udp_sock, address, port)
 		except KeyboardInterrupt:
 			print("\nKeyboard interrupt found while trying to unregister... CS may have been left in unusable state.")
-		udp_sock.close()
+		try_close(udp_sock)

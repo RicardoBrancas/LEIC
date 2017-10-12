@@ -200,7 +200,7 @@ def do_req(sock: socket, bufferedReader: BufferedReader, request_number: int):
 					out_file.close()
 
 				bufferedReader.close()
-				wsSock.close()
+				try_close(wsSock)
 
 		out_filename = make_filename(request_number, ext='.out')
 
@@ -272,7 +272,7 @@ def tcp_accept():
 		Process(target=user_connection, args=(newSock, request_number), daemon=True).start()
 		request_number += 1
 
-		newSock.close()
+		try_close(newSock)
 	except OSError:
 		pass
 
@@ -388,7 +388,7 @@ if __name__ == '__main__':
 
 	except KeyboardInterrupt:
 		print("\nCleaning up...")
-		tcpSock.close()
-		udpSock.close()
+		try_close(tcpSock)
+		try_close(udpSock)
 		print("Exiting")
 		exit()

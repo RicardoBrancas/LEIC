@@ -13,11 +13,16 @@ ptc_descriptions = {
 input_files_path = "input_files/"
 
 
-def try_close(closeable):
+def try_close(socket: socket):
 	try:
-		closeable.close()
+		socket.shutdown()
 	except Exception:
 		pass
+	finally:
+		try:
+			socket.close()
+		except Exception:
+			pass
 
 
 class ProtocolError(Exception):

@@ -41,7 +41,7 @@ def do_list():
 		print("Protocol error while communicating with server.")
 	finally:
 		bufferedReader.close()
-		sock.close()
+		try_close(sock)
 
 
 def do_request(input_parts):
@@ -102,7 +102,7 @@ def do_request(input_parts):
 		print("Protocol error while communicating with server.")
 	finally:
 		bufferedReader.close()
-		sock.close()
+		try_close(sock)
 
 
 if __name__ == '__main__':
@@ -116,7 +116,7 @@ if __name__ == '__main__':
 
 	print("Checking if server is online...")
 	tempSock = prepare_tcp_client((host, port))
-	tempSock.close()
+	try_close(tempSock)
 
 	print("Waiting for commands...")
 	try:
