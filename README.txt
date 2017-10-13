@@ -6,18 +6,15 @@ No compiling needed.
 
 User:
 
-    ./user.py
-    (or alternately 'python3 user.py')
+    python3 user.py
 
 CS:
 
-    ./CS.py
-    (or alternately 'python3 CS.py')
+    python3 CS.py
 
 WS:
 
-    ./WS.py
-    (or alternately 'python3 WS.py')
+    python3 WS.py
 
 === TESTING ===
 
