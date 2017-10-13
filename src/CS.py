@@ -4,9 +4,7 @@ import argparse
 import select
 import sys
 from multiprocessing import Process
-
 import os
-
 import errno
 
 from common import *
@@ -202,7 +200,7 @@ def do_req(sock: socket, bufferedReader: BufferedReader, request_number: int):
 				bufferedReader.close()
 				try_close(wsSock)
 
-		out_filename = make_filename(request_number, ext='.out')
+		out_filename = make_filename(request_number, folder=output_files_path)
 
 		final_reply_type, final_reply = assemble_back(replies, out_filenames, ptc, out_filename)
 
@@ -369,6 +367,11 @@ if __name__ == '__main__':
 
 		try:
 			os.makedirs(input_files_path)
+		except OSError as e:
+			if e.errno != errno.EEXIST:  # else, directory already exists. Continue
+				raise
+		try:
+			os.makedirs(output_files_path)
 		except OSError as e:
 			if e.errno != errno.EEXIST:  # else, directory already exists. Continue
 				raise

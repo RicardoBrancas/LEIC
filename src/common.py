@@ -11,6 +11,7 @@ ptc_descriptions = {
 }
 
 input_files_path = "input_files/"
+output_files_path = "output_files/"
 
 
 def try_close(socket: socket):
@@ -38,8 +39,8 @@ def protocol_assert(predicate):
 		raise ProtocolError
 
 
-def make_filename(request_id: int, part_number: int = None, ext='.txt') -> str:
-	filename = input_files_path + str(request_id).rjust(5, '0')
+def make_filename(request_id: int, part_number: int = None, ext='.txt', folder=input_files_path) -> str:
+	filename = folder + str(request_id).rjust(5, '0')
 
 	if part_number is not None:
 		filename += str(part_number).rjust(3, '0')

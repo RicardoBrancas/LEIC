@@ -3,6 +3,7 @@
 import argparse
 import os
 from multiprocessing import Process
+import errno
 
 from common import *
 
@@ -226,6 +227,12 @@ if __name__ == '__main__':
 
 	hostname = ''
 	address = socket.gethostbyname(hostname)
+
+	try:
+		os.makedirs(input_files_path)
+	except OSError as e:
+		if e.errno != errno.EEXIST:  # else, directory already exists. Continue
+			raise
 
 	udp_sock = prepare_udp_client(20)
 	tcp_sock = prepare_tcp_server((address, port))
