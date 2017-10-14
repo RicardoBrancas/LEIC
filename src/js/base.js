@@ -45,7 +45,7 @@ VariablyAcceleratableObject3D.prototype = Object.assign(Object.create(THREE.Obje
 
 	update: function (delta) {
 		this.speed += this.acceleration * delta - this.speed * this.DRAG * delta;
-		this.rotateOnAxis(this.up, this.angularVelocity * delta);
+		this.rotateOnAxis(this.up, this.speed * this.angularVelocity * delta / 50);
 		this.translateOnAxis(this.front, this.speed * delta);
 	}
 });
@@ -89,7 +89,7 @@ Car.prototype = Object.assign(Object.create(VariablyAcceleratableObject3D.protot
 	},
 
 	addWheels: function() {
-		var geometry = new THREE.TorusGeometry(this.wheel_radius, this.wheel_tube, 16, 32);
+		var geometry = new THREE.TorusGeometry(this.wheel_radius, this.wheel_tube, 8, 10);
 		var wheel = new THREE.Mesh(geometry, carMaterial);
 		wheel.rotateY(Math.PI / 2);
 
@@ -123,7 +123,7 @@ function addGround(parent, x, y, z) {
 
 function addCheerios(parent) {
 	cheerioMaterial = new THREE.MeshBasicMaterial({color: 0xffff00, wireframe: true});
-	var geometry = new THREE.TorusGeometry(cheerioSize, cheerioSize / 2, 8, 16);
+	var geometry = new THREE.TorusGeometry(cheerioSize, cheerioSize / 2, 8, 10);
 	var baseCheerio = new THREE.Mesh(geometry, cheerioMaterial);
 
 	var cheerios = new THREE.Group();
