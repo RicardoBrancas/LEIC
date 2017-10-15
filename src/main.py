@@ -112,7 +112,7 @@ def board_remove_group(board, group):
 	for col in reversed(range(len(newboard[0]))):
 		empty = True
 		line = 0
-		while not empty and line < len(newboard):
+		while empty and line < len(newboard):
 			if color(newboard[line][col]):
 				empty = False
 			line = line + 1
