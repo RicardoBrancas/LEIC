@@ -1,4 +1,4 @@
-import search
+from search import *
 
 
 # TAI color
@@ -41,6 +41,10 @@ def add_to_group(group, pos):
 	group.append(pos)
 
 
+def group_size(group):
+	return len(group)
+
+
 # TAI Board
 
 def show_board(board):
@@ -55,6 +59,15 @@ def copy_board(board):
 	return newboard
 
 
+def board_empty(board):
+	for line in board:
+		for cell in line:
+			if color(cell):
+				return False
+
+	return True
+
+
 def board_find_groups(board):
 	groups = []
 	visited = []
@@ -62,16 +75,17 @@ def board_find_groups(board):
 		visited.append([False] * len(board[0]))
 	for i in range(len(board)):
 		for j in range(len(board[0])):
-			if not visited[i][j]:
-				color = board[i][j]
+			if color(board[i][j]) and not visited[i][j]:
+				c = board[i][j]
 				group = []
-				has_next(color, visited, i, j, group, board)
+				has_next(c, visited, i, j, group, board)
 				groups.append(group)
-	print(groups)
+
+	return groups
 
 
 def has_next(color, visited, i, j, group, board):
-	if i < len(board) and j < len(board[0]) and i >= 0 and j >= 0:
+	if (i < len(board)) and (j < len(board[0])) and (i >= 0) and (j >= 0):
 		if board[i][j] == color and not visited[i][j]:
 			add_to_group(group, (i, j))
 			visited[i][j] = True
@@ -79,8 +93,6 @@ def has_next(color, visited, i, j, group, board):
 			has_next(color, visited, i + 1, j, group, board)
 			has_next(color, visited, i, j + 1, group, board)
 			has_next(color, visited, i, j - 1, group, board)
-	else:
-		return
 
 
 def board_remove_group(board, group):
@@ -133,3 +145,29 @@ class sg_state(object):
 
 	def __lt__(self, state):
 		return self.order < state.order
+
+
+class same_game(Problem):
+	def __init__(self, board):
+		super().__init__(sg_state(board))
+
+	def actions(self, state: sg_state):
+		actions = []
+		for group in board_find_groups(state.board):
+			if group_size(group) >= 2:
+				actions += [group]
+
+		return actions
+
+	def result(self, state, action):
+		new_board = board_remove_group(state.board, action)
+		return sg_state(new_board)
+
+	def goal_test(self, state):
+		return board_empty(state.board)
+
+	def path_cost(self, c, state1, action, state2):
+		return c + 1
+
+	def h(self, node):
+		return len(board_find_groups(node.state.board))
