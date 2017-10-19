@@ -5,7 +5,7 @@ let clock;
 
 let car;
 
-let carMaterial, groundMaterial, orangeMaterial, butterMaterial;
+let carMaterial, groundMaterial;
 
 const tableLength = 200;
 const tableHeight = 2;
@@ -137,9 +137,7 @@ class Cheerio extends VariablyAcceleratable {
 	}
 }
 
-const butter_material = new THREE.MeshBasicMaterial({
-	color: 0xFFFFE0
-});
+const butter_material = new THREE.MeshBasicMaterial({color: 0xFFFFE0});
 const butter_geometry = new THREE.BoxGeometry(7, 4, 1.2);
 const butter_mesh = new THREE.Mesh(butter_geometry, butter_material);
 
@@ -164,6 +162,34 @@ class Butter extends VariablyAcceleratable {
 
 
 	resolve_collision(other_node) {
+		//do nothing
+	}
+}
+
+const orange_geometry = new THREE.SphereGeometry(6, 16, 16);
+const orange_material = new THREE.MeshBasicMaterial({color: 0xff8c00});
+const orange_mesh = new THREE.Mesh(orange_geometry, orange_material);
+
+class Orange extends VariablyAcceleratable {
+
+	constructor(x, y, z) {
+		super();
+
+		let clone = orange_mesh.clone();
+		this.add(clone);
+		this.position.set(x, y, z);
+		this.update_radius();
+	}
+
+
+	update_radius() {
+		this.sphere_radius = 6;
+
+		this.dirty_radius = false;
+	}
+
+
+	resolve_collision(other_node, delta) {
 		//do nothing
 	}
 }
@@ -232,13 +258,14 @@ class Car extends VariablyAcceleratable {
 
 	resolve_collision(other_node) {
 		if (other_node instanceof Butter) {
-			let new_direction = this.unit_vector_to(other_node).negate();
 			let over_movement = this.sphere_radius + other_node.sphere_radius - Math.sqrt(this.distanceSq_to(other_node));
 			this.translateOnAxis(this.front.clone().negate(), over_movement); //We've overstepped, go back!
 			if (over_movement > 0)
 				this.dirty_center = true;
 
 			this.speed = 0;
+		} else if (other_node instanceof Orange) {
+			window.location.reload();
 		}
 	}
 }
@@ -292,15 +319,8 @@ function addButters(parent) {
 }
 
 function addOranges(parent) {
-	const geometry = new THREE.SphereGeometry(6, 16, 16);
-	orangeMaterial = new THREE.MeshBasicMaterial({
-		color: 0xff8c00
-	});
-	const baseOrange = new THREE.Mesh(geometry, orangeMaterial);
-	baseOrange.name = 'Orange';
-
-	addCloneAtPosition(parent, baseOrange, -33, -29, 0.8);
-	addCloneAtPosition(parent, baseOrange, 67, -78, 0.8);
+	parent.add(new Orange(-33, -29, 0.8));
+	parent.add(new Orange(67, -78, 0.8));
 }
 
 function createTrack(x, y, z) {
@@ -354,8 +374,8 @@ function onKeyDown(e) {
 		case 97:
 			groundMaterial.wireframe = !groundMaterial.wireframe;
 			carMaterial.wireframe = !carMaterial.wireframe;
-			orangeMaterial.wireframe = !orangeMaterial.wireframe;
-			butterMaterial.wireframe = !butterMaterial.wireframe;
+			orange_material.wireframe = !orange_material.wireframe;
+			butter_material.wireframe = !butter_material.wireframe;
 			cheerio_material.wireframe = !cheerio_material.wireframe;
 			break;
 		case 38: //up
