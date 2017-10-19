@@ -101,7 +101,7 @@ class Cheerio extends VariablyAcceleratable {
 	constructor(x, y, z) {
 		super();
 
-		this.drag = 0.1;
+		this.drag = 0.8;
 
 		let clone = cheerio_mesh.clone();
 		this.add(clone);
