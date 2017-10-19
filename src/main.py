@@ -170,4 +170,12 @@ class same_game(Problem):
 		return c + 1
 
 	def h(self, node):
-		return len(board_find_groups(node.state.board))
+		h = 0
+
+		for group in board_find_groups(node.state.board):
+			if group_size(group) >= 2:
+				h += 1
+			else:
+				h += 2
+
+		return h
