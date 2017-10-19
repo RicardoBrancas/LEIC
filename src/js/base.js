@@ -32,19 +32,10 @@ class Collidable extends THREE.Object3D {
 	constructor() {
 		super();
 
-		this.dirty_AABB = true;
 		this.dirty_sphere = true;
 
 		this.sphere_radius = NaN;
-		this.xmin = NaN;
-		this.xmax = NaN;
-		this.ymin = NaN;
-		this.ymax = NaN;
 	}
-
-	// update_AABB() {
-	// 	console.warn("update_AABB() method should be overridden!");
-	// }
 
 	update_sphere() {
 		console.warn("update_sphere() should be overridden!")
@@ -89,7 +80,6 @@ class VariablyAcceleratable extends Collidable {
 		this.up.set(0, 0, 1);
 
 		this.drag = 0.4;
-		this.mass = 0;
 
 		this.acceleration = 0;
 		this.speed = 0;
@@ -101,17 +91,7 @@ class VariablyAcceleratable extends Collidable {
 		this.speed += this.acceleration * delta - this.speed * this.drag * delta;
 		this.rotateOnAxis(this.up, Math.abs(this.speed) * this.angularVelocity * delta / 50);
 		this.translateOnAxis(this.front, this.speed * delta);
-
-		// if (this.angularVelocity !== 0 && this.speed !== 0)
-		// 	this.dirty_AABB = true;
 	}
-
-	undo_update(delta) {
-		this.speed -= this.acceleration * delta - this.speed * this.drag * delta;
-		this.rotateOnAxis(this.up, -Math.abs(this.speed) * this.angularVelocity * delta / 50);
-		this.translateOnAxis(this.front, -this.speed * delta);
-	}
-
 }
 
 const cheerio_material = new THREE.MeshBasicMaterial({color: 0xFFD700});
@@ -124,7 +104,6 @@ class Cheerio extends VariablyAcceleratable {
 		super();
 
 		this.drag = 1;
-		this.mass = 5;
 
 		let clone = cheerio_mesh.clone();
 		this.add(clone);
@@ -249,6 +228,10 @@ class Car extends VariablyAcceleratable {
 
 	resolve_collision(other_node) {
 		if (other_node instanceof Butter) {
+			let new_direction = this.unit_vector_to(other_node).negate();
+			let over_movement = this.sphere_radius + other_node.sphere_radius - Math.sqrt(this.distanceSq_to(other_node));
+			this.translateOnAxis(new_direction, over_movement); //We've overstepped, go back!
+
 			this.speed = 0;
 		}
 	}
