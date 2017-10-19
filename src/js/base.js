@@ -12,8 +12,6 @@ const tableHeight = 2;
 
 const cheerioSize = 1;
 
-let temp_vec_1 = new THREE.Vector3(), temp_vec_2 = new THREE.Vector3();
-
 // === HELPER FUNCTIONS ===
 
 function addCloneAtPosition(parent, object, x, y, z) {
@@ -32,38 +30,35 @@ class Collidable extends THREE.Object3D {
 	constructor() {
 		super();
 
-		this.dirty_sphere = true;
+		this.dirty_radius = true;
+		this.dirty_center = true;
 
-		this.sphere_radius = NaN;
+		this.sphere_center = new THREE.Vector3();
+		this.sphere_radius = 0;
 	}
 
-	update_sphere() {
-		console.warn("update_sphere() should be overridden!")
+	update_center() {
+		this.sphere_center.copy(this.getWorldPosition());
+
+		this.dirty_center = false;
 	}
 
-	unit_vector_to(other_node) {
-		this.getWorldPosition(temp_vec_1);
-		other_node.getWorldPosition(temp_vec_2);
-
-		return new THREE.Vector3(temp_vec_2.x - temp_vec_1.x, temp_vec_2.y - temp_vec_1.y, 0).normalize();
+	update_radius() {
+		console.warn("update_radius() should be overridden!")
 	}
 
-	distanceSq_to(other_node) {
-		this.getWorldPosition(temp_vec_1);
-		other_node.getWorldPosition(temp_vec_2);
-
-		return (temp_vec_1.x - temp_vec_2.x) ** 2 + (temp_vec_1.y - temp_vec_2.y) ** 2;
+	unit_vector_to(other_collidable) {
+		return new THREE.Vector3(other_collidable.sphere_center.x - this.sphere_center.x, other_collidable.sphere_center.y - this.sphere_center.y, 0).normalize();
 	}
 
-	sphere_collides(other_node) {
-		if (isNaN(this.sphere_radius) || isNaN(other_node.sphere_radius)) {
-			console.log("Bounding spheres have not been calculated yet!");
-			return false;
-		}
+	distanceSq_to(other_collidable) {
+		return (this.sphere_center.x - other_collidable.sphere_center.x) ** 2 + (this.sphere_center.y - other_collidable.sphere_center.y) ** 2;
+	}
 
-		let distance = this.distanceSq_to(other_node);
+	sphere_collides(other_collidable) {
+		let distance = this.distanceSq_to(other_collidable);
 
-		return (this.sphere_radius + other_node.sphere_radius) ** 2 >= distance;
+		return (this.sphere_radius + other_collidable.sphere_radius) ** 2 >= distance;
 	}
 
 	resolve_collision(other_node, delta) {
@@ -91,6 +86,9 @@ class VariablyAcceleratable extends Collidable {
 		this.speed += this.acceleration * delta - this.speed * this.drag * delta;
 		this.rotateOnAxis(this.up, Math.abs(this.speed) * this.angularVelocity * delta / 50);
 		this.translateOnAxis(this.front, this.speed * delta);
+
+		if(this.speed !== 0)
+			this.dirty_center = true;
 	}
 }
 
@@ -109,13 +107,13 @@ class Cheerio extends VariablyAcceleratable {
 		this.add(clone);
 		this.position.set(x, y, z);
 
-		this.update_sphere();
+		this.update_radius();
 	}
 
 
-	update_sphere() {
+	update_radius() {
 		this.sphere_radius = cheerioSize * 1.5;
-		this.dirty_sphere = false;
+		this.dirty_radius = false;
 	}
 
 
@@ -126,9 +124,11 @@ class Cheerio extends VariablyAcceleratable {
 			let over_movement = this.sphere_radius + other_node.sphere_radius - Math.sqrt(this.distanceSq_to(other_node));
 
 			this.translateOnAxis(new_direction, over_movement); //We've overstepped, go back!
+			if (over_movement > 0) {
+				this.dirty_center = true;
+			}
 
 			this.front = new_direction;
-
 			this.speed = Math.abs(other_node.speed);
 		}
 
@@ -148,14 +148,14 @@ class Butter extends VariablyAcceleratable {
 		this.add(clone);
 		this.position.set(x, y, z);
 
-		this.update_sphere();
+		this.update_radius();
 	}
 
 
-	update_sphere() {
+	update_radius() {
 		this.sphere_radius = Math.sqrt(3.5 ** 2 + 2 ** 2);
 
-		this.dirty_sphere = false;
+		this.dirty_radius = false;
 	}
 
 
@@ -169,7 +169,7 @@ class Car extends VariablyAcceleratable {
 	constructor(width, length, wheel_external_diameter, wheel_width) {
 		super();
 
-		carMaterial = new THREE.MeshBasicMaterial({color: 0xffffff, wireframe: true});
+		carMaterial = new THREE.MeshBasicMaterial({color: 0xffffff});
 
 		this.mass = 3;
 
@@ -186,17 +186,17 @@ class Car extends VariablyAcceleratable {
 		this.addBody();
 		this.addWheels();
 
-		this.update_sphere();
+		this.update_radius();
 	}
 
 
-	update_sphere() {
+	update_radius() {
 		let half_total_width = this.width / 2 + this.wheel_tube * 2;
 		let half_total_height = this.width + (this.length - this.width) / 2;
 
 		this.sphere_radius = Math.sqrt(half_total_width * half_total_width + half_total_height * half_total_height);
 
-		this.dirty_sphere = false;
+		this.dirty_radius = false;
 	}
 
 	addBody() {
@@ -230,7 +230,9 @@ class Car extends VariablyAcceleratable {
 		if (other_node instanceof Butter) {
 			let new_direction = this.unit_vector_to(other_node).negate();
 			let over_movement = this.sphere_radius + other_node.sphere_radius - Math.sqrt(this.distanceSq_to(other_node));
-			this.translateOnAxis(new_direction, over_movement); //We've overstepped, go back!
+			this.translateOnAxis(this.front.clone().negate(), over_movement); //We've overstepped, go back!
+			if (over_movement > 0)
+				this.dirty_center = true;
 
 			this.speed = 0;
 		}
@@ -285,7 +287,7 @@ function addButters(parent) {
 
 function addOranges(parent) {
 	const geometry = new THREE.SphereGeometry(6, 16, 16);
-	orangeMaterial = new THREE.MeshBasicMaterial({color: 0xff8c00, wireframe: true});
+	orangeMaterial = new THREE.MeshBasicMaterial({color: 0xff8c00});
 	const baseOrange = new THREE.Mesh(geometry, orangeMaterial);
 	baseOrange.name = 'Orange';
 
@@ -344,7 +346,7 @@ function onKeyDown(e) {
 			carMaterial.wireframe = !carMaterial.wireframe;
 			orangeMaterial.wireframe = !orangeMaterial.wireframe;
 			butterMaterial.wireframe = !butterMaterial.wireframe;
-			cheerioMaterial.wireframe = !cheerioMaterial.wireframe;
+			cheerio_material.wireframe = !cheerio_material.wireframe;
 			break;
 		case 38: //up
 			car.acceleration = 20;
@@ -391,8 +393,11 @@ function animate() {
 
 		if (node instanceof Collidable) {
 
-			if (node.dirty_sphere)
-				node.update_sphere();
+			if (node.dirty_center)
+				node.update_center();
+
+			if (node.dirty_radius)
+				node.update_radius();
 
 			scene.traverse(function (other_node) {
 				if (node !== other_node) {
