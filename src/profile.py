@@ -83,9 +83,10 @@ for i, problem in problems.items():
 	print("Running problem", i)
 
 	sg = same_game(problem)
-	instrumented = InstrumentedProblem(sg)
 
 	for name, search in searches.items():
+		instrumented = InstrumentedProblem(sg)
+
 		print('\t' + name + ':', end=' ')
 		start = time.perf_counter()
 		search(instrumented)
