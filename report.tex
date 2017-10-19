@@ -1,5 +1,5 @@
 \documentclass[a4paper]{article}
-\usepackage[margin=3cm]{geometry}
+\usepackage[margin=2.5cm]{geometry}
 \usepackage[portuguese]{babel}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
@@ -14,16 +14,19 @@
 
     \section{Resultados}
 
-    \begin{tabular}{ c|*{3}{c}|*{3}{c}|*{3}{c} }
-        & \multicolumn{3}{ c| }{DFS} & \multicolumn{3}{ c| }{Greedy} & \multicolumn{3}{ c }{A*} \\ \cline{2-10}
-        Problema & t & g & e & t & g & e & t & g & e \\
-        \hline
-        1 & \num{1.19e-04} & 1       & 1       & \num{3.24e-04} & 3       & 2       & \num{3.53e-04} & 5       & 3 \\
-        2 & \num{8.03e-04} & 5       & 4       & \num{1.11e-03} & 10      & 7       & \num{1.61e-03} & 16      & 11 \\
-        3 & \num{9.74e+00} & 74702   & 74702   & \num{2.28e+01} & 149405  & 149404  & \num{1.45e+01} & 224108  & 224106 \\
-        4 & \num{5.18e-03} & 55      & 54      & \num{7.43e-03} & 99      & 96      & \num{5.89e-03} & 125     & 120\\
-        5 & \num{2.47e+02} & 3123309 & 3123308 & \num{3.72e-02} & 3123480 & 3123477 & \num{1.48e-02} & 3123498 & 3123493\\
-    \end{tabular}
+    \begin{table}[h!]
+        \begin{tabular}{ c|*{3}{c}|*{3}{c}|*{3}{c} }
+            & \multicolumn{3}{ c| }{DFS} & \multicolumn{3}{ c| }{Greedy} & \multicolumn{3}{ c }{A*} \\ \cline{2-10}
+            Problema & t & g & e & t & g & e & t & g & e \\
+            \hline
+            1 & 0.0001 & 1 & 1 & 0.0002 & 2 & 1 & 0.0002 & 2 & 1     \\
+            2 & 0.0004 & 5 & 4 & 0.0006 & 5 & 3 & 0.0006 & 6 & 4     \\
+            3 & 5.8729 & 74702 & 74702 & 12.091 & 74703 & 74702 & 12.030 & 74703 & 74703 \\
+            4 & 0.0052 & 55 & 54 & 0.0105 & 44 & 42 & 0.0058 & 26 & 24    \\
+            5 & 221.30 & 3123309 & 3123308 & 0.0357 & 171 & 169 & 0.0145 & 18 & 16    \\
+        \end{tabular}
+        \caption{Resultados da execução dos vários problemas. \small \textbf{t} refere-se ao tempo demorado; \textbf{g} ao número de nós gerados e \textbf{e} ao número de nós expandidos.}
+    \end{table}
 
     \section{Análise}
 

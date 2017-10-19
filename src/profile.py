@@ -1,5 +1,3 @@
-import itertools
-
 import time
 
 from main import *
@@ -76,7 +74,8 @@ problems = {
 searches = {
 	'DFS': depth_first_tree_search,
 	'Greedy': greedy_search,
-	'A*': astar_search
+	'A*': astar_search,
+	# 'RBFS': recursive_best_first_search
 }
 
 for i, problem in problems.items():
@@ -91,4 +90,4 @@ for i, problem in problems.items():
 		start = time.perf_counter()
 		search(instrumented)
 		end = time.perf_counter()
-		print(instrumented, "{:.2e}".format((end-start)))
+		print(instrumented, "{0:.4f}".format((end-start)))
