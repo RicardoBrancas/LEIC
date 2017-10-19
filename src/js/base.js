@@ -338,11 +338,13 @@ function onResize() {
       camera.right = (tableLength / 2) * aspectRatio;
       camera.top = (tableLength / 2);
       camera.bottom = -(tableLength / 2);
+      camera.aspect=aspectRatio;
     } else {
       camera.left = -(tableLength / 2);
       camera.right = (tableLength / 2);
       camera.top = (tableLength / 2) / aspectRatio;
       camera.bottom = -(tableLength / 2) / aspectRatio;
+      camera.aspect=aspectRatio;
     }
     camera.updateProjectionMatrix();
   }
@@ -362,7 +364,7 @@ function onKeyDown(e) {
       car.acceleration = 20;
       break;
     case 40: //down
-      car.acceleration = -10;
+      car.acceleration = -40;
       break;
     case 37: //left
       car.angularVelocity = 1;
