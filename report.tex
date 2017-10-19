@@ -12,22 +12,59 @@
 \begin{document}
     \maketitle
 
-    \section{Resultados}
+    \section{Resultados Exeprimentais}
+
+    \subsection{Breve descrição dos problemas utilizados}
+
+    \subparagraph{Problema 1}
+    [4x5], 2 cores, sem solução
+
+    \subparagraph{Problema 2}
+    [4x5], 3 cores
+
+    \subparagraph{Problema 3}
+    [10x4], 5 cores, sem solução
+
+    \subparagraph{Problema 4}
+    [10x4], 3 cores
+
+    \subparagraph{Problema 5}
+    [10x4], 5 cores
+
+    \subsection{Resultados}
 
     \begin{table}[h!]
         \begin{tabular}{ c|*{3}{c}|*{3}{c}|*{3}{c} }
             & \multicolumn{3}{ c| }{DFS} & \multicolumn{3}{ c| }{Greedy} & \multicolumn{3}{ c }{A*} \\ \cline{2-10}
             Problema & t & g & e & t & g & e & t & g & e \\
             \hline
-            1 & 0.0001 & 1 & 1 & 0.0002 & 2 & 1 & 0.0002 & 2 & 1     \\
-            2 & 0.0004 & 5 & 4 & 0.0006 & 5 & 3 & 0.0006 & 6 & 4     \\
-            3 & 5.8729 & 74702 & 74702 & 12.091 & 74703 & 74702 & 12.030 & 74703 & 74703 \\
-            4 & 0.0052 & 55 & 54 & 0.0105 & 44 & 42 & 0.0058 & 26 & 24    \\
-            5 & 221.30 & 3123309 & 3123308 & 0.0357 & 171 & 169 & 0.0145 & 18 & 16    \\
+            1 & 0.0001 & 0 & 1 & 0.0002 & 0 & 1 & 0.0002 & 0 & 1     \\
+            2 & 0.0004 & 7 & 4 & 0.0006 & 6 & 3 & 0.0006 & 7 & 4     \\
+            3 & 5.8729 & 74701 & 74702 & 12.091 & 74701 & 74702 & 12.030 & 74701 & 74702 \\
+            4 & 0.0052 & 85 & 54 & 0.0105 & 59 & 42 & 0.0058 & 43 & 24    \\
+            5 & 221.30 & 3123363 & 3123308 & 0.0357 & 237 & 169 & 0.0145 & 91 & 16    \\
         \end{tabular}
         \caption{Resultados da execução dos vários problemas. \small \textbf{t} refere-se ao tempo demorado; \textbf{g} ao número de nós gerados e \textbf{e} ao número de nós expandidos.}
     \end{table}
 
     \section{Análise}
+    \paragraph{Caracterização do Espaço de Estados}\mbox{} \\
+    Tomando um qualquer tabuleiro $b$ e sabendo que uma ação $a$ consiste na remoção de um grupo de cardinalidade $\geq 2$,
+    conclui-se que o tabuleiro resultante de aplicar $a$ a $b$ tem estritamente menos peças que o tabuleiro original. Como tal,
+    conclui-se que não podem existir ciclos no espaço de estados, pois nunca é possível o tabuleiro voltar a ganhar peças.
+
+    Em acréscimo, uma vez que o número de peças é finito, o comprimento máximo de um caminho no espaço de estados é também finito
+    (correspondendo à situação de se removerem todas as peças do tabuleiro, em grupos apenas de 2). Como tal não podem existir
+    ramos infinitos no espaço de estados.
+
+    Em último lugar, temos que para cada estado existe um número máximo de sucessores diretos finito, uma vez que cada ação corresponde a
+    remover um grupo e o número de grupos é finito. Consequentemente o \textit{branching factor}, $b^*$, é também finito.
+
+
+
+    \paragraph{Completude}
+    No problema Same Game, qualquer uma das pesquisas estudadas é completa uma vez que o espaço de estados é acíclico e o
+    comprimento máximo de um caminho e o \textit{branching factor} são finitos.
+
 
 \end{document}
