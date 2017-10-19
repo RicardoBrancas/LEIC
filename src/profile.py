@@ -87,7 +87,7 @@ for i, problem in problems.items():
 	for name, search in searches.items():
 		instrumented = InstrumentedProblem(sg)
 
-		print('\t' + name + ':', end=' ')
+		print('\t' + name.rjust(8) + ':', end=' ')
 		start = time.perf_counter()
 		search(instrumented)
 		end = time.perf_counter()
