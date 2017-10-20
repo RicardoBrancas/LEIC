@@ -1,12 +1,14 @@
 \documentclass[a4paper]{article}
-\usepackage[margin=2.5cm]{geometry}
+\usepackage[margin=3cm]{geometry}
 \usepackage[portuguese]{babel}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage{multirow}
 \usepackage{amsmath}
 
-\title{\LARGE \textbf{Relatório Inteligência Artificial}}
+\linespread{1.1}
+
+\title{\LARGE \textbf{Relatório do Projeto 1 de Inteligência Artificial}}
 \author{Mihail Brinza \\ \scriptsize 83533 \normalsize \and Ricardo Brancas \\ \scriptsize 83557 \normalsize}
 
 \begin{document}
@@ -34,17 +36,20 @@
     \subsection{Resultados}
 
     \begin{table}[h!]
-        \begin{tabular}{ c|*{3}{c}|*{3}{c}|*{3}{c} }
-            & \multicolumn{3}{ c| }{DFS} & \multicolumn{3}{ c| }{Greedy} & \multicolumn{3}{ c }{A*} \\ \cline{2-10}
-            Problema & t & g & e & t & g & e & t & g & e \\
-            \hline
-            1 & 0.0001 & 0 & 1 & 0.0002 & 0 & 1 & 0.0002 & 0 & 1     \\
-            2 & 0.0004 & 7 & 4 & 0.0006 & 6 & 3 & 0.0006 & 7 & 4     \\
-            3 & 5.8729 & 74701 & 74702 & 12.091 & 74701 & 74702 & 12.030 & 74701 & 74702 \\
-            4 & 0.0052 & 85 & 54 & 0.0105 & 59 & 42 & 0.0058 & 43 & 24    \\
-            5 & 221.30 & 3123363 & 3123308 & 0.0357 & 237 & 169 & 0.0145 & 91 & 16    \\
-        \end{tabular}
-        \caption{Resultados da execução dos vários problemas. \small \textbf{t} refere-se ao tempo demorado; \textbf{g} ao número de nós gerados e \textbf{e} ao número de nós expandidos.}
+		\begin{center}
+	        \begin{tabular}{ c|*{3}{c}|*{3}{c}|*{3}{c} }
+	            & \multicolumn{3}{ c| }{DFS} & \multicolumn{3}{ c| }{Greedy} & \multicolumn{3}{ c }{A*} \\ \cline{2-10}
+	            Problema & t & g & e & t & g & e & t & g & e \\
+	            \hline
+	            1 & 0.0003 & 0 & 1 & 0.0005 & 0 & 1 & 0.0006 & 0 & 1 \\
+	            2 & 0.0006 & 7 & 4 & 0.0009 & 6 & 3 & 0.0009 & 7 & 4 \\
+	            3 & 12.574 & 74701 & 74702 & 17.673 & 74701 & 74702 & 12.833 & 74701 & 74702 \\
+	            4 & 0.0057 & 85 & 54 & 0.0144 & 59 & 42 & 0.0119 & 43 & 24 \\
+	            5 & 208.09 & 3123363 & 3123308 & 0.0539 & 220 & 149 & 0.0306 & 91 & 16 \\
+	        \end{tabular}
+		\end{center}
+		\footnotesize \textbf{t} refere-se ao tempo demorado; \textbf{g} ao número de nós gerados e \textbf{e} ao número de nós expandidos. \normalsize
+        \caption{Resultados da execução dos vários problemas.}
     \end{table}
 
     \section{Análise}
@@ -68,15 +73,18 @@
 
 
     \paragraph{Eficiência}
-    Dos 3 métodos de pesquisa abordados, os mais eficiente (em termos de tempo/nós gerados) são claramente as procuras informadas,
+    Dos 3 métodos de pesquisa abordados, os mais eficientes (em termos de tempo/nós gerados) são claramente as procuras informadas,
     neste caso a Procura Ganaciosa e a Procura A*. Isto deve-se ao facto das procuras informadas usarem heurísticas para direcionar
     a pesquisa em direção ao estado objetivo, reduzindo efetivamente o \textit{branching factor}.
+    Por este motivo, a discrepância entre as procuras informadas e não informadas é mais notória quando existe um grande número
+    de grupos alternativos que podem ser removidos ($>$ \textit{branching factor}).
 
-    É ainda possível afirmar que o número de cores de uma determinada instância do problema tem uma maior influência na
-    sua complexidade que o tamanho da instância. Em particular quando são usadas procuras não informadas. (ver problemas 4 e 5)
+    Através da análise de várias instâncias do problema, concluimos ainda, que um dos fatores determinantes para a complexidade
+    de uma dada instância é a relação entre o número de cores e o tamanho do tabuleiro, tal como no clássico jogo \textit{minesweeper}
+    (neste caso número de bombas vs.\ tamanho do tabuleiro); pois num tabuleiro muito grande com poucas cores a solução é normalmente
+    mais simples (uma vez que os grupos são em geral maiores). Em contraste, num tabuleiro pequeno com muitas cores os
+    grupos são em geral muito pequenos o que difculta a resolução do problema.
 
-    \paragraph{Comparação}
-    still missing
 
     \paragraph{Heurística}
     Na implementação do nosso problema Same Game usámos a seguinte função heurística:
@@ -87,13 +95,15 @@
             3, & size(g) = 1
         \end{cases}
     \]
-    Para cada grupo de cardinalidade $\geq 2$ somamos $1$ ao valor de $h(n)$ uma vez que no melhor caso, esse grupo irá ser removido
-    apenas numa ação. Para cada grupo de cardinalidade $1$, somamos $3$ de modo estamos a dirigir a nossa pesquisa de modo a evitar
-    grupos de cardinalidade $1$, uma vez que esses grupos são, provavelmente, mais difíceis de remover que grupos com maiores cardinalidades.
+    Para cada grupo de cardinalidade $\geq 2$ somamos $1$ ao valor de $h(n)$ uma vez que, no melhor caso, esse grupo irá ser removido
+    apenas numa ação; para cada grupo de cardinalidade $1$, somamos $3$ de forma a dirigir a nossa pesquisa de modo a evitar
+    grupos de cardinalidade $1$, uma vez que esses grupos são provavelmente mais difíceis de remover que grupos com maiores cardinalidades.
     Experimentalmente constatámos que esta heurística produz ligeiramente menos nós do que não fazendo diferenciação na
     cardinalidade dos grupos.
 
-    \paragraph{}
-
+    Esta heurística é claramente não admissível, uma vez que remover um grupo pode implicar uma alteração radical no número
+    de grupos restantes (pois vários grupos separados podem juntar-se num só). No entanto, como este não é um problema de
+    optimalidade e sim de satisfação, não é importante que a heurística seja admissível mas sim que conduza o mais rapidamente
+    possível ao estado objetivo.
 
 \end{document}

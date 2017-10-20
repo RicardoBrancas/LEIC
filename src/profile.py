@@ -52,13 +52,10 @@ def do_search(name, search, problem):
 	print('\t', name.rjust(8) + ':', problem, "{0:.4f}".format((end - start)))
 
 
-for i, problem in enumerate(problems):
+for i, problem in enumerate(problems, start=1):
 	print("Running problem", i)
 
 	sg = same_game(problem)
-
-	# if i == 5:
-	# 	del searches['DFS']
 
 	processes = []
 
