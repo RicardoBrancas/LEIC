@@ -60,12 +60,7 @@ def copy_board(board):
 
 
 def board_empty(board):
-	for line in board:
-		for cell in line:
-			if color(cell):
-				return False
-
-	return True
+	return no_color(board[len(board)-1][0])
 
 
 def board_find_groups(board):
@@ -176,6 +171,6 @@ class same_game(Problem):
 			if group_size(group) >= 2:
 				h += 1
 			else:
-				h += 2
+				h += 3
 
 		return h

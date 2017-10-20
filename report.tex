@@ -4,7 +4,7 @@
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage{multirow}
-\usepackage{siunitx}
+\usepackage{amsmath}
 
 \title{\LARGE \textbf{Relatório Inteligência Artificial}}
 \author{Mihail Brinza \\ \scriptsize 83533 \normalsize \and Ricardo Brancas \\ \scriptsize 83557 \normalsize}
@@ -63,8 +63,37 @@
 
 
     \paragraph{Completude}
-    No problema Same Game, qualquer uma das pesquisas estudadas é completa uma vez que o espaço de estados é acíclico e o
-    comprimento máximo de um caminho e o \textit{branching factor} são finitos.
+    No problema Same Game, qualquer uma das pesquisas estudadas é completa uma vez que o espaço de estados é acíclico e tanto o
+    comprimento máximo de um caminho como o \textit{branching factor} são finitos.
+
+
+    \paragraph{Eficiência}
+    Dos 3 métodos de pesquisa abordados, os mais eficiente (em termos de tempo/nós gerados) são claramente as procuras informadas,
+    neste caso a Procura Ganaciosa e a Procura A*. Isto deve-se ao facto das procuras informadas usarem heurísticas para direcionar
+    a pesquisa em direção ao estado objetivo, reduzindo efetivamente o \textit{branching factor}.
+
+    É ainda possível afirmar que o número de cores de uma determinada instância do problema tem uma maior influência na
+    sua complexidade que o tamanho da instância. Em particular quando são usadas procuras não informadas. (ver problemas 4 e 5)
+
+    \paragraph{Comparação}
+    still missing
+
+    \paragraph{Heurística}
+    Na implementação do nosso problema Same Game usámos a seguinte função heurística:
+    \[
+        h(n) = \sum_{g\, \in\, groups(n)}
+        \begin{cases}
+            1, & size(g) \geq 2 \\
+            3, & size(g) = 1
+        \end{cases}
+    \]
+    Para cada grupo de cardinalidade $\geq 2$ somamos $1$ ao valor de $h(n)$ uma vez que no melhor caso, esse grupo irá ser removido
+    apenas numa ação. Para cada grupo de cardinalidade $1$, somamos $3$ de modo estamos a dirigir a nossa pesquisa de modo a evitar
+    grupos de cardinalidade $1$, uma vez que esses grupos são, provavelmente, mais difíceis de remover que grupos com maiores cardinalidades.
+    Experimentalmente constatámos que esta heurística produz ligeiramente menos nós do que não fazendo diferenciação na
+    cardinalidade dos grupos.
+
+    \paragraph{}
 
 
 \end{document}
