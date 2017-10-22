@@ -7,8 +7,16 @@ let car;
 
 let carMaterial, groundMaterial;
 
-const tableLength = 200;
+const table_length = 200;
+const table_half_length = table_length / 2;
 const tableHeight = 2;
+
+let current_level = 1;
+
+class Limits {
+}
+
+const limits = new Limits(); //used for collisions
 
 const cheerioSize = 1;
 
@@ -39,7 +47,6 @@ class Collidable extends THREE.Object3D {
 
 	update_center() {
 		this.sphere_center.copy(this.getWorldPosition());
-
 		this.dirty_center = false;
 	}
 
@@ -56,9 +63,16 @@ class Collidable extends THREE.Object3D {
 	}
 
 	sphere_collides(other_collidable) {
+		if (!(this.visible) || !(other_collidable.visible)) return false;
 		let distance = this.distanceSq_to(other_collidable);
 
 		return (this.sphere_radius + other_collidable.sphere_radius) ** 2 >= distance;
+	}
+
+	out_of_limits() {
+		if (!(this.visible)) return false;
+		return this.sphere_center.x < -table_half_length || this.sphere_center.x > table_half_length
+			|| this.sphere_center.y < -table_half_length || this.sphere_center.y > table_half_length;
 	}
 
 	resolve_collision(other_node, delta) {
@@ -83,6 +97,8 @@ class VariablyAcceleratable extends Collidable {
 	}
 
 	update(delta) {
+		if(!(this.visible)) return;
+
 		this.speed += this.acceleration * delta - this.speed * this.drag * delta;
 		this.rotateOnAxis(this.up, Math.abs(this.speed) * this.angularVelocity * delta / 50);
 		this.translateOnAxis(this.front, this.speed * delta);
@@ -121,7 +137,7 @@ class Cheerio extends VariablyAcceleratable {
 
 	resolve_collision(other_node, delta) {
 
-		if (other_node instanceof Car) {
+		if (other_node instanceof VariablyAcceleratable) {
 			let new_direction = this.unit_vector_to(other_node).negate();
 			let over_movement = this.sphere_radius + other_node.sphere_radius - Math.sqrt(this.distanceSq_to(other_node));
 
@@ -130,8 +146,10 @@ class Cheerio extends VariablyAcceleratable {
 				this.dirty_center = true;
 			}
 
-			this.front = new_direction;
-			this.speed = Math.max(this.speed, Math.abs(other_node.speed));
+			if (!(other_node instanceof Orange)) { //if we are colliding with orange, don't gain speed
+				this.front = new_direction;
+				this.speed = Math.max(this.speed, Math.abs(other_node.speed));
+			}
 		}
 
 	}
@@ -156,7 +174,6 @@ class Butter extends VariablyAcceleratable {
 
 	update_radius() {
 		this.sphere_radius = Math.sqrt(3.5 ** 2 + 2 ** 2);
-
 		this.dirty_radius = false;
 	}
 
@@ -166,7 +183,9 @@ class Butter extends VariablyAcceleratable {
 	}
 }
 
-const orange_geometry = new THREE.SphereGeometry(6, 16, 16);
+const orange_radius = 6;
+
+const orange_geometry = new THREE.SphereGeometry(orange_radius, 16, 16);
 const orange_material = new THREE.MeshBasicMaterial({color: 0xff8c00});
 const orange_mesh = new THREE.Mesh(orange_geometry, orange_material);
 
@@ -177,6 +196,7 @@ const stalk_geometry = new THREE.BoxGeometry(0.5, 0.5, 2);
 const stalk_mesh = new THREE.Mesh(stalk_geometry, leaf_material);
 
 const orange_group = new THREE.Group();
+orange_group.add(orange_mesh);
 leaf_mesh.rotateY(Math.PI / 3);
 leaf_mesh.position.x = 6.5;
 leaf_mesh.position.z = 3;
@@ -188,40 +208,55 @@ orange_group.add(stalk_mesh);
 
 class Orange extends VariablyAcceleratable {
 
-	constructor(x, y, z) {
+	constructor() {
 		super();
 
 		this.drag = 0.1;
-		this.speed = Math.floor(Math.random() * 10);
 		this.acceleration = 5;
 
 		this.inner_orange = orange_group.clone();
 		this.add(this.inner_orange);
 
-		this.position.set(x, y, z);
-
-        this.rotateZ(Math.random() * 2 * Math.PI);
-		this.add( new THREE.AxisHelper(10));
+		this.reset_and_randomize();
 		this.update_radius();
 	}
 
-    update_radius() {
-        this.sphere_radius = 6;
-        this.dirty_radius = false;
-    }
+	hide() {
+		this.visible = false;
 
-    update(delta) {
+		setTimeout(function (object) {
+			return function () {
+				object.reset_and_randomize();
+			}
+		}(this), (Math.random()+0.5) * 1000 * 3)
+	}
+
+	reset_and_randomize() {
+		let x = (Math.random() * 2 - 1) * table_half_length;
+		let y = (Math.random() * 2 - 1) * table_half_length;
+		this.position.set(x, y, orange_radius);
+		this.update_center();
+
+		this.speed = Math.floor(Math.random() * 10 * current_level);
+		this.rotateZ(Math.random() * 2 * Math.PI);
+
+		this.visible = true;
+	}
+
+	update_radius() {
+		this.sphere_radius = 6;
+		this.dirty_radius = false;
+	}
+
+	update(delta) {
 		super.update(delta);
-
-        let pos = this.getWorldPosition();
-		if (Math.abs(pos.getComponent(0)) > 105 || (Math.abs(pos.getComponent(1)) > 105)) {
-            this.visible = false;
-        }
-        this.children[0].rotateX(0.1);
+		this.inner_orange.rotateX(-this.speed * delta / orange_radius);
 	}
 
 	resolve_collision(other_node, delta) {
-		//do nothing
+		if (other_node instanceof Limits) {
+			this.hide();
+		}
 	}
 }
 
@@ -233,8 +268,6 @@ class Car extends VariablyAcceleratable {
 		carMaterial = new THREE.MeshBasicMaterial({
 			color: 0xffffff
 		});
-
-		this.mass = 3;
 
 		this.width = width;
 		this.length = length;
@@ -296,7 +329,6 @@ class Car extends VariablyAcceleratable {
 
 			this.speed = 0;
 		} else if (other_node instanceof Orange) {
-			if (other_node.visible)
 				window.location.reload();
 		}
 	}
@@ -317,7 +349,7 @@ function addGround(parent, x, y, z) {
 	groundMaterial = new THREE.MeshBasicMaterial({
 		color: 0x45525F
 	});
-	const geometry = new THREE.BoxGeometry(tableLength, tableLength, tableHeight);
+	const geometry = new THREE.BoxGeometry(table_length, table_length, tableHeight);
 	const mesh = new THREE.Mesh(geometry, groundMaterial);
 	mesh.name = "Ground";
 	mesh.position.set(x, y, z - tableHeight / 2);
@@ -331,8 +363,8 @@ function addCheerios(parent) {
 	const number_of_cheerios = 64;
 
 	const anglePerCheerio = (2 * Math.PI) / number_of_cheerios;
-	const outerRadius = (tableLength - cheerioSize * 4) / 2;
-	const innerRadius = (tableLength - cheerioSize * 4) / 2 * 2 / 3;
+	const outerRadius = (table_length - cheerioSize * 4) / 2;
+	const innerRadius = (table_length - cheerioSize * 4) / 2 * 2 / 3;
 
 	for (let i = 0, alpha = 0; i < number_of_cheerios; i++, alpha += anglePerCheerio) {
 		cheerios.add(new Cheerio(Math.cos(alpha) * outerRadius, Math.sin(alpha) * outerRadius, 0));
@@ -351,8 +383,9 @@ function addButters(parent) {
 }
 
 function addOranges(parent) {
-	parent.add(new Orange(-33, -29, 5.5));
-    parent.add(new Orange(-33, 69, 5.5));
+	parent.add(new Orange());
+	parent.add(new Orange());
+	parent.add(new Orange());
 
 }
 
@@ -385,16 +418,16 @@ function onResize() {
 	if (window.innerHeight > 0 && window.innerWidth > 0) {
 		const aspectRatio = window.innerWidth / window.innerHeight;
 		if (aspectRatio > 1) {
-			camera.left = -(tableLength / 2) * aspectRatio;
-			camera.right = (tableLength / 2) * aspectRatio;
-			camera.top = (tableLength / 2);
-			camera.bottom = -(tableLength / 2);
+			camera.left = -(table_length / 2) * aspectRatio;
+			camera.right = (table_length / 2) * aspectRatio;
+			camera.top = (table_length / 2);
+			camera.bottom = -(table_length / 2);
 			camera.aspect = aspectRatio;
 		} else {
-			camera.left = -(tableLength / 2);
-			camera.right = (tableLength / 2);
-			camera.top = (tableLength / 2) / aspectRatio;
-			camera.bottom = -(tableLength / 2) / aspectRatio;
+			camera.left = -(table_length / 2);
+			camera.right = (table_length / 2);
+			camera.top = (table_length / 2) / aspectRatio;
+			camera.bottom = -(table_length / 2) / aspectRatio;
 			camera.aspect = aspectRatio;
 		}
 		camera.updateProjectionMatrix();
@@ -449,6 +482,10 @@ function onKeyUp(e) {
 	}
 }
 
+function onLevelIncrease() {
+	current_level++;
+}
+
 // === EVENT LISTENERS END ===
 
 function render() {
@@ -464,17 +501,6 @@ function animate() {
 			if (node.visible)
 				node.update(delta)
 		}
-		if (node instanceof Orange) {
-			if (!node.visible) {
-                node.visible = true;
-                setTimeout(function () {
-                    node.position.set(Math.random() * 180 - 90, Math.random() * 180 - 90, 5.5);
-                    node.speed = Math.random() * 10 + clock.getElapsedTime()*5;
-                    node.rotateZ(Math.random() * 2 * Math.PI);
-                }, 0)
-				clearTimeout();
-            }
-        }
 
 		if (node instanceof Collidable) {
 
@@ -483,6 +509,9 @@ function animate() {
 
 			if (node.dirty_radius)
 				node.update_radius();
+
+			if (node.out_of_limits())
+				node.resolve_collision(limits, delta);
 
 			scene.traverse(function (other_node) {
 				if (node !== other_node) {
@@ -520,15 +549,16 @@ function init() {
 	window.addEventListener("resize", onResize);
 	window.addEventListener("keydown", onKeyDown);
 	window.addEventListener("keyup", onKeyUp);
+	setInterval(onLevelIncrease, 10*1000);
 }
 
 
 function createCamera() {
 	const aspectRatio = window.innerWidth / window.innerHeight;
 	if (aspectRatio > 1)
-		camera1 = new THREE.OrthographicCamera(-(tableLength / 2) * aspectRatio, (tableLength / 2) * aspectRatio, (tableLength / 2), -(tableLength / 2), 1, 200);
+		camera1 = new THREE.OrthographicCamera(-(table_length / 2) * aspectRatio, (table_length / 2) * aspectRatio, (table_length / 2), -(table_length / 2), 1, 200);
 	else
-		camera1 = new THREE.OrthographicCamera(-(tableLength / 2), (tableLength / 2), (tableLength / 2) / aspectRatio, -(tableLength / 2) / aspectRatio, 1, 200);
+		camera1 = new THREE.OrthographicCamera(-(table_length / 2), (table_length / 2), (table_length / 2) / aspectRatio, -(table_length / 2) / aspectRatio, 1, 200);
 
 	camera1.position.x = 0;
 	camera1.position.y = 0;
