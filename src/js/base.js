@@ -141,14 +141,13 @@ class Cheerio extends VariablyAcceleratable {
 			let new_direction = this.unit_vector_to(other_node).negate();
 			let over_movement = this.sphere_radius + other_node.sphere_radius - Math.sqrt(this.distanceSq_to(other_node));
 
-			this.translateOnAxis(new_direction, over_movement); //We've overstepped, go back!
-			if (over_movement > 0) {
-				this.dirty_center = true;
-			}
-
-			if (!(other_node instanceof Orange)) { //if we are colliding with orange, don't gain speed
+			if (!(other_node instanceof Orange)) { //if we are colliding with orange, do nothing
 				this.front = new_direction;
 				this.speed = Math.max(this.speed, Math.abs(other_node.speed));
+                this.translateOnAxis(new_direction, over_movement); //We've overstepped, go back!
+                if (over_movement > 0) {
+                    this.dirty_center = true;
+                }
 			}
 		}
 
@@ -237,7 +236,7 @@ class Orange extends VariablyAcceleratable {
 		this.position.set(x, y, orange_radius);
 		this.update_center();
 
-		this.speed = Math.floor(Math.random() * 10 * current_level);
+		this.speed = Math.floor(Math.random() * 10 * current_level + current_level);
 		this.rotateZ(Math.random() * 2 * Math.PI);
 
 		this.visible = true;
@@ -446,16 +445,16 @@ function onKeyDown(e) {
 			cheerio_material.wireframe = !cheerio_material.wireframe;
 			break;
 		case 38: //up
-			car.acceleration = 20;
+			car.acceleration = 30;
 			break;
 		case 40: //down
 			car.acceleration = -40;
 			break;
 		case 37: //left
-			car.angularVelocity = 1;
+			car.angularVelocity = 2;
 			break;
 		case 39:
-			car.angularVelocity = -1;
+			car.angularVelocity = -2;
 			break;
 		case 49:
 			camera = camera1;
@@ -498,8 +497,7 @@ function animate() {
 	scene.traverse(function (node) {
 
 		if (node instanceof VariablyAcceleratable) {
-			if (node.visible)
-				node.update(delta)
+			node.update(delta)
 		}
 
 		if (node instanceof Collidable) {
