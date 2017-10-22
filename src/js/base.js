@@ -171,38 +171,43 @@ const orange_material = new THREE.MeshBasicMaterial({color: 0xff8c00});
 const leaf_material = new THREE.MeshBasicMaterial({color: 0x05581c})
 const orange_mesh = new THREE.Mesh(orange_geometry, orange_material);
 
+
+
 class Orange extends VariablyAcceleratable {
 
 	constructor(x, y, z) {
 		super();
 
-        this.addLeaf();
+		let orangeGroup = new THREE.Group();
+    //    orangeGroup.addLeaf();
 		let clone = orange_mesh.clone();
-		this.add(clone);
+		orangeGroup.add(clone);
+		this.add(orangeGroup);
 		this.position.set(x, y, z);
         this.drag = 0.1;
         this.speed = Math.floor(Math.random() * 10);
         this.acceleration = 5;
-        this.front.applyAxisAngle(this.up, Math.random() * 2 * Math.PI);
 
+        this.rotateZ(Math.random() * 2 * Math.PI);
+		this.add( new THREE.AxisHelper(10));
 		this.update_radius();
 	}
 
 	addLeaf() {
-		const leaf_geom = new THREE.BoxGeometry(3, 3, 0.1);
-		const leaf = new THREE.Mesh(leaf_geom, leaf_material);
-		const stalk_geom = new THREE.BoxGeometry(0.5, 0.5, 2);
-		const stalk = new THREE.Mesh(stalk_geom, leaf_material);
+        const leaf_geom = new THREE.BoxGeometry(3, 3, 0.1);
+        const leaf = new THREE.Mesh(leaf_geom, leaf_material);
+        const stalk_geom = new THREE.BoxGeometry(0.5, 0.5, 2);
+        const stalk = new THREE.Mesh(stalk_geom, leaf_material);
 
-		leaf.rotateY(Math.PI / 3);
-		leaf.position.x = 6.5;
-		leaf.position.z = 3;
+        leaf.rotateY(Math.PI / 3);
+        leaf.position.x = 6.5;
+        leaf.position.z = 3;
         this.add(leaf);
         stalk.rotateY(Math.PI / 3);
         stalk.position.x = 5.5;
-		stalk.position.z = 3;
+        stalk.position.z = 3;
         this.add(stalk);
-	}
+    }
 
     update_radius() {
         this.sphere_radius = 6;
@@ -211,14 +216,12 @@ class Orange extends VariablyAcceleratable {
 
     update(delta) {
 		super.update(delta);
-        let pos = this.getWorldPosition();
 
-        if (Math.abs(pos.getComponent(0)) > 105 || (Math.abs(pos.getComponent(1)) > 105)) {
-            this.position.set(150, 150, 5);
+        let pos = this.getWorldPosition();
+		if (Math.abs(pos.getComponent(0)) > 105 || (Math.abs(pos.getComponent(1)) > 105)) {
             this.visible = false;
-            this.speed = 0;
-            this. acceleration = 0;
         }
+        this.children[0].rotateX(0.1);
 	}
 
 	resolve_collision(other_node, delta) {
@@ -297,7 +300,8 @@ class Car extends VariablyAcceleratable {
 
 			this.speed = 0;
 		} else if (other_node instanceof Orange) {
-			window.location.reload();
+			if (other_node.visible)
+				window.location.reload();
 		}
 	}
 }
@@ -351,8 +355,8 @@ function addButters(parent) {
 }
 
 function addOranges(parent) {
-	parent.add(new Orange(-33, -29, 5));
-    parent.add(new Orange(-33, 69, 5));
+	parent.add(new Orange(-33, -29, 5.5));
+    parent.add(new Orange(-33, 69, 5.5));
 
 }
 
@@ -461,16 +465,16 @@ function animate() {
 	scene.traverse(function (node) {
 
 		if (node instanceof VariablyAcceleratable) {
-			node.update(delta)
+			if (node.visible)
+				node.update(delta)
 		}
 		if (node instanceof Orange) {
 			if (!node.visible) {
                 node.visible = true;
                 setTimeout(function () {
-                    node.position.set(Math.random() * 180 - 90, Math.random() * 180 - 90, 5);
-                    node.speed = Math.floor(Math.random() * 10);
-                    node.acceleration = 5;
-                    node.front.applyAxisAngle(node.up, Math.random() * 2 * Math.PI);
+                    node.position.set(Math.random() * 180 - 90, Math.random() * 180 - 90, 5.5);
+                    node.speed = Math.random() * 10 + clock.getElapsedTime()*5;
+                    node.rotateZ(Math.random() * 2 * Math.PI);
                 }, 0)
 				clearTimeout();
             }
