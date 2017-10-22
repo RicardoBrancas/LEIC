@@ -168,46 +168,42 @@ class Butter extends VariablyAcceleratable {
 
 const orange_geometry = new THREE.SphereGeometry(6, 16, 16);
 const orange_material = new THREE.MeshBasicMaterial({color: 0xff8c00});
-const leaf_material = new THREE.MeshBasicMaterial({color: 0x05581c})
 const orange_mesh = new THREE.Mesh(orange_geometry, orange_material);
 
+const leaf_material = new THREE.MeshBasicMaterial({color: 0x05581c});
+const leaf_geometry = new THREE.BoxGeometry(3, 3, 0.1);
+const leaf_mesh = new THREE.Mesh(leaf_geometry, leaf_material);
+const stalk_geometry = new THREE.BoxGeometry(0.5, 0.5, 2);
+const stalk_mesh = new THREE.Mesh(stalk_geometry, leaf_material);
 
+const orange_group = new THREE.Group();
+leaf_mesh.rotateY(Math.PI / 3);
+leaf_mesh.position.x = 6.5;
+leaf_mesh.position.z = 3;
+orange_group.add(leaf_mesh);
+stalk_mesh.rotateY(Math.PI / 3);
+stalk_mesh.position.x = 5.5;
+stalk_mesh.position.z = 3;
+orange_group.add(stalk_mesh);
 
 class Orange extends VariablyAcceleratable {
 
 	constructor(x, y, z) {
 		super();
 
-		let orangeGroup = new THREE.Group();
-    //    orangeGroup.addLeaf();
-		let clone = orange_mesh.clone();
-		orangeGroup.add(clone);
-		this.add(orangeGroup);
+		this.drag = 0.1;
+		this.speed = Math.floor(Math.random() * 10);
+		this.acceleration = 5;
+
+		this.inner_orange = orange_group.clone();
+		this.add(this.inner_orange);
+
 		this.position.set(x, y, z);
-        this.drag = 0.1;
-        this.speed = Math.floor(Math.random() * 10);
-        this.acceleration = 5;
 
         this.rotateZ(Math.random() * 2 * Math.PI);
 		this.add( new THREE.AxisHelper(10));
 		this.update_radius();
 	}
-
-	addLeaf() {
-        const leaf_geom = new THREE.BoxGeometry(3, 3, 0.1);
-        const leaf = new THREE.Mesh(leaf_geom, leaf_material);
-        const stalk_geom = new THREE.BoxGeometry(0.5, 0.5, 2);
-        const stalk = new THREE.Mesh(stalk_geom, leaf_material);
-
-        leaf.rotateY(Math.PI / 3);
-        leaf.position.x = 6.5;
-        leaf.position.z = 3;
-        this.add(leaf);
-        stalk.rotateY(Math.PI / 3);
-        stalk.position.x = 5.5;
-        stalk.position.z = 3;
-        this.add(stalk);
-    }
 
     update_radius() {
         this.sphere_radius = 6;
