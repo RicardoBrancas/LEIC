@@ -13,6 +13,8 @@ const tableHeight = 2;
 
 let current_level = 1;
 
+let camera_needs_update = false;
+
 class Limits {
 }
 
@@ -26,6 +28,31 @@ function addCloneAtPosition(parent, object, x, y, z) {
 	const clone = object.clone();
 	clone.position.set(x, y, z);
 	parent.add(clone);
+}
+
+function update_camera(camera) {
+	if (window.innerWidth > 0 && window.innerHeight > 0) {
+		let aspectRatio = window.innerWidth / window.innerHeight;
+
+		if (camera instanceof THREE.OrthographicCamera) {
+			if (aspectRatio > 1) {
+				camera.left = -(table_length / 2) * aspectRatio;
+				camera.right = (table_length / 2) * aspectRatio;
+				camera.top = (table_length / 2);
+				camera.bottom = -(table_length / 2);
+			} else {
+				camera.left = -(table_length / 2);
+				camera.right = (table_length / 2);
+				camera.top = (table_length / 2) / aspectRatio;
+				camera.bottom = -(table_length / 2) / aspectRatio;
+			}
+		} else if (camera instanceof THREE.PerspectiveCamera) {
+			camera.aspect = aspectRatio;
+		}
+
+		camera.updateProjectionMatrix();
+
+	}
 }
 
 // === HELPER FUNCTIONS END ===
@@ -97,7 +124,7 @@ class VariablyAcceleratable extends Collidable {
 	}
 
 	update(delta) {
-		if(!(this.visible)) return;
+		if (!(this.visible)) return;
 
 		this.speed += this.acceleration * delta - this.speed * this.drag * delta;
 		this.rotateOnAxis(this.up, Math.abs(this.speed) * this.angularVelocity * delta / 50);
@@ -137,17 +164,15 @@ class Cheerio extends VariablyAcceleratable {
 
 	resolve_collision(other_node, delta) {
 
-		if (other_node instanceof VariablyAcceleratable) {
+		if ((other_node instanceof VariablyAcceleratable) && !(other_node instanceof Orange)) { //if we are colliding with orange, do nothing
 			let new_direction = this.unit_vector_to(other_node).negate();
 			let over_movement = this.sphere_radius + other_node.sphere_radius - Math.sqrt(this.distanceSq_to(other_node));
 
-			if (!(other_node instanceof Orange)) { //if we are colliding with orange, do nothing
-				this.front = new_direction;
-				this.speed = Math.max(this.speed, Math.abs(other_node.speed));
-                this.translateOnAxis(new_direction, over_movement); //We've overstepped, go back!
-                if (over_movement > 0) {
-                    this.dirty_center = true;
-                }
+			this.front = new_direction;
+			this.speed = Math.max(this.speed, Math.abs(other_node.speed));
+			this.translateOnAxis(new_direction, over_movement); //We've overstepped, go back!
+			if (over_movement > 0) {
+				this.dirty_center = true;
 			}
 		}
 
@@ -227,7 +252,7 @@ class Orange extends VariablyAcceleratable {
 			return function () {
 				object.reset_and_randomize();
 			}
-		}(this), (Math.random()+0.5) * 1000 * 3)
+		}(this), (Math.random() + 0.5) * 1000 * 3)
 	}
 
 	reset_and_randomize() {
@@ -328,7 +353,8 @@ class Car extends VariablyAcceleratable {
 
 			this.speed = 0;
 		} else if (other_node instanceof Orange) {
-				window.location.reload();
+			alert('Game over!');
+			window.location.reload();
 		}
 	}
 }
@@ -414,23 +440,7 @@ function createScene() {
 function onResize() {
 	renderer.setSize(window.innerWidth, window.innerHeight);
 
-	if (window.innerHeight > 0 && window.innerWidth > 0) {
-		const aspectRatio = window.innerWidth / window.innerHeight;
-		if (aspectRatio > 1) {
-			camera.left = -(table_length / 2) * aspectRatio;
-			camera.right = (table_length / 2) * aspectRatio;
-			camera.top = (table_length / 2);
-			camera.bottom = -(table_length / 2);
-			camera.aspect = aspectRatio;
-		} else {
-			camera.left = -(table_length / 2);
-			camera.right = (table_length / 2);
-			camera.top = (table_length / 2) / aspectRatio;
-			camera.bottom = -(table_length / 2) / aspectRatio;
-			camera.aspect = aspectRatio;
-		}
-		camera.updateProjectionMatrix();
-	}
+	update_camera(camera);
 }
 
 function onKeyDown(e) {
@@ -458,12 +468,15 @@ function onKeyDown(e) {
 			break;
 		case 49:
 			camera = camera1;
+			camera_needs_update = true;
 			break;
 		case 50:
 			camera = camera2;
+			camera_needs_update = true;
 			break;
 		case 51:
 			camera = camera3;
+			camera_needs_update = true;
 			break;
 	}
 }
@@ -493,6 +506,11 @@ function render() {
 
 function animate() {
 	const delta = clock.getDelta();
+
+	if(camera_needs_update) {
+		update_camera(camera);
+		camera_needs_update = false;
+	}
 
 	scene.traverse(function (node) {
 
@@ -547,7 +565,7 @@ function init() {
 	window.addEventListener("resize", onResize);
 	window.addEventListener("keydown", onKeyDown);
 	window.addEventListener("keyup", onKeyUp);
-	setInterval(onLevelIncrease, 10*1000);
+	setInterval(onLevelIncrease, 10 * 1000);
 }
 
 
