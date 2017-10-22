@@ -184,7 +184,6 @@ class Orange extends VariablyAcceleratable {
 		orangeGroup.add(clone);
 		this.add(orangeGroup);
 		this.position.set(x, y, z);
-        this.drag = 0.1;
         this.speed = Math.floor(Math.random() * 10);
         this.acceleration = 5;
 
@@ -473,7 +472,7 @@ function animate() {
                 node.visible = true;
                 setTimeout(function () {
                     node.position.set(Math.random() * 180 - 90, Math.random() * 180 - 90, 5.5);
-                    node.speed = Math.random() * 10 + clock.getElapsedTime()*5;
+                    node.speed = Math.min(Math.random() * 10 + clock.getElapsedTime()*5, 100);
                     node.rotateZ(Math.random() * 2 * Math.PI);
                 }, 0)
 				clearTimeout();
