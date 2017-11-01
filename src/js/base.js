@@ -60,6 +60,38 @@ function update_camera(camera) {
 
 // === OBJECTS ===
 
+const candle_light_color = 0xffffff;
+
+let candle_group = new THREE.Group();
+let wax_material = new THREE.MeshPhongMaterial({ color: 0xefe6d3 });
+let wax_geometry = new THREE.CylinderGeometry(0.6, 0.4, 4, 8);
+let wax_mesh = new THREE.Mesh(wax_geometry, wax_material);
+wax_mesh.position.z = 4/2;
+wax_mesh.rotateX(-Math.PI / 2);
+candle_group.add(wax_mesh);
+let flame_material = new THREE.MeshPhongMaterial({ color: 0xe71837 });
+let flame_geometry = new THREE.ConeGeometry(0.3, 1, 3);
+let flame_mesh = new THREE.Mesh(flame_geometry, flame_material);
+flame_mesh.rotateX(Math.PI /2);
+flame_mesh.position.z = 4 + (1/2);
+candle_group.add(flame_mesh);
+
+class Candle extends THREE.Object3D {
+
+    constructor(x, y, z) {
+    	super();
+
+    	this.light = new THREE.PointLight( candle_light_color );
+		this.light.position.z = 4 + (1/2);
+		this.add(this.light);
+
+		this.add(candle_group.clone());
+
+		this.position.set(x, y, z)
+    }
+}
+
+
 class Collidable extends THREE.Object3D {
 
 	constructor() {
@@ -135,7 +167,7 @@ class VariablyAcceleratable extends Collidable {
 	}
 }
 
-const cheerio_material = new THREE.MeshBasicMaterial({
+const cheerio_material = new THREE.MeshPhongMaterial({
 	color: 0xFFD700
 });
 const cheerio_geometry = new THREE.TorusGeometry(cheerioSize, cheerioSize / 2, 8, 10);
@@ -179,7 +211,7 @@ class Cheerio extends VariablyAcceleratable {
 	}
 }
 
-const butter_material = new THREE.MeshBasicMaterial({color: 0xFFFFE0});
+const butter_material = new THREE.MeshPhongMaterial({color: 0xFFFFE0});
 const butter_geometry = new THREE.BoxGeometry(7, 4, 1.2);
 const butter_mesh = new THREE.Mesh(butter_geometry, butter_material);
 
@@ -210,10 +242,10 @@ class Butter extends VariablyAcceleratable {
 const orange_radius = 6;
 
 const orange_geometry = new THREE.SphereGeometry(orange_radius, 16, 16);
-const orange_material = new THREE.MeshBasicMaterial({color: 0xff8c00});
+const orange_material = new THREE.MeshPhongMaterial({color: 0xff8c00});
 const orange_mesh = new THREE.Mesh(orange_geometry, orange_material);
 
-const leaf_material = new THREE.MeshBasicMaterial({color: 0x05581c});
+const leaf_material = new THREE.MeshPhongMaterial({color: 0x05581c});
 const leaf_geometry = new THREE.BoxGeometry(3, 3, 0.1);
 const leaf_mesh = new THREE.Mesh(leaf_geometry, leaf_material);
 const stalk_geometry = new THREE.BoxGeometry(0.5, 0.5, 2);
@@ -289,7 +321,7 @@ class Car extends VariablyAcceleratable {
 	constructor(width, length, wheel_external_diameter, wheel_width) {
 		super();
 
-		carMaterial = new THREE.MeshBasicMaterial({
+		carMaterial = new THREE.MeshPhongMaterial({
 			color: 0xffffff
 		});
 
@@ -347,13 +379,12 @@ class Car extends VariablyAcceleratable {
 	resolve_collision(other_node) {
 		if (other_node instanceof Butter) {
 			let over_movement = this.sphere_radius + other_node.sphere_radius - Math.sqrt(this.distanceSq_to(other_node));
-			this.translateOnAxis(this.front.clone().negate(), over_movement); //We've overstepped, go back!
+			this.translateOnAxis(this.front.clone().negate(), Math.sign(this.speed) * over_movement); //We've overstepped, go back!
 			if (over_movement > 0)
 				this.dirty_center = true;
 
 			this.speed = 0;
 		} else if (other_node instanceof Orange) {
-			alert('Game over!');
 			window.location.reload();
 		}
 	}
@@ -371,10 +402,12 @@ function createCar(x, y, z) {
 }
 
 function addGround(parent, x, y, z) {
-	groundMaterial = new THREE.MeshLambertMaterial({
-		color: 0x45525F
+	groundMaterial = new THREE.MeshPhongMaterial({
+		color: 0x45525F,
+		flatShading: true
 	});
 	const geometry = new THREE.BoxGeometry(table_length, table_length, tableHeight, 20, 20);
+	geometry.computeFaceNormals();
 	const mesh = new THREE.Mesh(geometry, groundMaterial);
 	mesh.name = "Ground";
 	mesh.position.set(x, y, z - tableHeight / 2);
@@ -388,8 +421,8 @@ function addCheerios(parent) {
 	const number_of_cheerios = 64;
 
 	const anglePerCheerio = (2 * Math.PI) / number_of_cheerios;
-	const outerRadius = (table_length - cheerioSize * 4) / 2;
-	const innerRadius = (table_length - cheerioSize * 4) / 2 * 2 / 3;
+	const outerRadius = (table_length - cheerioSize * 4) / 2 * 8/9;
+	const innerRadius = (table_length - cheerioSize * 4) / 2 * 4 / 7;
 
 	for (let i = 0, alpha = 0; i < number_of_cheerios; i++, alpha += anglePerCheerio) {
 		cheerios.add(new Cheerio(Math.cos(alpha) * outerRadius, Math.sin(alpha) * outerRadius, 0));
@@ -415,27 +448,17 @@ function addOranges(parent) {
 
 }
 
-function add_candles(parent) {
+function add_candles(parent, candles) {
+	let inner = false;
 	
-	let close = false;
-	
-	const anglePerCheerio = (2 * Math.PI) / 6;
-	const outerRadius = ((table_length - cheerioSize * 4) / 2 )+10;
-	const innerRadius = ((table_length - cheerioSize * 4) / 2 * 2 / 3) -10;
+	const angle_per_candle = (2 * Math.PI) / candles;
+	const outerRadius = (table_length - cheerioSize * 4) / 2 * 8/9+10;
+	const innerRadius = (table_length - cheerioSize * 4) / 2 * 4 / 7 -10;
 
-	for (let i = 0, alpha = 0; i < 6; i++, alpha += anglePerCheerio) {
-		//parent.add(new Cheerio(Math.cos(alpha) * (close ? innerRadius : outerRadius), Math.sin(alpha) * (close ? innerRadius : outerRadius), 0));
-		
-		let spotLight = new THREE.SpotLight( 0xe5a524 );
-		spotLight.position.set(Math.cos(alpha) * (close ? innerRadius : outerRadius), Math.sin(alpha) * (close ? innerRadius : outerRadius), 10);
-		parent.add(spotLight);
-		parent.add(spotLight.target)
-		spotLight.target.position.set(Math.cos(alpha) * (close ? innerRadius : outerRadius), Math.sin(alpha) * (close ? innerRadius : outerRadius), 0);
-		
-		close = !close;
+	for (let i = 0, alpha = 0; i < candles; i++, alpha += angle_per_candle) {
+		parent.add(new Candle(Math.cos(alpha) * (inner ? innerRadius : outerRadius), Math.sin(alpha) * (inner ? innerRadius : outerRadius), 0));
+		inner = !inner;
 	}
-	
-	
 }
 
 function createTrack(x, y, z) {
@@ -445,7 +468,7 @@ function createTrack(x, y, z) {
 	addCheerios(track);
 	addButters(track);
 	addOranges(track);
-	add_candles(track);
+	add_candles(track, 6);
 	track.position.set(x, y, z);
 	scene.add(track);
 }
