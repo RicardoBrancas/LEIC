@@ -371,10 +371,10 @@ function createCar(x, y, z) {
 }
 
 function addGround(parent, x, y, z) {
-	groundMaterial = new THREE.MeshBasicMaterial({
+	groundMaterial = new THREE.MeshLambertMaterial({
 		color: 0x45525F
 	});
-	const geometry = new THREE.BoxGeometry(table_length, table_length, tableHeight);
+	const geometry = new THREE.BoxGeometry(table_length, table_length, tableHeight, 20, 20);
 	const mesh = new THREE.Mesh(geometry, groundMaterial);
 	mesh.name = "Ground";
 	mesh.position.set(x, y, z - tableHeight / 2);
@@ -394,6 +394,7 @@ function addCheerios(parent) {
 	for (let i = 0, alpha = 0; i < number_of_cheerios; i++, alpha += anglePerCheerio) {
 		cheerios.add(new Cheerio(Math.cos(alpha) * outerRadius, Math.sin(alpha) * outerRadius, 0));
 		cheerios.add(new Cheerio(Math.cos(alpha) * innerRadius, Math.sin(alpha) * innerRadius, 0));
+		
 	}
 
 	parent.add(cheerios);
@@ -414,6 +415,29 @@ function addOranges(parent) {
 
 }
 
+function add_candles(parent) {
+	
+	let close = false;
+	
+	const anglePerCheerio = (2 * Math.PI) / 6;
+	const outerRadius = ((table_length - cheerioSize * 4) / 2 )+10;
+	const innerRadius = ((table_length - cheerioSize * 4) / 2 * 2 / 3) -10;
+
+	for (let i = 0, alpha = 0; i < 6; i++, alpha += anglePerCheerio) {
+		//parent.add(new Cheerio(Math.cos(alpha) * (close ? innerRadius : outerRadius), Math.sin(alpha) * (close ? innerRadius : outerRadius), 0));
+		
+		let spotLight = new THREE.SpotLight( 0xe5a524 );
+		spotLight.position.set(Math.cos(alpha) * (close ? innerRadius : outerRadius), Math.sin(alpha) * (close ? innerRadius : outerRadius), 10);
+		parent.add(spotLight);
+		parent.add(spotLight.target)
+		spotLight.target.position.set(Math.cos(alpha) * (close ? innerRadius : outerRadius), Math.sin(alpha) * (close ? innerRadius : outerRadius), 0);
+		
+		close = !close;
+	}
+	
+	
+}
+
 function createTrack(x, y, z) {
 	const track = new THREE.Object3D();
 	track.name = "Track";
@@ -421,6 +445,7 @@ function createTrack(x, y, z) {
 	addCheerios(track);
 	addButters(track);
 	addOranges(track);
+	add_candles(track);
 	track.position.set(x, y, z);
 	scene.add(track);
 }
