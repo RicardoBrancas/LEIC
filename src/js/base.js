@@ -15,6 +15,9 @@ let current_level = 1;
 
 let camera_needs_update = false;
 
+let candles = [];
+let switch_candles = false;
+
 class Limits {
 }
 
@@ -448,15 +451,17 @@ function addOranges(parent) {
 
 }
 
-function add_candles(parent, candles) {
+function add_candles(parent, candles_n) {
 	let inner = false;
 	
-	const angle_per_candle = (2 * Math.PI) / candles;
+	const angle_per_candle = (2 * Math.PI) / candles_n;
 	const outerRadius = (table_length - cheerioSize * 4) / 2 * 8/9+10;
 	const innerRadius = (table_length - cheerioSize * 4) / 2 * 4 / 7 -10;
 
-	for (let i = 0, alpha = 0; i < candles; i++, alpha += angle_per_candle) {
-		parent.add(new Candle(Math.cos(alpha) * (inner ? innerRadius : outerRadius), Math.sin(alpha) * (inner ? innerRadius : outerRadius), 0));
+	for (let i = 0, alpha = 0; i < candles_n; i++, alpha += angle_per_candle) {
+		let candle = new Candle(Math.cos(alpha) * (inner ? innerRadius : outerRadius), Math.sin(alpha) * (inner ? innerRadius : outerRadius), 0);
+		candles.push(candle);
+		parent.add(candle);
 		inner = !inner;
 	}
 }
@@ -526,6 +531,9 @@ function onKeyDown(e) {
 			camera = camera3;
 			camera_needs_update = true;
 			break;
+		case 67:
+			switch_candles = true;
+			break;
 	}
 }
 
@@ -558,6 +566,13 @@ function animate() {
 	if(camera_needs_update) {
 		update_camera(camera);
 		camera_needs_update = false;
+	}
+
+	if(switch_candles) {
+		for(let candle of candles) {
+			candle.visible = !candle.visible;
+		}
+		switch_candles = false;
 	}
 
 	scene.traverse(function (node) {
