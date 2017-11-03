@@ -60,6 +60,16 @@ function update_camera(camera) {
 
 // === HELPER FUNCTIONS END ===
 
+// === SCENE LIGHT ===
+
+const sunLight = new THREE.DirectionalLight(defaultStatus, 1.5);
+
+sunLight.position.x = 1;
+sunLight.position.z = 3;
+
+let switchDay = false;
+
+// === SCENE LIGHT END ===
 
 // === OBJECTS ===
 
@@ -190,12 +200,10 @@ class Cheerio extends VariablyAcceleratable {
 		this.update_radius();
 	}
 
-
 	update_radius() {
 		this.sphere_radius = cheerioSize * 1.5;
 		this.dirty_radius = false;
 	}
-
 
 	resolve_collision(other_node, delta) {
 
@@ -230,12 +238,10 @@ class Butter extends VariablyAcceleratable {
 		this.update_radius();
 	}
 
-
 	update_radius() {
 		this.sphere_radius = Math.sqrt(3.5 ** 2 + 2 ** 2);
 		this.dirty_radius = false;
 	}
-
 
 	resolve_collision(other_node) {
 		//do nothing
@@ -344,7 +350,6 @@ class Car extends VariablyAcceleratable {
 		this.update_radius();
 	}
 
-
 	update_radius() {
 		let half_total_width = this.width / 2 + this.wheel_tube * 2;
 		let half_total_height = this.length / 2;
@@ -377,7 +382,6 @@ class Car extends VariablyAcceleratable {
 		addCloneAtPosition(this, wheel, -this.total_axle_length / 2, -this.width / 2, this.axle_height);
 		addCloneAtPosition(this, wheel, this.total_axle_length / 2, -this.width / 2, this.axle_height);
 	}
-
 
 	resolve_collision(other_node) {
 		if (other_node instanceof Butter) {
@@ -451,7 +455,7 @@ function addOranges(parent) {
 
 }
 
-function add_candles(parent, candles_n) {
+function addCandles(parent, candles_n) {
 	let inner = false;
 	
 	const angle_per_candle = (2 * Math.PI) / candles_n;
@@ -473,7 +477,7 @@ function createTrack(x, y, z) {
 	addCheerios(track);
 	addButters(track);
 	addOranges(track);
-	add_candles(track, 6);
+	addCandles(track, 6);
 	track.position.set(x, y, z);
 	scene.add(track);
 }
@@ -482,6 +486,7 @@ function createScene() {
 	scene = new THREE.Scene();
 	scene.add(new THREE.AxisHelper(10));
 	createTrack(0, 0, 0);
+    scene.add(sunLight);
 	createCar(65, -65, 0);
 }
 
@@ -534,6 +539,13 @@ function onKeyDown(e) {
 		case 67:
 			switch_candles = true;
 			break;
+		case 71: //G
+			break;
+		case 76: //L
+			break;
+		case 78:
+			switchDay = true;
+			break;
 	}
 }
 
@@ -575,7 +587,12 @@ function animate() {
 		switch_candles = false;
 	}
 
-	scene.traverse(function (node) {
+    if(switchDay) {
+        sunLight.visible = !sunLight.visible;
+        switchDay = false;
+    }
+
+    scene.traverse(function (node) {
 
 		if (node instanceof VariablyAcceleratable) {
 			node.update(delta)
