@@ -442,10 +442,10 @@ class Car extends VariablyAcceleratable {
 			new THREE.Vector3(1.5, 1.5, -0.25),
 			new THREE.Vector3(1.5, -1.5, -0.25),
 			new THREE.Vector3(-1.5, -1.5, -0.25),
-			new THREE.Vector3(-1.5, 1.25, 0.25),
-			new THREE.Vector3(1.5, 1.25, 0.25),
-			new THREE.Vector3(1.5, -1.25, 0.25),
-			new THREE.Vector3(-1.5, -1.25, 0.25)
+			new THREE.Vector3(-1.25, 1.25, 0.25),
+			new THREE.Vector3(1.25, 1.25, 0.25),
+			new THREE.Vector3(1.25, -1.25, 0.25),
+			new THREE.Vector3(-1.25, -1.25, 0.25)
 		);
 
 		part2_geom.faces.push(
