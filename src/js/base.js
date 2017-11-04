@@ -5,8 +5,6 @@ let clock;
 
 let car;
 
-let carMaterial, groundMaterial;
-
 const table_length = 200;
 const table_half_length = table_length / 2;
 const tableHeight = 2;
@@ -60,7 +58,8 @@ function update_camera(camera) {
 
 // === HELPER FUNCTIONS END ===
 
-// === SCENE LIGHT ===
+
+// === MATERIALS AND SCENE LIGHT ===
 
 const sunLight = new THREE.DirectionalLight(defaultStatus, 1.5);
 
@@ -68,21 +67,61 @@ sunLight.position.x = 1;
 sunLight.position.z = 3;
 
 let switchDay = false;
+let switchBasic = false;
 
-// === SCENE LIGHT END ===
+const basicMaterials = {
+	car: new THREE.MeshBasicMaterial({color: 0xffffff}),
+	ground: new THREE.MeshBasicMaterial({color: 0x45525F}),
+	wax: new THREE.MeshBasicMaterial({ color: 0xefe6d3}),
+	flame: new THREE.MeshBasicMaterial({ color: 0xe71837}),
+	cheerio: new THREE.MeshBasicMaterial({color: 0xFFD700}),
+	butter: new THREE.MeshBasicMaterial({color: 0xFFFFE0}),
+	orange: new THREE.MeshBasicMaterial({color: 0xff8c00}),
+	leaf: new THREE.MeshBasicMaterial({color: 0x05581c})
+};
+
+const phongMaterials = {
+    car: new THREE.MeshPhongMaterial({color: 0xffffff}),
+    ground: new THREE.MeshPhongMaterial({color: 0x45525F, flatShading: true}),
+    wax: new THREE.MeshPhongMaterial({ color: 0xefe6d3}),
+    flame: new THREE.MeshPhongMaterial({ color: 0xe71837}),
+    cheerio: new THREE.MeshPhongMaterial({color: 0xFFD700}),
+    butter: new THREE.MeshPhongMaterial({color: 0xFFFFE0}),
+    orange: new THREE.MeshPhongMaterial({color: 0xff8c00}),
+    leaf: new THREE.MeshPhongMaterial({color: 0x05581c})
+};
+
+let car_material = phongMaterials['car'];
+car_material.name = 'car';
+let ground_material = phongMaterials['ground'];
+ground_material.name = 'ground';
+let wax_material = phongMaterials['wax'];
+wax_material.name = 'wax';
+let flame_material = phongMaterials['flame'];
+flame_material.name = 'flame';
+let cheerio_material = phongMaterials['cheerio'];
+cheerio_material.name = 'cheerio';
+let butter_material = phongMaterials['butter'];
+butter_material.name = 'butter';
+let orange_material = phongMaterials['orange'];
+orange_material.name = 'orange';
+let leaf_material = phongMaterials['leaf'];
+leaf_material.name = 'leaf';
+
+
+// === MATERIALS AND SCENE LIGHT END ===
+
 
 // === OBJECTS ===
 
 const candle_light_color = 0xffffff;
 
 let candle_group = new THREE.Group();
-let wax_material = new THREE.MeshPhongMaterial({ color: 0xefe6d3 });
 let wax_geometry = new THREE.CylinderGeometry(0.6, 0.4, 4, 8);
 let wax_mesh = new THREE.Mesh(wax_geometry, wax_material);
 wax_mesh.position.z = 4/2;
 wax_mesh.rotateX(-Math.PI / 2);
 candle_group.add(wax_mesh);
-let flame_material = new THREE.MeshPhongMaterial({ color: 0xe71837 });
 let flame_geometry = new THREE.ConeGeometry(0.3, 1, 3);
 let flame_mesh = new THREE.Mesh(flame_geometry, flame_material);
 flame_mesh.rotateX(Math.PI /2);
@@ -103,7 +142,6 @@ class Candle extends THREE.Object3D {
 		this.position.set(x, y, z)
     }
 }
-
 
 class Collidable extends THREE.Object3D {
 
@@ -180,11 +218,8 @@ class VariablyAcceleratable extends Collidable {
 	}
 }
 
-const cheerio_material = new THREE.MeshPhongMaterial({
-	color: 0xFFD700
-});
 const cheerio_geometry = new THREE.TorusGeometry(cheerioSize, cheerioSize / 2, 8, 10);
-const cheerio_mesh = new THREE.Mesh(cheerio_geometry, cheerio_material);
+let cheerio_mesh = new THREE.Mesh(cheerio_geometry, cheerio_material);
 
 class Cheerio extends VariablyAcceleratable {
 
@@ -222,9 +257,8 @@ class Cheerio extends VariablyAcceleratable {
 	}
 }
 
-const butter_material = new THREE.MeshPhongMaterial({color: 0xFFFFE0});
 const butter_geometry = new THREE.BoxGeometry(7, 4, 1.2);
-const butter_mesh = new THREE.Mesh(butter_geometry, butter_material);
+let butter_mesh = new THREE.Mesh(butter_geometry, butter_material);
 
 class Butter extends VariablyAcceleratable {
 
@@ -251,14 +285,12 @@ class Butter extends VariablyAcceleratable {
 const orange_radius = 6;
 
 const orange_geometry = new THREE.SphereGeometry(orange_radius, 16, 16);
-const orange_material = new THREE.MeshPhongMaterial({color: 0xff8c00});
-const orange_mesh = new THREE.Mesh(orange_geometry, orange_material);
+let orange_mesh = new THREE.Mesh(orange_geometry, orange_material);
 
-const leaf_material = new THREE.MeshPhongMaterial({color: 0x05581c});
 const leaf_geometry = new THREE.BoxGeometry(3, 3, 0.1);
-const leaf_mesh = new THREE.Mesh(leaf_geometry, leaf_material);
+let leaf_mesh = new THREE.Mesh(leaf_geometry, leaf_material);
 const stalk_geometry = new THREE.BoxGeometry(0.5, 0.5, 2);
-const stalk_mesh = new THREE.Mesh(stalk_geometry, leaf_material);
+let stalk_mesh = new THREE.Mesh(stalk_geometry, leaf_material);
 
 const orange_group = new THREE.Group();
 orange_group.add(orange_mesh);
@@ -330,10 +362,6 @@ class Car extends VariablyAcceleratable {
 	constructor(width, length, wheel_external_diameter, wheel_width) {
 		super();
 
-		carMaterial = new THREE.MeshPhongMaterial({
-			color: 0xffffff
-		});
-
 		this.width = width;
 		this.length = length;
 		this.part1_height = 1;
@@ -361,9 +389,9 @@ class Car extends VariablyAcceleratable {
 
 	addBody() {
 		const part1_geom = new THREE.BoxGeometry(this.width, this.length, this.part1_height);
-		const part1 = new THREE.Mesh(part1_geom, carMaterial);
+		const part1 = new THREE.Mesh(part1_geom, car_material);
 		const part2_geom = new THREE.BoxGeometry(this.width, this.width, this.part2_height);
-		const part2 = new THREE.Mesh(part2_geom, carMaterial);
+		const part2 = new THREE.Mesh(part2_geom, car_material);
 
 		part1.position.z = this.part1_height / 2 + this.axle_height;
 		this.add(part1);
@@ -374,7 +402,7 @@ class Car extends VariablyAcceleratable {
 
 	addWheels() {
 		const geometry = new THREE.TorusGeometry(this.wheel_radius, this.wheel_tube, 8, 10);
-		const wheel = new THREE.Mesh(geometry, carMaterial);
+		const wheel = new THREE.Mesh(geometry, car_material);
 		wheel.rotateY(Math.PI / 2);
 
 		addCloneAtPosition(this, wheel, this.total_axle_length / 2, this.width / 2, this.axle_height);
@@ -399,7 +427,6 @@ class Car extends VariablyAcceleratable {
 
 // === OBJECTS END ===
 
-
 // === SCENE INIT ===
 
 function createCar(x, y, z) {
@@ -409,13 +436,9 @@ function createCar(x, y, z) {
 }
 
 function addGround(parent, x, y, z) {
-	groundMaterial = new THREE.MeshPhongMaterial({
-		color: 0x45525F,
-		flatShading: true
-	});
 	const geometry = new THREE.BoxGeometry(table_length, table_length, tableHeight, 20, 20);
 	geometry.computeFaceNormals();
-	const mesh = new THREE.Mesh(geometry, groundMaterial);
+	const mesh = new THREE.Mesh(geometry, ground_material);
 	mesh.name = "Ground";
 	mesh.position.set(x, y, z - tableHeight / 2);
 	parent.add(mesh);
@@ -484,7 +507,6 @@ function createTrack(x, y, z) {
 
 function createScene() {
 	scene = new THREE.Scene();
-	scene.add(new THREE.AxisHelper(10));
 	createTrack(0, 0, 0);
     scene.add(sunLight);
 	createCar(65, -65, 0);
@@ -497,7 +519,6 @@ function createScene() {
 
 function onResize() {
 	renderer.setSize(window.innerWidth, window.innerHeight);
-
 	update_camera(camera);
 }
 
@@ -505,8 +526,8 @@ function onKeyDown(e) {
 	switch (e.keyCode) {
 		case 65:
 		case 97:
-			groundMaterial.wireframe = !groundMaterial.wireframe;
-			carMaterial.wireframe = !carMaterial.wireframe;
+			ground_material.wireframe = !ground_material.wireframe;
+			car_material.wireframe = !car_material.wireframe;
 			orange_material.wireframe = !orange_material.wireframe;
 			leaf_material.wireframe = !leaf_material.wireframe;
 			butter_material.wireframe = !butter_material.wireframe;
@@ -542,6 +563,7 @@ function onKeyDown(e) {
 		case 71: //G
 			break;
 		case 76: //L
+			switchBasic = true;
 			break;
 		case 78:
 			switchDay = true;
@@ -619,9 +641,20 @@ function animate() {
 				}
 			})
 		}
-
-
 	});
+
+	scene.traverse(function (myMesh) {
+        if (switchBasic) {
+            if (myMesh instanceof THREE.Mesh) {
+                if (myMesh.material.isMeshBasicMaterial)
+                    myMesh.material = phongMaterials[myMesh.material.name];
+                else if (myMesh.material.isMeshPhongMaterial)
+                    myMesh.material = basicMaterials[myMesh.material.name];
+            }
+        }
+    });
+
+    switchBasic = false;
 
 	render();
 
@@ -665,10 +698,10 @@ function createCamera() {
 	camera = camera1;
 
 	camera2 = new THREE.PerspectiveCamera(90, aspectRatio, 1, 1000);
-	camera2.position.x = 0;
+	camera2.position.x = -100;
 	camera2.position.y = 0;
 	camera2.position.z = 100;
-	camera2.up.set(0, 1, 0);
+	camera2.up.set(0, 0, 1);
 	camera2.lookAt(scene.position);
 
 	camera3 = new THREE.PerspectiveCamera(90, aspectRatio, 1, 1000);
