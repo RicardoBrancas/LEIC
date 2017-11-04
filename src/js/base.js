@@ -70,12 +70,12 @@ let switchBasic = false;
 let basicMaterials = {};
 let phongMaterials = {};
 
-function create_material(name, color) {
+function create_material(name, color, emissive = false) {
 	let basic = new THREE.MeshBasicMaterial({color: color});
 	basic.name = name;
 	basicMaterials[name] = basic;
 
-	let phong = new THREE.MeshPhongMaterial({color: color});
+	let phong = new THREE.MeshPhongMaterial({color: color, emissive: emissive ? color : 0x000000});
 	phong.name = name;
 	phongMaterials[name] = phong;
 
@@ -85,7 +85,7 @@ function create_material(name, color) {
 let car_material = create_material('car', 0xffffff);
 let ground_material = create_material('ground', 0x45525F);
 let wax_material = create_material('wax', 0xefe6d3);
-let flame_material = create_material('flame', 0xe71837);
+let flame_material = create_material('flame', 0xe71837, emissive=true);
 let cheerio_material = create_material('cheerio', 0xFFD700);
 let butter_material = create_material('butter', 0xFFFFE0);
 let orange_material = create_material('orange', 0xff8c00);
@@ -116,7 +116,7 @@ class Candle extends THREE.Object3D {
     constructor(x, y, z) {
     	super();
 
-    	this.light = new THREE.PointLight( candle_light_color );
+    	this.light = new THREE.PointLight(candle_light_color, 1, 100);
 		this.light.position.z = 4 + (1/2);
 		this.add(this.light);
 
