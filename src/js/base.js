@@ -772,10 +772,10 @@ function createCamera() {
   camera2.lookAt(scene.position);
 
   camera3 = new THREE.PerspectiveCamera(90, aspectRatio, 1, 1000);
-  camera3.position.x = 10;
-  camera3.position.y = 3;
-  camera3.position.z = 5;
-  camera3.up.set(0, 0, 1);
+  camera3.position.x = 0;
+  camera3.position.y = -10;
+  camera3.position.z = 8;
+  camera3.up.set(0, 1, 0);
   camera3.lookAt(scene.position);
   car.add(camera3)
 }
