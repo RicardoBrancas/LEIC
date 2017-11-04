@@ -64,25 +64,26 @@ sunLight.position.x = 1;
 sunLight.position.z = 3;
 
 let switchDay = false;
-let switchBasic = false;
+let switchLightEffect = false;
+let switchShading = false;
+let lastMaterial = 'basic';
 
 let basicMaterials = {};
 let phongMaterials = {};
+let lambertMaterials = {};
 
 function create_material(name, color, emissive = false) {
-  let basic = new THREE.MeshBasicMaterial({
-    color: color
-  });
+  let basic = new THREE.MeshBasicMaterial({color: color});
   basic.name = name;
   basicMaterials[name] = basic;
 
-  let phong = new THREE.MeshPhongMaterial({
-    color: color,
-    emissive: emissive ? color : 0x000000
-  });
+  let phong = new THREE.MeshPhongMaterial({color: color});
   phong.name = name;
   phongMaterials[name] = phong;
 
+  let lambert = new THREE.MeshLambertMaterial({color: color});
+  lambert.name = name;
+  lambertMaterials[name] = lambert;
   return basic;
 }
 
@@ -673,9 +674,10 @@ function onKeyDown(e) {
       switch_candles = true;
       break;
     case 71: //G
+      switchShading = true;
       break;
     case 76: //L
-      switchBasic = true;
+      switchLightEffect = true;
       break;
     case 78: //N
       switchDay = true;
@@ -728,14 +730,31 @@ function animate() {
 
   scene.traverse(function(node) {
 
-    if (switchBasic) {
+    if (switchLightEffect) {
       if (node instanceof THREE.Mesh) {
         if (node.material instanceof THREE.MeshBasicMaterial)
-          node.material = phongMaterials[node.material.name];
-
-        else if (node.material instanceof THREE.MeshPhongMaterial)
+            if (lastMaterial == 'lambert')
+                node.material = lambertMaterials[node.material.name];
+            else {
+                node.material = phongMaterials[node.material.name];
+                lastMaterial = 'phong';
+            }
+        else
           node.material = basicMaterials[node.material.name];
       }
+    }
+
+    if (switchShading) {
+        if (node instanceof THREE.Mesh) {
+            if (node.material instanceof THREE.MeshPhongMaterial) {
+                node.material = lambertMaterials[node.material.name];
+                lastMaterial = 'lambert';
+            }
+            else if (node.material instanceof THREE.MeshLambertMaterial) {
+                node.material = phongMaterials[node.material.name];
+                lastMaterial = 'phong';
+            }
+        }
     }
 
     if (node instanceof VariablyAcceleratable) {
@@ -765,7 +784,8 @@ function animate() {
     }
   });
 
-  switchBasic = false;
+  switchLightEffect = false;
+  switchShading = false;
 
   render();
 
