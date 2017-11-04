@@ -438,34 +438,78 @@ class Car extends VariablyAcceleratable {
 
     let part2_geom = new THREE.Geometry();
     part2_geom.vertices.push(
-			new THREE.Vector3(-1.5, 1.5, -0.25),
-			new THREE.Vector3(1.5, 1.5, -0.25),
-			new THREE.Vector3(1.5, -1.5, -0.25),
-			new THREE.Vector3(-1.5, -1.5, -0.25),
-			new THREE.Vector3(-1.25, 1.25, 0.25),
-			new THREE.Vector3(1.25, 1.25, 0.25),
-			new THREE.Vector3(1.25, -1.25, 0.25),
-			new THREE.Vector3(-1.25, -1.25, 0.25)
-		);
+      new THREE.Vector3(-1.5, 1.5, -0.25),
+      new THREE.Vector3(1.5, 1.5, -0.25),
+      new THREE.Vector3(1.5, -1.5, -0.25),
+      new THREE.Vector3(-1.5, -1.5, -0.25),
+      new THREE.Vector3(-1.25, 1.25, 0.25),
+      new THREE.Vector3(1.25, 1.25, 0.25),
+      new THREE.Vector3(1.25, -1.25, 0.25),
+      new THREE.Vector3(-1.25, -1.25, 0.25)
+    );
 
-		part2_geom.faces.push(
+    part2_geom.faces.push(
       new THREE.Face3(0, 1, 2),
       new THREE.Face3(2, 3, 0),
-			new THREE.Face3(5, 4, 7),
+      new THREE.Face3(5, 4, 7),
       new THREE.Face3(7, 6, 5),
-			new THREE.Face3(1, 5, 6),
+      new THREE.Face3(1, 5, 6),
       new THREE.Face3(6, 2, 1),
-			new THREE.Face3(2, 6, 7),
+      new THREE.Face3(2, 6, 7),
       new THREE.Face3(7, 3, 2),
-			new THREE.Face3(4, 0, 3),
+      new THREE.Face3(4, 0, 3),
       new THREE.Face3(3, 7, 4),
-			new THREE.Face3(4, 5, 1),
+      new THREE.Face3(4, 5, 1),
       new THREE.Face3(1, 0, 4),
     );
-		part2_geom.computeFaceNormals();
+    part2_geom.computeFaceNormals();
     const part2 = new THREE.Mesh(part2_geom, car_material);
     part2.position.z = this.part2_height / 2 + this.part1_height + this.axle_height;
     this.add(part2);
+
+    let headlights_geom = new THREE.Geometry();
+    headlights_geom.vertices.push(
+      new THREE.Vector3(0, 0.05, 0.1),
+      new THREE.Vector3(0.05, 0.05, 0.05),
+      new THREE.Vector3(0.05, 0.05, -0.05),
+      new THREE.Vector3(0, 0.05, -0.1),
+      new THREE.Vector3(-0.05, 0.05, -0.05),
+      new THREE.Vector3(-0.05, 0.05, 0.05),
+      new THREE.Vector3(0, -0.05, 0.1),
+      new THREE.Vector3(0.05, -0.05, 0.05),
+      new THREE.Vector3(0.05, -0.05, -0.05),
+      new THREE.Vector3(0, -0.05, -0.1),
+      new THREE.Vector3(-0.05, -0.05, -0.05),
+      new THREE.Vector3(-0.05, -0.05, 0.05),
+    );
+
+    headlights_geom.faces.push(
+      new THREE.Face3(0, 1, 2),
+      new THREE.Face3(2, 3, 4),
+      new THREE.Face3(4, 5, 0),
+      new THREE.Face3(6, 11, 10),
+      new THREE.Face3(10, 9, 8),
+      new THREE.Face3(8, 7, 6),
+      new THREE.Face3(0, 6, 7),
+      new THREE.Face3(7, 1, 0),
+      new THREE.Face3(7, 8, 2),
+      new THREE.Face3(2, 1, 7),
+      new THREE.Face3(8, 9, 3),
+      new THREE.Face3(3, 2, 8),
+      new THREE.Face3(9, 10, 4),
+      new THREE.Face3(4, 3, 9),
+      new THREE.Face3(10, 11, 5),
+      new THREE.Face3(5, 4, 10),
+      new THREE.Face3(11, 6, 0),
+      new THREE.Face3(0, 5, 11),
+
+    );
+    headlights_geom.computeFaceNormals();
+    const headlights = new THREE.Mesh(headlights_geom, car_material);
+    addCloneAtPosition(this, headlights, 1, this.length / 2 + 0.25, this.part1_height / 2 + this.axle_height)
+		addCloneAtPosition(this, headlights, -1, this.length / 2 + 0.25, this.part1_height / 2 + this.axle_height)
+
+
   }
 
   addWheels() {
@@ -774,7 +818,7 @@ function createCamera() {
   camera3 = new THREE.PerspectiveCamera(90, aspectRatio, 1, 1000);
   camera3.position.x = 0;
   camera3.position.y = -10;
-  camera3.position.z = 8;
+  camera3.position.z = 7;
   camera3.up.set(0, 1, 0);
   camera3.lookAt(scene.position);
   car.add(camera3)
