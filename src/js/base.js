@@ -1,5 +1,3 @@
-'use strict';
-
 let camera, camera1, camera2, camera3, scene, renderer;
 let clock;
 
@@ -69,44 +67,29 @@ sunLight.position.z = 3;
 let switchDay = false;
 let switchBasic = false;
 
-const basicMaterials = {
-	car: new THREE.MeshBasicMaterial({color: 0xffffff}),
-	ground: new THREE.MeshBasicMaterial({color: 0x45525F}),
-	wax: new THREE.MeshBasicMaterial({ color: 0xefe6d3}),
-	flame: new THREE.MeshBasicMaterial({ color: 0xe71837}),
-	cheerio: new THREE.MeshBasicMaterial({color: 0xFFD700}),
-	butter: new THREE.MeshBasicMaterial({color: 0xFFFFE0}),
-	orange: new THREE.MeshBasicMaterial({color: 0xff8c00}),
-	leaf: new THREE.MeshBasicMaterial({color: 0x05581c})
-};
+let basicMaterials = {};
+let phongMaterials = {};
 
-const phongMaterials = {
-    car: new THREE.MeshPhongMaterial({color: 0xffffff}),
-    ground: new THREE.MeshPhongMaterial({color: 0x45525F, flatShading: true}),
-    wax: new THREE.MeshPhongMaterial({ color: 0xefe6d3}),
-    flame: new THREE.MeshPhongMaterial({ color: 0xe71837}),
-    cheerio: new THREE.MeshPhongMaterial({color: 0xFFD700}),
-    butter: new THREE.MeshPhongMaterial({color: 0xFFFFE0}),
-    orange: new THREE.MeshPhongMaterial({color: 0xff8c00}),
-    leaf: new THREE.MeshPhongMaterial({color: 0x05581c})
-};
+function create_material(name, color) {
+	let basic = new THREE.MeshBasicMaterial({color: color});
+	basic.name = name;
+	basicMaterials[name] = basic;
 
-let car_material = phongMaterials['car'];
-car_material.name = 'car';
-let ground_material = phongMaterials['ground'];
-ground_material.name = 'ground';
-let wax_material = phongMaterials['wax'];
-wax_material.name = 'wax';
-let flame_material = phongMaterials['flame'];
-flame_material.name = 'flame';
-let cheerio_material = phongMaterials['cheerio'];
-cheerio_material.name = 'cheerio';
-let butter_material = phongMaterials['butter'];
-butter_material.name = 'butter';
-let orange_material = phongMaterials['orange'];
-orange_material.name = 'orange';
-let leaf_material = phongMaterials['leaf'];
-leaf_material.name = 'leaf';
+	let phong = new THREE.MeshPhongMaterial({color: color});
+	phong.name = name;
+	phongMaterials[name] = phong;
+
+	return basic;
+}
+
+let car_material = create_material('car', 0xffffff);
+let ground_material = create_material('ground', 0x45525F);
+let wax_material = create_material('wax', 0xefe6d3);
+let flame_material = create_material('flame', 0xe71837);
+let cheerio_material = create_material('cheerio', 0xFFD700);
+let butter_material = create_material('butter', 0xFFFFE0);
+let orange_material = create_material('orange', 0xff8c00);
+let leaf_material = create_material('leaf', 0x05581c);
 
 
 // === MATERIALS AND SCENE LIGHT END ===
@@ -565,7 +548,7 @@ function onKeyDown(e) {
 		case 76: //L
 			switchBasic = true;
 			break;
-		case 78:
+		case 78: //N
 			switchDay = true;
 			break;
 	}
@@ -616,6 +599,16 @@ function animate() {
 
     scene.traverse(function (node) {
 
+		if (switchBasic) {
+			if (node instanceof THREE.Mesh) {
+				if (node.material instanceof THREE.MeshBasicMaterial)
+					node.material = phongMaterials[node.material.name];
+
+				else if (node.material instanceof THREE.MeshPhongMaterial)
+					node.material = basicMaterials[node.material.name];
+			}
+		}
+
 		if (node instanceof VariablyAcceleratable) {
 			node.update(delta)
 		}
@@ -643,18 +636,7 @@ function animate() {
 		}
 	});
 
-	scene.traverse(function (myMesh) {
-        if (switchBasic) {
-            if (myMesh instanceof THREE.Mesh) {
-                if (myMesh.material.isMeshBasicMaterial)
-                    myMesh.material = phongMaterials[myMesh.material.name];
-                else if (myMesh.material.isMeshPhongMaterial)
-                    myMesh.material = basicMaterials[myMesh.material.name];
-            }
-        }
-    });
-
-    switchBasic = false;
+	switchBasic = false;
 
 	render();
 
@@ -698,9 +680,9 @@ function createCamera() {
 	camera = camera1;
 
 	camera2 = new THREE.PerspectiveCamera(90, aspectRatio, 1, 1000);
-	camera2.position.x = -100;
+	camera2.position.x = 150;
 	camera2.position.y = 0;
-	camera2.position.z = 100;
+	camera2.position.z = 75;
 	camera2.up.set(0, 0, 1);
 	camera2.lookAt(scene.position);
 
