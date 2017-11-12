@@ -582,8 +582,6 @@ function addCheerios(parent) {
 	const outerRadius = (table_length - cheerioSize * 4) / 2 * 8 / 9;
 	const innerRadius = (table_length - cheerioSize * 4) / 2 * 4 / 7;
 
-	console.log(outerRadius - innerRadius);
-
 	for (let i = 0, alpha = 0; i < number_of_cheerios; i++, alpha += anglePerCheerio) {
 		cheerios.add(new Cheerio(Math.cos(alpha) * outerRadius, Math.sin(alpha) * outerRadius, 0));
 		cheerios.add(new Cheerio(Math.cos(alpha) * innerRadius, Math.sin(alpha) * innerRadius, 0));
