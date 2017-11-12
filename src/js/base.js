@@ -102,8 +102,8 @@ function foreach_material(func) {
 	lambert_materials.forEach(func);
 }
 
-let car_material = create_material('car', 0xFF7518, {shininess: 1000});
-let car_top_material = create_material('car_top', 0xdcf5f7, {shininess: 1000000, specular: 0xffffff, transparent: true, opacity: 0.8});
+let car_material = create_material('car', 0xFF7518, {shininess: 100});
+let car_top_material = create_material('car_top', 0xdcf5f7, {shininess: 200, specular: 0xffffff, transparent: true, opacity: 0.8});
 let tires_material = create_material('tires', 0x0303003, {shininess: 10, specular: 0x666666});
 let ground_material = create_material('ground', 0x45525F, {shininess: 20});
 let wax_material = create_material('wax', 0xefe6d3);
@@ -112,6 +112,7 @@ let cheerio_material = create_material('cheerio', 0xFFD700, {shininess: 1, specu
 let butter_material = create_material('butter', 0xFFFDD0);
 let orange_material = create_material('orange', 0xff8c00, {shininess: 80});
 let leaf_material = create_material('leaf', 0x05581c, {shininess: 100});
+let headlights_material = create_material('headlights', 0xaaaaaa, {shininess: 76.8, emissive: true});
 
 // === MATERIALS AND SCENE LIGHT END ===
 
@@ -449,6 +450,7 @@ class Car extends VariablyAcceleratable {
 		);
 
 		part1_geom.computeFaceNormals();
+		part1_geom.computeVertexNormals();
 		const part1 = new THREE.Mesh(part1_geom, car_material);
 		part1.position.z = this.part1_height / 2 + this.axle_height;
 		this.add(part1);
@@ -480,55 +482,43 @@ class Car extends VariablyAcceleratable {
 			new THREE.Face3(1, 0, 4),
 		);
 		part2_geom.computeFaceNormals();
+		part2_geom.computeFlatVertexNormals();
 		const part2 = new THREE.Mesh(part2_geom, car_top_material);
 		part2.position.z = this.part2_height / 2 + this.part1_height + this.axle_height;
 		this.add(part2);
 
 		let headlights_geom = new THREE.Geometry();
-		headlights_geom.vertices.push(
-			new THREE.Vector3(0, 0.05, 0.1),
-			new THREE.Vector3(0.05, 0.05, 0.05),
-			new THREE.Vector3(0.05, 0.05, -0.05),
-			new THREE.Vector3(0, 0.05, -0.1),
-			new THREE.Vector3(-0.05, 0.05, -0.05),
-			new THREE.Vector3(-0.05, 0.05, 0.05),
-			new THREE.Vector3(0, -0.05, 0.1),
-			new THREE.Vector3(0.05, -0.05, 0.05),
-			new THREE.Vector3(0.05, -0.05, -0.05),
-			new THREE.Vector3(0, -0.05, -0.1),
-			new THREE.Vector3(-0.05, -0.05, -0.05),
-			new THREE.Vector3(-0.05, -0.05, 0.05),
-		);
 
-		headlights_geom.faces.push(
-			new THREE.Face3(0, 1, 2),
-			new THREE.Face3(2, 3, 4),
-			new THREE.Face3(4, 5, 0),
-			new THREE.Face3(6, 11, 10),
-			new THREE.Face3(10, 9, 8),
-			new THREE.Face3(8, 7, 6),
-			new THREE.Face3(0, 6, 7),
-			new THREE.Face3(7, 1, 0),
-			new THREE.Face3(7, 8, 2),
-			new THREE.Face3(2, 1, 7),
-			new THREE.Face3(8, 9, 3),
-			new THREE.Face3(3, 2, 8),
-			new THREE.Face3(9, 10, 4),
-			new THREE.Face3(4, 3, 9),
-			new THREE.Face3(10, 11, 5),
-			new THREE.Face3(5, 4, 10),
-			new THREE.Face3(11, 6, 0),
-			new THREE.Face3(0, 5, 11),
-		);
+		for(let y = 0.1; y <= 0.2; y += 0.1) {
+			for(let i = 0; i < 6; i++) {
+				headlights_geom.vertices.push(new THREE.Vector3(Math.cos(Math.PI / 3 * i) * 0.1, y, Math.sin(Math.PI / 3 * i) * 0.15));
+			}
+		}
+
+		for(let i = 0; i < 6; i+=1) { //sides
+			if(i+6+1 < 12) { //last one must be flipped
+				headlights_geom.faces.push(new THREE.Face3(i+1, i, i+6+1));
+			} else {
+				headlights_geom.faces.push(new THREE.Face3(i+6, i+1, 0));
+			}
+			headlights_geom.faces.push(new THREE.Face3((i+6+1) % 12, i, i+6));
+		}
+
+		for(let i = 1; i < 5; i++) { //bases
+			headlights_geom.faces.push(new THREE.Face3(i, i+1, 0));
+			headlights_geom.faces.push(new THREE.Face3(6+i+1, 6+i, 6));
+		}
+
 		headlights_geom.computeFaceNormals();
-		const headlights = new THREE.Mesh(headlights_geom, car_material);
+		headlights_geom.computeVertexNormals();
+		const headlights = new THREE.Mesh(headlights_geom, headlights_material);
 		addCloneAtPosition(this, headlights, 1, this.length / 2 + 0.25, this.part1_height / 2 + this.axle_height);
 		addCloneAtPosition(this, headlights, -1, this.length / 2 + 0.25, this.part1_height / 2 + this.axle_height);
 
 		this.headlights = [];
 
 		for (let x = -1; x <= 1; x += 2) { //just 2 iterations
-			let headlight = new THREE.SpotLight(0xffffff, 1, 32, Math.PI / 4);
+			let headlight = new THREE.SpotLight(0xffffff, 1, 32, Math.PI / 4, 0.1);
 			headlight.position.set(x, this.length / 2 + 0.25, this.part1_height / 2 + this.axle_height);
 			headlight.target.position.set(x, this.length / 2 + 0.25 + 50, this.part1_height / 2 + this.axle_height);
 			this.add(headlight.target);
@@ -558,7 +548,7 @@ class Car extends VariablyAcceleratable {
 
 			this.speed = 0;
 		} else if (other_node instanceof Orange) {
-			window.location.reload();
+			// window.location.reload();
 		}
 	}
 }
@@ -574,7 +564,8 @@ function createCar(x, y, z) {
 }
 
 function addGround(parent, x, y, z) {
-	const geometry = new THREE.BoxGeometry(table_length, table_length, tableHeight, 20, 20);
+	const geometry = new THREE.BoxGeometry(table_length, table_length, tableHeight, 30, 30);
+	geometry.computeVertexNormals();
 	const mesh = new THREE.Mesh(geometry, ground_material);
 	mesh.name = "Ground";
 	mesh.position.set(x, y, z - tableHeight / 2);
