@@ -71,6 +71,8 @@ let switch_day = false;
 let switch_lighting_enabled = false;
 let switch_shading = false;
 
+let switch_headlights = false;
+
 let is_phong = true;
 let lighting_enabled = false;
 
@@ -520,10 +522,20 @@ class Car extends VariablyAcceleratable {
 		);
 		headlights_geom.computeFaceNormals();
 		const headlights = new THREE.Mesh(headlights_geom, car_material);
-		addCloneAtPosition(this, headlights, 1, this.length / 2 + 0.25, this.part1_height / 2 + this.axle_height)
-		addCloneAtPosition(this, headlights, -1, this.length / 2 + 0.25, this.part1_height / 2 + this.axle_height)
+		addCloneAtPosition(this, headlights, 1, this.length / 2 + 0.25, this.part1_height / 2 + this.axle_height);
+		addCloneAtPosition(this, headlights, -1, this.length / 2 + 0.25, this.part1_height / 2 + this.axle_height);
 
+		this.headlights = [];
 
+		for (let x = -1; x <= 1; x += 2) { //just 2 iterations
+			let headlight = new THREE.SpotLight(0xffffff, 1, 32, Math.PI / 4);
+			headlight.position.set(x, this.length / 2 + 0.25, this.part1_height / 2 + this.axle_height);
+			headlight.target.position.set(x, this.length / 2 + 0.25 + 50, this.part1_height / 2 + this.axle_height);
+			this.add(headlight.target);
+			this.add(headlight);
+
+			this.headlights.push(headlight);
+		}
 	}
 
 	addWheels() {
@@ -578,6 +590,8 @@ function addCheerios(parent) {
 	const anglePerCheerio = (2 * Math.PI) / number_of_cheerios;
 	const outerRadius = (table_length - cheerioSize * 4) / 2 * 8 / 9;
 	const innerRadius = (table_length - cheerioSize * 4) / 2 * 4 / 7;
+
+	console.log(outerRadius - innerRadius);
 
 	for (let i = 0, alpha = 0; i < number_of_cheerios; i++, alpha += anglePerCheerio) {
 		cheerios.add(new Cheerio(Math.cos(alpha) * outerRadius, Math.sin(alpha) * outerRadius, 0));
@@ -689,6 +703,9 @@ function onKeyDown(e) {
 		case 78: //N
 			switch_day = true;
 			break;
+		case 72: //H
+			switch_headlights = true;
+			break;
 	}
 }
 
@@ -728,6 +745,13 @@ function animate() {
 			candle.visible = !candle.visible;
 		}
 		switch_candles = false;
+	}
+
+	if (switch_headlights) {
+		for (let headlight of car.headlights) {
+			headlight.visible = !headlight.visible;
+		}
+		switch_headlights = false;
 	}
 
 	if (switch_day) {
