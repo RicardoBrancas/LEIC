@@ -4,8 +4,8 @@ let basic_materials = new Map();
 let phong_materials = new Map();
 let lambert_materials = new Map();
 
-function create_material(name, color, {emissive = false, shininess = 30, specular = 0x111111, transparent = false, opacity = 1} = {}) {
-	let basic = new THREE.MeshBasicMaterial({color: color, transparent: transparent, opacity: opacity});
+function create_material(name, color, {emissive = false, shininess = 30, specular = 0x111111, transparent = false, opacity = 1, map = null } = {}) {
+	let basic = new THREE.MeshBasicMaterial({color: color, transparent: transparent, opacity: opacity, map: map});
 	basic.name = name;
 	basic_materials.set(name, basic);
 
@@ -15,7 +15,8 @@ function create_material(name, color, {emissive = false, shininess = 30, specula
 		shininess: shininess,
 		specular: specular,
 		transparent: transparent,
-		opacity: opacity
+		opacity: opacity,
+		map: map
 	});
 	phong.name = name;
 	phong_materials.set(name, phong);
@@ -24,7 +25,8 @@ function create_material(name, color, {emissive = false, shininess = 30, specula
 		color: color,
 		emissive: emissive ? color : 0x0,
 		transparent: transparent,
-		opacity: opacity
+		opacity: opacity,
+		map: map
 	});
 	lambert.name = name;
 	lambert_materials.set(name, lambert);
@@ -46,8 +48,13 @@ let car_top_material = create_material('car_top', 0xdcf5f7, {
 	opacity: 0.8
 });
 
+var textureToalha = new THREE.TextureLoader().load( "/img/toalha.jpg" );
+textureToalha.wrapS = THREE.RepeatWrapping;
+textureToalha.wrapT = THREE.RepeatWrapping;
+textureToalha.repeat.set( 4, 4 );
+
 let tires_material = create_material('tires', 0x0303003, {shininess: 10, specular: 0x666666});
-let ground_material = create_material('ground', 0x45525F, {shininess: 20});
+let ground_material = create_material('ground', 0x45525F, {shininess: 20, map: textureToalha});
 let wax_material = create_material('wax', 0xefe6d3);
 let flame_material = create_material('flame', 0xe71837, {emissive: true});
 let cheerio_material = create_material('cheerio', 0xFFD700, {shininess: 1, specular: 0xDA9100});
