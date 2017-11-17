@@ -87,11 +87,12 @@ class Track extends THREE.Object3D {
 		this.add_oranges();
 		this.add_candles();
 		this.create_car();
+		this.add_sunlight();
 	}
 
 	create_ground() {
 		let ground = ground_mesh.clone();
-		ground.position.z = - table_height / 2;
+		ground.position.z = -table_height / 2;
 		this.add(ground);
 	}
 
@@ -144,9 +145,15 @@ class Track extends THREE.Object3D {
 	}
 
 	create_car() {
-		this.car = new Car(3, 5, 0.9, 0.3);
+		this.car = new Car();
 		this.car.position.set(65, -65, 0);
-		scene.add(this.car);
+		this.add(this.car);
+	}
+
+	add_sunlight() {
+		this.sunlight = new THREE.DirectionalLight();
+		this.sunlight.position.set(50, 75, 100);
+		this.add(this.sunlight);
 	}
 }
 
@@ -279,52 +286,41 @@ class Candle extends THREE.Object3D {
 
 class Car extends VariablyAcceleratable {
 
-	constructor(width, length, wheel_external_diameter, wheel_width) {
+	constructor() {
 		super();
 
-		this.width = width;
-		this.length = length;
-		this.part1_height = 1;
-		this.part2_height = 0.5;
-
-		this.axle_height = wheel_external_diameter / 2;
-		this.wheel_radius = (wheel_external_diameter - wheel_width) / 2;
-		this.wheel_tube = wheel_width / 2;
-		this.total_axle_length = this.width + this.wheel_tube * 2;
-
-		this.addBody();
-		this.addWheels();
-
+		this.add_body();
+		this.add_wheels();
 		this.update_radius();
 	}
 
 	update_radius() {
-		let half_total_width = this.width / 2 + this.wheel_tube * 2;
-		let half_total_height = this.length / 2;
+		let half_total_width = car_width / 2 + car_wheel_tube;
+		let half_total_height = car_length / 2;
 
 		this.sphere_radius = Math.sqrt(half_total_width * half_total_width + half_total_height * half_total_height);
 
 		this.dirty_radius = false;
 	}
 
-	addBody() {
+	add_body() {
 		let body = car_body.clone();
-		body.position.z = this.part1_height / 2 + this.axle_height;
+		body.position.z = car_body_height / 2 + car_axle_height;
 		this.add(body);
 
 
 		let top = car_top.clone();
-		top.position.z = this.part2_height / 2 + this.part1_height + this.axle_height;
+		top.position.z = car_top_height / 2 + car_body_height + car_axle_height;
 		this.add(top);
 
-		addCloneAtPosition(this, car_headlights, 1, this.length / 2 + 0.25, this.part1_height / 2 + this.axle_height);
-		addCloneAtPosition(this, car_headlights, -1, this.length / 2 + 0.25, this.part1_height / 2 + this.axle_height);
+		addCloneAtPosition(this, car_headlights, 1, car_length / 2 + 0.25, car_body_height / 2 + car_axle_height);
+		addCloneAtPosition(this, car_headlights, -1, car_length / 2 + 0.25, car_body_height / 2 + car_axle_height);
 
 		this.headlights = [];
 		for (let x = -1; x <= 1; x += 2) { //just 2 iterations
 			let headlight = new THREE.SpotLight(0xffffff, 1, 32, Math.PI / 4, 0.1);
-			headlight.position.set(x, this.length / 2 + 0.25, this.part1_height / 2 + this.axle_height);
-			headlight.target.position.set(x, this.length / 2 + 0.25 + 50, this.part1_height / 2 + this.axle_height);
+			headlight.position.set(x, car_length / 2 + 0.25, car_body_height / 2 + car_axle_height);
+			headlight.target.position.set(x, car_length / 2 + 0.25 + 50, car_body_height / 2 + car_axle_height);
 			this.add(headlight.target);
 			this.add(headlight);
 
@@ -332,15 +328,11 @@ class Car extends VariablyAcceleratable {
 		}
 	}
 
-	addWheels() {
-		const geometry = new THREE.TorusGeometry(this.wheel_radius, this.wheel_tube, 8, 10);
-		const wheel = new THREE.Mesh(geometry, tires_material);
-		wheel.rotateY(Math.PI / 2);
-
-		addCloneAtPosition(this, wheel, this.total_axle_length / 2, this.width / 2, this.axle_height);
-		addCloneAtPosition(this, wheel, -this.total_axle_length / 2, this.width / 2, this.axle_height);
-		addCloneAtPosition(this, wheel, -this.total_axle_length / 2, -this.width / 2, this.axle_height);
-		addCloneAtPosition(this, wheel, this.total_axle_length / 2, -this.width / 2, this.axle_height);
+	add_wheels() {
+		addCloneAtPosition(this, wheel_mesh, car_total_axle_length / 2, car_width / 2, car_axle_height);
+		addCloneAtPosition(this, wheel_mesh, -car_total_axle_length / 2, car_width / 2, car_axle_height);
+		addCloneAtPosition(this, wheel_mesh, -car_total_axle_length / 2, -car_width / 2, car_axle_height);
+		addCloneAtPosition(this, wheel_mesh, car_total_axle_length / 2, -car_width / 2, car_axle_height);
 	}
 
 	resolve_collision(other_node) {
@@ -351,8 +343,11 @@ class Car extends VariablyAcceleratable {
 				this.dirty_center = true;
 
 			this.speed = 0;
-		} else if (other_node instanceof Orange) {
-			// window.location.reload();
+		} else if (other_node instanceof Orange || other_node instanceof Limits) {
+			decrement_lives();
+			reset();
+			//pause(); //TODO
+			waiting_for_restart = true;
 		}
 	}
 }

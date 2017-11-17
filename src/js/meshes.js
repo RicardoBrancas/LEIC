@@ -37,3 +37,6 @@ candle_group.add(flame_mesh);
 const car_body = new THREE.Mesh(car_body_geometry, car_material);
 const car_top = new THREE.Mesh(car_top_geometry, car_top_material);
 const car_headlights = new THREE.Mesh(car_headlights_geometry, headlights_material);
+
+const wheel_mesh = new THREE.Mesh(wheel_geometry, tires_material);
+wheel_mesh.rotateY(Math.PI / 2);

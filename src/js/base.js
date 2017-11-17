@@ -1,40 +1,5 @@
 'use strict';
 
-let camera, camera1, camera2, camera3, scene, renderer;
-let clock;
-
-let current_level = 1;
-
-let camera_needs_update = false;
-
-let switch_candles = false;
-
-let track;
-
-// === MATERIALS AND SCENE LIGHT ===
-
-const sunlight = new THREE.DirectionalLight();
-
-sunlight.position.x = 50;
-sunlight.position.y = 75;
-sunlight.position.z = 100;
-
-// === MATERIALS AND SCENE LIGHT END ===
-
-// === SCENE INIT ===
-
-function create_scene() {
-	scene = new THREE.Scene();
-	track = new Track();
-	scene.add(track);
-	scene.add(sunlight);
-}
-
-// === SCENE INIT END ===
-
-
-// === EVENT LISTENERS ===
-
 function onResize() {
 	renderer.setSize(window.innerWidth, window.innerHeight);
 	update_camera(camera);
@@ -85,6 +50,10 @@ function onKeyDown(e) {
 		case 72: //H
 			switch_headlights = true;
 			break;
+		case 82: //R
+			if(waiting_for_restart)
+				window.location.reload();
+			break;
 	}
 }
 
@@ -108,7 +77,10 @@ function onLevelIncrease() {
 // === EVENT LISTENERS END ===
 
 function render() {
+	renderer.clear();
 	renderer.render(scene, camera);
+	// renderer.clearDepth();
+	renderer.render(hud_scene, hud_camera);
 }
 
 function animate() {
@@ -134,7 +106,7 @@ function animate() {
 	}
 
 	if (switch_day) {
-		sunlight.visible = !sunlight.visible;
+		track.sunlight.visible = !track.sunlight.visible;
 		switch_day = false;
 	}
 
@@ -146,7 +118,7 @@ function animate() {
 
 	scene.traverse(function (node) {
 
-		if (switch_shading || switch_lighting_enabled) {
+		if (switch_shading || switch_lighting_enabled || was_reset) {
 			if (node instanceof THREE.Mesh) {
 
 				if (!lighting_enabled)
@@ -202,12 +174,19 @@ function init() {
 	renderer = new THREE.WebGLRenderer({
 		antialias: true
 	});
+	renderer.autoClear = false;
 
 	renderer.setSize(window.innerWidth, window.innerHeight);
 	document.body.appendChild(renderer.domElement);
 
-	create_scene();
-	createCamera();
+	scene = new THREE.Scene();
+	hud_scene = new THREE.Scene();
+	track = new Track();
+	scene.add(track);
+
+	create_cameras();
+
+	init_hud();
 
 	clock = new THREE.Clock();
 
@@ -217,34 +196,9 @@ function init() {
 	setInterval(onLevelIncrease, 10 * 1000);
 }
 
-
-function createCamera() {
-	const aspectRatio = window.innerWidth / window.innerHeight;
-	if (aspectRatio > 1)
-		camera1 = new THREE.OrthographicCamera(-(table_length / 2) * aspectRatio, (table_length / 2) * aspectRatio, (table_length / 2), -(table_length / 2), 1, 200);
-	else
-		camera1 = new THREE.OrthographicCamera(-(table_length / 2), (table_length / 2), (table_length / 2) / aspectRatio, -(table_length / 2) / aspectRatio, 1, 200);
-
-	camera1.position.x = 0;
-	camera1.position.y = 0;
-	camera1.position.z = 150;
-	camera1.up.set(0, 1, 0);
-	camera1.lookAt(scene.position);
-
-	camera = camera1;
-
-	camera2 = new THREE.PerspectiveCamera(90, aspectRatio, 1, 1000);
-	camera2.position.x = 150;
-	camera2.position.y = 0;
-	camera2.position.z = 75;
-	camera2.up.set(0, 0, 1);
-	camera2.lookAt(scene.position);
-
-	camera3 = new THREE.PerspectiveCamera(90, aspectRatio, 1, 1000);
-	camera3.position.x = 0;
-	camera3.position.y = -10;
-	camera3.position.z = 7;
-	camera3.up.set(0, 1, 0);
-	camera3.lookAt(scene.position);
-	track.car.add(camera3)
+function reset() {
+	scene.remove(track);
+	track = new Track();
+	scene.add(track);
+	was_reset = true;
 }

@@ -113,3 +113,5 @@ for(let i = 1; i < 5; i++) { //bases
 }
 car_headlights_geometry.computeFaceNormals();
 car_headlights_geometry.computeVertexNormals();
+
+const wheel_geometry = new THREE.TorusGeometry(car_wheel_radius, car_wheel_tube, 8, 10);
