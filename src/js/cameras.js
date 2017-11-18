@@ -27,6 +27,20 @@ function update_camera(camera) {
 	}
 }
 
+function update_hud() {
+	let aspectRatio = window.innerWidth / window.innerHeight;
+
+	hud_camera.left = -aspectRatio;
+	hud_camera.right = aspectRatio;
+	hud_camera.updateProjectionMatrix();
+}
+
+function reposition_camera3(old_track, new_track) {
+	old_track.car.remove(camera3);
+	new_track.car.add(camera3);
+	update_camera(camera3);
+}
+
 function create_cameras() {
 	const aspectRatio = window.innerWidth / window.innerHeight;
 
@@ -53,10 +67,9 @@ function create_cameras() {
 
 	camera = camera1;
 
-	hud_camera = new THREE.OrthographicCamera(-window.innerWidth/2, window.innerWidth/2, -window.innerHeight/2, window.innerHeight/2, 0, 600);
+	hud_camera = new THREE.OrthographicCamera(-aspectRatio, aspectRatio, 1, -1, 0, 600);
 	hud_camera.position.z = 300;
 	hud_camera.lookAt(hud_scene.position);
 	hud_camera.up.set(0, 1, 0);
 	hud_camera.updateProjectionMatrix();
-
 }

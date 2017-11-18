@@ -9,7 +9,7 @@ const candle_light_color = 0xffffff;
 const number_of_candles = 6;
 const cheerio_size = 1;
 
-const car_width = 5;
+const car_width = 3;
 const car_length = 3;
 const car_body_height = 1;
 const car_top_height = 0.5;

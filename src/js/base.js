@@ -3,6 +3,7 @@
 function onResize() {
 	renderer.setSize(window.innerWidth, window.innerHeight);
 	update_camera(camera);
+	update_hud();
 }
 
 function onKeyDown(e) {
@@ -197,8 +198,10 @@ function init() {
 }
 
 function reset() {
+	let new_track = new Track();
+	reposition_camera3(track, new_track);
 	scene.remove(track);
-	track = new Track();
-	scene.add(track);
+	track = new_track;
+	scene.add(new_track);
 	was_reset = true;
 }

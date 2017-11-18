@@ -1,5 +1,7 @@
 'use strict';
 
+const texture_loader = new THREE.TextureLoader();
+
 let basic_materials = new Map();
 let phong_materials = new Map();
 let lambert_materials = new Map();
@@ -40,6 +42,11 @@ function foreach_material(func) {
 	lambert_materials.forEach(func);
 }
 
+let table_cloth_texture = texture_loader.load( "img/toalha2.jpg" );
+table_cloth_texture.wrapS = THREE.RepeatWrapping;
+table_cloth_texture.wrapT = THREE.RepeatWrapping;
+table_cloth_texture.repeat.set( 64, 64 );
+
 let car_material = create_material('car', 0xFF7518, {shininess: 100});
 let car_top_material = create_material('car_top', 0xdcf5f7, {
 	shininess: 200,
@@ -47,14 +54,8 @@ let car_top_material = create_material('car_top', 0xdcf5f7, {
 	transparent: true,
 	opacity: 0.8
 });
-
-var textureToalha = new THREE.TextureLoader().load( "/img/toalha.jpg" );
-textureToalha.wrapS = THREE.RepeatWrapping;
-textureToalha.wrapT = THREE.RepeatWrapping;
-textureToalha.repeat.set( 4, 4 );
-
 let tires_material = create_material('tires', 0x0303003, {shininess: 10, specular: 0x666666});
-let ground_material = create_material('ground', 0x45525F, {shininess: 20, map: textureToalha});
+let ground_material = create_material('ground', 0xffffff, {shininess: 20, map: table_cloth_texture});
 let wax_material = create_material('wax', 0xefe6d3);
 let flame_material = create_material('flame', 0xe71837, {emissive: true});
 let cheerio_material = create_material('cheerio', 0xFFD700, {shininess: 1, specular: 0xDA9100});

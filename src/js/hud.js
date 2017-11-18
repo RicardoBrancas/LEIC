@@ -1,10 +1,10 @@
-const life_spacing = 3;
+const life_spacing = 0.01;
 const total_lives = 5;
 
 let lives = total_lives;
 let car_clones = [];
 
-let texture_loader = new THREE.TextureLoader();
+
 
 class MessageObject extends THREE.Object3D {
 
@@ -12,14 +12,9 @@ class MessageObject extends THREE.Object3D {
 		super();
 
 		let texture = texture_loader.load(path);
-
-		let message_geometry = new THREE.CubeGeometry(640, 800);
-		message_geometry.rotateZ(Math.PI);
-		let message_material = new THREE.MeshBasicMaterial({color: 0xffffff, doubleSided: true});
-		message_material.map = texture;
+		let message_material = new THREE.MeshBasicMaterial({map: texture});
 
 		this.add(new THREE.Mesh(message_geometry, message_material));
-		this.add(new THREE.AxisHelper(10));
 	}
 
 }
@@ -33,7 +28,7 @@ function reset_lives() {
 	for (let i = 1; i <= total_lives; i++) {
 		let car = track.car.clone();
 		car.scale.set(life_spacing, life_spacing, life_spacing);
-		car.position.set(window.innerWidth/-2 + i * life_spacing * 10, window.innerHeight/-2 + 30, 0);
+		car.position.set(-1 + i*life_spacing*7.5, 1 - life_spacing*7.5, 0);
 		hud_scene.add(car);
 		car_clones.push(car);
 	}

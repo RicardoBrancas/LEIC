@@ -115,3 +115,5 @@ car_headlights_geometry.computeFaceNormals();
 car_headlights_geometry.computeVertexNormals();
 
 const wheel_geometry = new THREE.TorusGeometry(car_wheel_radius, car_wheel_tube, 8, 10);
+
+const message_geometry = new THREE.CubeGeometry(1.6, 0.9);
