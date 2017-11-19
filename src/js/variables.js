@@ -40,6 +40,8 @@ let lighting_enabled = false;
 let was_reset = false;
 let waiting_for_restart = false;
 
+let is_paused = false;
+
 let scene, renderer, hud_scene;
 let clock;
 

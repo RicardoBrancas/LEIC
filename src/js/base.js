@@ -55,6 +55,9 @@ function onKeyDown(e) {
 			if(waiting_for_restart)
 				window.location.reload();
 			break;
+        case 83: //S
+			is_paused = !is_paused;
+            break;
 	}
 }
 
@@ -85,9 +88,18 @@ function render() {
 }
 
 function animate() {
-	const delta = clock.getDelta();
 
-	if (camera_needs_update) {
+    var delta = clock.getDelta();
+
+	if (is_paused) {
+		delta = 0;
+        PauseMessage.visible = true;
+	}
+
+	else
+        PauseMessage.visible = false;
+
+    if (camera_needs_update) {
 		update_camera(camera);
 		camera_needs_update = false;
 	}

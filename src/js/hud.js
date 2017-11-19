@@ -5,7 +5,6 @@ let lives = total_lives;
 let car_clones = [];
 
 
-
 class MessageObject extends THREE.Object3D {
 
 	constructor(path) {
@@ -44,6 +43,9 @@ function decrement_lives() {
 	}
 }
 
+const PauseMessage = new MessageObject('img/pause.png');
+
 function init_hud() {
+	hud_scene.add(PauseMessage);
 	reset_lives();
 }
