@@ -56,7 +56,10 @@ function onKeyDown(e) {
 				window.location.reload();
 			break;
         case 83: //S
-			is_paused = !is_paused;
+			if(!waiting_for_restart) {
+				is_paused = !is_paused;
+				pause_message.visible = is_paused;
+			}
             break;
 	}
 }
@@ -83,21 +86,15 @@ function onLevelIncrease() {
 function render() {
 	renderer.clear();
 	renderer.render(scene, camera);
-	// renderer.clearDepth();
+	renderer.clearDepth();
 	renderer.render(hud_scene, hud_camera);
 }
 
 function animate() {
+    let delta = clock.getDelta();
 
-    var delta = clock.getDelta();
-
-	if (is_paused) {
+	if (is_paused)
 		delta = 0;
-        PauseMessage.visible = true;
-	}
-
-	else
-        PauseMessage.visible = false;
 
     if (camera_needs_update) {
 		update_camera(camera);

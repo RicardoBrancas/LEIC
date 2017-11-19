@@ -233,14 +233,19 @@ class Orange extends VariablyAcceleratable {
 	hide() {
 		this.visible = false;
 
-		setTimeout(function (object) {
-			return function () {
-				object.reset_and_randomize();
-			}
-		}(this), (Math.random() + 0.5) * 1000 * 3)
+		setTimeout((object => () => {
+			object.reset_and_randomize();
+		})(this), (Math.random() + 0.5) * 1000 * 3)
 	}
 
 	reset_and_randomize() {
+		if(is_paused) {
+			setTimeout((object => () => {
+				object.reset_and_randomize();
+			})(this), 100);
+			return;
+		}
+
 		let x = (Math.random() * 2 - 1) * table_half_length;
 		let y = (Math.random() * 2 - 1) * table_half_length;
 		this.position.set(x, y, orange_radius);
@@ -346,8 +351,6 @@ class Car extends VariablyAcceleratable {
 		} else if (other_node instanceof Orange || other_node instanceof Limits) {
 			decrement_lives();
 			reset();
-			//pause(); //TODO
-			waiting_for_restart = true;
 		}
 	}
 }

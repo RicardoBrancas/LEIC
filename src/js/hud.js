@@ -4,19 +4,20 @@ const total_lives = 5;
 let lives = total_lives;
 let car_clones = [];
 
-
 class MessageObject extends THREE.Object3D {
 
 	constructor(path) {
 		super();
 
 		let texture = texture_loader.load(path);
-		let message_material = new THREE.MeshBasicMaterial({map: texture});
+		let message_material = new THREE.MeshBasicMaterial({map: texture, transparent: true});
 
 		this.add(new THREE.Mesh(message_geometry, message_material));
 	}
 
 }
+
+const pause_message = new MessageObject('img/pause.png');
 
 function reset_lives() {
 	lives = total_lives;
@@ -39,13 +40,14 @@ function decrement_lives() {
 	lives--;
 
 	if (lives === 0) {
+		is_paused = true;
+		waiting_for_restart = true;
 		hud_scene.add(new MessageObject('img/end.png'));
 	}
 }
 
-const PauseMessage = new MessageObject('img/pause.png');
-
 function init_hud() {
-	hud_scene.add(PauseMessage);
+	pause_message.visible = false;
+	hud_scene.add(pause_message);
 	reset_lives();
 }
