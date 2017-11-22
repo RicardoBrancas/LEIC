@@ -1,0 +1,124 @@
+\documentclass[a4paper]{article}
+\usepackage[margin=3cm]{geometry}
+\usepackage[portuguese]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{courier}
+\usepackage{listings}
+
+\newcommand{\var}[1]{\textit{#1}}
+\newcommand{\rel}[1]{\textbf{\var{#1}}}
+\newcommand{\PK}[1]{\underline{\smash{\var{#1}}}}
+\newcommand{\restrict}{\hspace*{2em}}
+\newcommand{\FK}[2]{\restrict \var{#1}: \textup{FK}(\var{#2})}
+\newcommand{\FKfull}[3]{\restrict \var{#1}: \textup{FK}(\var{#2}.\var{#3})}
+\newcommand{\RI}{\restrict RI: }
+\newcommand{\outRI}{RI: }
+
+\newenvironment{relationalmodel}{\setlength{\parindent}{0cm}}
+
+\lstset{basicstyle=\footnotesize\ttfamily,breaklines=true}
+
+\begin{document}
+    \begin{titlepage}
+        \centering
+        \includegraphics[width=0.5\textwidth]{IST_A_CMYK_POS.pdf}\par
+        {\huge\bfseries Projeto de Bases de Dados, Parte 2\par}
+        \vspace{2cm}
+        {
+        \Large
+        \begin{tabular}{llll}
+            83533 & Mihail Brinza & 24\% & 4h \\
+            38557 & Ricardo Brancas & 64\% & 11h \\
+            83883 & David Nunes & 12\% & 2h
+        \end{tabular}
+        }
+        \vfill
+        \large
+        Grupo 37, turno BD2251795L10 \par
+        Professor Miguel Amaral
+
+        \vspace{3cm}
+
+        {\normalsize \today\par}
+    \end{titlepage}
+
+    \section{Modelo Relacional}
+    \begin{relationalmodel}
+
+        \rel{Produto}(\PK{ean}, \var{design})\\
+        \RI um produto só é válido se participar na relação \rel{fornece\_prim}\\
+        \RI um produto só é válido se participar na relação \rel{fornece\_sec}\\
+        \RI um produto só é válido se participar na relação \rel{tem}\\
+
+        \rel{Corredor}(\PK{nro}, \var{largura})\\
+
+        \rel{Prateleira}(\PK{nro, lado, altura})\\
+        \FK{nro}{Corredor}\\
+
+        \rel{planograma}(\PK{ean, nro, lado, altura}, \var{faces}, \var{unidades}, \var{loc})\\
+        \FK{ean}{Produto}\\
+        \FK{nro, lado, altura}{Prateleira}\\
+
+        \rel{Fornecedor}(\PK{nif}, \var{nome})\\
+
+        \rel{fornece\_prim}(\PK{ean}, \var{nif}, \var{data})\\
+        \FK{ean}{Produto}\\
+        \FK{nif}{Fornecedor}\\
+
+        \rel{fornece\_sec}(\PK{ean, nif})\\
+        \FK{ean}{Produto}\\
+        \FK{nif}{Fornecedor}\\
+
+        \outRI O mesmo par (\var{ean}, \var{nif}) não pode existir nas relações \rel{fornece\_prim} e \rel{fornece\_sec} ao mesmo tempo\\
+
+        \rel{Categoria}(\PK{nome})\\
+        \RI \var{nome} tem que existir em \rel{Categoria Simples} ou (exclusivo) \rel{Super Categoria}\\
+
+        \rel{Categoria Simples}(\PK{nome})\\
+        \FK{nome}{Categoria}\\
+
+        \rel{Super Categoria}(\PK{nome})\\
+        \FK{nome}{Categoria}\\
+        \RI uma super categoria só é válida se participar na relação \rel{constituida}\\
+
+        \rel{constituida}(\PK{sub\_nome, super\_nome})\\
+        \FKfull{sub\_nome}{Categoria}{nome}\\
+        \FKfull{super\_nome}{Categoria}{nome}\\
+        \RI não podem existir ciclos (diretos ou indiretos) nesta relação\\ %TODO
+
+        \rel{tem}(\PK{ean}, \var{nome})\\
+        \FK{ean}{Produto}\\
+        \FK{nome}{Categoria}\\
+
+        \rel{Evento Reposição}(\PK{operador, instante})\\
+        \RI um evento de reposição só é válido se participar na relação \rel{reposição}\\
+
+        \rel{reposição}(\PK{operador, instante, ean, nro, lado, altura}, \var{unidades})\\
+        \FK{operador, instante}{Evento Reposição}\\
+        \FK{ean, nro, lado, altura}{planograma}\\
+        \RI o momento de reposição tem de ser anterior ao momento atual\\
+
+        \outRI Para cada elemento de \rel{reposição} as \var{unidades} têm de ser inferiores às \var{unidades}
+        do elemento de \rel{palonograma} associado.\\
+    \end{relationalmodel}
+
+    \section{Algebra Relacional}
+
+    \begin{enumerate}
+        \setlength\itemsep{1em}
+
+        \item $\Pi_{ean, design}(Produto \bowtie \sigma_{nome='Fruta'}(tem) \bowtie \\ \sigma_{sum\_unidades > 10}(_{ean}G_{\textsc{Sum}(unidades) \mapsto sum\_unidades}(\sigma_{data > '10/1/2017'}(reposicao)))) $
+        \item $ (\Pi_{nif}(\sigma_{ean=x}(Produto) \bowtie fornece\_prim) \cup \Pi_{nif}(\sigma_{ean=x}(Produto) \bowtie fornece\_sec)) \bowtie Fornecedor $
+        \item $ G_{\textsc{Count()}}(\sigma_{super\_nome='Congelados'}(constituida)) $
+        \item $ cats\_por\_nif \gets ~_{nif}G_{\textsc{Count}() \mapsto count\_nome}(\Pi_{nif, nome}((\Pi_{ean, nif}(fornce\_prim) \cup \\ fornece\_sec) \bowtie tem)) \\
+        \sigma_{max = count\_nome}(G_{\textsc{Max}(count\_nome) \mapsto max}(cats\_por\_nif) \times cats\_por\_nif) \bowtie Fornecedor $
+        \item $  (\Pi_{nif, nome}(fornece\_prim \bowtie tem) \div Categoria Simples) \bowtie Fornecedor $
+        \item $ \sigma_{nro, largura}((planograma \bowtie fornece\_prim) \div (\Pi_{nif}(fornece\_prim) - \Pi_{nif}(fornece\_sec))) $
+    \end{enumerate}
+
+    \section{SQL}
+    \lstinputlisting[language=SQL]{entrega2.sql}
+\end{document}
