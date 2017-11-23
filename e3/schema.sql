@@ -61,6 +61,7 @@ CREATE TABLE produto (
 	design        VARCHAR(80) NOT NULL,
 	categoria     VARCHAR(80) NOT NULL,
 	forn_primario NUMERIC(9)  NOT NULL,
+  data          TIMESTAMP,
 	PRIMARY KEY (ean),
 	FOREIGN KEY (categoria) REFERENCES categoria (nome),
 	FOREIGN KEY (forn_primario) REFERENCES fornecedor (nif)
