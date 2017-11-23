@@ -1,0 +1,45 @@
+\documentclass[a4paper]{article}
+\usepackage[margin=3cm]{geometry}
+\usepackage[portuguese]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{courier}
+\usepackage{listings}
+
+\lstset{language=SQL}
+\lstset{basicstyle=\footnotesize\ttfamily,breaklines=true,morekeywords={IF,REFERENCES}}
+
+\begin{document}
+
+    \begin{titlepage}
+        \centering
+        \includegraphics[width=0.5\textwidth]{IST_A_CMYK_POS.pdf}\par
+        {\huge\bfseries Projeto de Bases de Dados, Parte 3\par}
+        \vspace{2cm}
+        {
+        \Large
+        \begin{tabular}{llll}
+            83533 & Mihail Brinza & .\% & h \\
+            38557 & Ricardo Brancas & .\% & h \\
+            83883 & David Nunes & .\% & h
+        \end{tabular}
+        }
+        \vfill
+        \large
+        Grupo 37, turno BD2251795L10 \par
+        Professor Miguel Amaral
+
+        \vspace{3cm}
+
+        {\normalsize \today\par}
+    \end{titlepage}
+
+    \section{Criação da Base de Dados}
+    \lstinputlisting{schema.sql}
+
+    \section{SQL}
+    \lstinputlisting{queries.sql}
+
+\end{document}
