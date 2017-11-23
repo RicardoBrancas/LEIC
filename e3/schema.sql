@@ -122,4 +122,6 @@ CREATE TABLE reposicao (
 	UNIQUE (operador),
 	UNIQUE (instante),
 	FOREIGN KEY (ean, nro, lado, altura) REFERENCES planograma (ean, nro, lado, altura)
+  FOREIGN KEY (operador) REFERENCES evento_reposicao(operador),
+  FOREIGN KEY (instante) REFERENCES evento_reposicao(instante)
 );
