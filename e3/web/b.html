@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Alinha B</title>
+</head>
+<body>
+  <h3>Adicionar Produto</h3>
+  <form action="/treatproducts.php" method="POST">
+    EAN:<br>
+    <input type="text" name="ean"><br>
+    Design:<br>
+    <input type="text" name="design"><br>
+    NIF Forncedor primario:<br>
+    <input type="text" name="nif_fornecedor_primario"><br>
+    Nome Forncedor primario:<br>
+    <input type="text" name="nome_fornecedor_primario"><br>
+    Categoria:<br>
+    <input type="text" name="categoria"><br>
+    <input type="submit" value="Submit">
+  </form>
+  <h3>REMOVER PRODUTO</h3>
+  <form action="/treatproducts.php" method="POST">
+    Escreva o EAN do produto:<br>
+    <input type="text" name="removeean"><br>
+    <input type="submit" value="Submit">
+  </form>
+
+</body>
+</html>
