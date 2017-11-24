@@ -1,3 +1,4 @@
+-- 1
 SELECT nome
 FROM (
 		 SELECT forn_primario AS nif, categoria
@@ -21,3 +22,8 @@ HAVING COUNT(categoria) >= ALL (
 		  GROUP BY nif) AS b
 );
 
+-- 2
+-- 3
+
+SELECT ean
+FROM

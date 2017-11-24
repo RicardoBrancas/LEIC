@@ -18,14 +18,7 @@ DROP TABLE IF EXISTS categoria;
 
 CREATE TABLE categoria (
 	nome VARCHAR(80) NOT NULL,
-	PRIMARY KEY (nome)--,
-	-- 	CHECK (nome IN (SELECT nome --RE1, RE2
-	-- 					FROM (SELECT nome
-	-- 						  FROM categoria_simples
-	-- 						  UNION
-	-- 						  SELECT nome
-	-- 						  FROM super_categoria) AS x
-	-- 					HAVING count(nome) = 1))
+	PRIMARY KEY (nome)
 );
 
 CREATE TABLE categoria_simples (
@@ -37,8 +30,7 @@ CREATE TABLE categoria_simples (
 CREATE TABLE super_categoria (
 	nome VARCHAR(80) NOT NULL,
 	PRIMARY KEY (nome),
-	FOREIGN KEY (nome) REFERENCES categoria (nome)--,
-	--CHECK (nome IN (SELECT super_categoria FROM constituida)) --sor ricardo, has de ver isto
+	FOREIGN KEY (nome) REFERENCES categoria (nome)
 );
 
 CREATE TABLE constituida (
@@ -61,7 +53,7 @@ CREATE TABLE produto (
 	design        VARCHAR(80) NOT NULL,
 	categoria     VARCHAR(80) NOT NULL,
 	forn_primario NUMERIC(9)  NOT NULL,
-  data          TIMESTAMP,
+	data          TIMESTAMP   NOT NULL,
 	PRIMARY KEY (ean),
 	FOREIGN KEY (categoria) REFERENCES categoria (nome),
 	FOREIGN KEY (forn_primario) REFERENCES fornecedor (nif)
@@ -75,13 +67,13 @@ CREATE TABLE fornece_sec (
 );
 
 CREATE TABLE corredor (
-	nro     VARCHAR(4) NOT NULL,
-	largura VARCHAR(3) NOT NULL,
+	nro     SMALLINT NOT NULL,
+	largura SMALLINT NOT NULL,
 	PRIMARY KEY (nro)
 );
 
 CREATE TABLE prateleira (
-	nro    VARCHAR(4)  NOT NULL,
+	nro    SMALLINT    NOT NULL,
 	lado   VARCHAR(10) NOT NULL,
 	altura VARCHAR(10) NOT NULL,
 	PRIMARY KEY (nro, lado, altura),
@@ -92,11 +84,11 @@ CREATE TABLE prateleira (
 
 CREATE TABLE planograma (
 	ean      NUMERIC(13) NOT NULL,
-	nro      VARCHAR(4)  NOT NULL,
+	nro      SMALLINT    NOT NULL,
 	lado     VARCHAR(10) NOT NULL,
 	altura   VARCHAR(10) NOT NULL,
-	face     VARCHAR(5)  NOT NULL,
-	unidades VARCHAR(4)  NOT NULL,
+	face     SMALLINT    NOT NULL,
+	unidades SMALLINT    NOT NULL,
 	PRIMARY KEY (ean, nro, lado, altura),
 	FOREIGN KEY (ean) REFERENCES produto (ean),
 	FOREIGN KEY (nro, lado, altura) REFERENCES prateleira (nro, lado, altura)
@@ -107,21 +99,21 @@ CREATE TABLE evento_reposicao (
 	instante TIMESTAMP   NOT NULL,
 	PRIMARY KEY (operador),
 	UNIQUE (instante),
+	UNIQUE (operador, instante),
 	CHECK (instante > CURRENT_TIMESTAMP)
 );
 
 CREATE TABLE reposicao (
 	ean      NUMERIC(13) NOT NULL,
-	nro      VARCHAR(4)  NOT NULL,
+	nro      SMALLINT    NOT NULL,
 	lado     VARCHAR(10) NOT NULL,
 	altura   VARCHAR(10) NOT NULL,
 	operador VARCHAR(80) NOT NULL,
 	instante TIMESTAMP   NOT NULL,
-  unidades VARCHAR(80) NOT NULL,
+	unidades SMALLINT    NOT NULL,
 	PRIMARY KEY (ean, nro, lado, altura),
 	UNIQUE (operador),
 	UNIQUE (instante),
-	FOREIGN KEY (ean, nro, lado, altura) REFERENCES planograma (ean, nro, lado, altura)
-  FOREIGN KEY (operador) REFERENCES evento_reposicao(operador),
-  FOREIGN KEY (instante) REFERENCES evento_reposicao(instante)
+	FOREIGN KEY (ean, nro, lado, altura) REFERENCES planograma (ean, nro, lado, altura),
+	FOREIGN KEY (operador, instante) REFERENCES evento_reposicao (operador, instante)
 );
