@@ -25,5 +25,3 @@ HAVING COUNT(categoria) >= ALL (
 -- 2
 -- 3
 
-SELECT ean
-FROM

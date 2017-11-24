@@ -13,6 +13,9 @@ DROP TABLE IF EXISTS super_categoria;
 DROP TABLE IF EXISTS categoria_simples;
 DROP TABLE IF EXISTS categoria;
 
+CREATE TYPE SIDE AS ENUM ('esquerda', 'direita');
+CREATE TYPE HEIGHT AS ENUM ('chao', 'medio', 'superior');
+
 -- Create tables
 
 
@@ -73,20 +76,18 @@ CREATE TABLE corredor (
 );
 
 CREATE TABLE prateleira (
-	nro    SMALLINT    NOT NULL,
-	lado   VARCHAR(10) NOT NULL,
-	altura VARCHAR(10) NOT NULL,
+	nro    SMALLINT NOT NULL,
+	lado   SIDE     NOT NULL,
+	altura HEIGHT   NOT NULL,
 	PRIMARY KEY (nro, lado, altura),
-	FOREIGN KEY (nro) REFERENCES corredor (nro),
-	CHECK (lado IN ('esquerdo', 'direito')),
-	CHECK (altura IN ('chao', 'medio', 'superior'))
+	FOREIGN KEY (nro) REFERENCES corredor (nro)
 );
 
 CREATE TABLE planograma (
 	ean      NUMERIC(13) NOT NULL,
 	nro      SMALLINT    NOT NULL,
-	lado     VARCHAR(10) NOT NULL,
-	altura   VARCHAR(10) NOT NULL,
+	lado     SIDE        NOT NULL,
+	altura   HEIGHT      NOT NULL,
 	face     SMALLINT    NOT NULL,
 	unidades SMALLINT    NOT NULL,
 	PRIMARY KEY (ean, nro, lado, altura),
@@ -106,8 +107,8 @@ CREATE TABLE evento_reposicao (
 CREATE TABLE reposicao (
 	ean      NUMERIC(13) NOT NULL,
 	nro      SMALLINT    NOT NULL,
-	lado     VARCHAR(10) NOT NULL,
-	altura   VARCHAR(10) NOT NULL,
+	lado     SIDE NOT NULL,
+	altura   HEIGHT NOT NULL,
 	operador VARCHAR(80) NOT NULL,
 	instante TIMESTAMP   NOT NULL,
 	unidades SMALLINT    NOT NULL,
