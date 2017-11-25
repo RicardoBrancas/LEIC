@@ -13,11 +13,13 @@ DROP TABLE IF EXISTS super_categoria;
 DROP TABLE IF EXISTS categoria_simples;
 DROP TABLE IF EXISTS categoria;
 
-CREATE TYPE SIDE AS ENUM ('esquerda', 'direita');
-CREATE TYPE HEIGHT AS ENUM ('chao', 'medio', 'superior');
+DROP TYPE IF EXISTS SIDE;
+DROP TYPE IF EXISTS HEIGHT;
 
 -- Create tables
 
+CREATE TYPE SIDE AS ENUM ('esquerda', 'direita');
+CREATE TYPE HEIGHT AS ENUM ('chao', 'medio', 'superior');
 
 CREATE TABLE categoria (
 	nome VARCHAR(80) NOT NULL,
@@ -107,8 +109,8 @@ CREATE TABLE evento_reposicao (
 CREATE TABLE reposicao (
 	ean      NUMERIC(13) NOT NULL,
 	nro      SMALLINT    NOT NULL,
-	lado     SIDE NOT NULL,
-	altura   HEIGHT NOT NULL,
+	lado     SIDE        NOT NULL,
+	altura   HEIGHT      NOT NULL,
 	operador VARCHAR(80) NOT NULL,
 	instante TIMESTAMP   NOT NULL,
 	unidades SMALLINT    NOT NULL,

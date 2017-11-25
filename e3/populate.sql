@@ -30,3 +30,19 @@ INSERT INTO fornece_sec VALUES (111111113, 1111111111112),
 	(111111112, 1111111111118),
 	(111111114, 1111111111119),
 	(111111114, 1111111111120);
+
+INSERT INTO corredor VALUES (1, 100), (2, 150), (3, 100), (4, 120);
+
+INSERT INTO prateleira VALUES (1, 'esquerda', 'superior'), (1, 'direita', 'chao'),
+	(2, 'esquerda', 'medio'), (2, 'direita', 'superior');
+
+INSERT INTO planograma VALUES (1111111111111, 1, 'esquerda', 'superior', 2, 10),
+	(1111111111112, 1, 'direita', 'chao', 2, 10),
+	(1111111111113, 2, 'esquerda', 'medio', 2, 10),
+	(1111111111114, 2, 'direita', 'superior', 2, 10),
+	(1111111111115, 1, 'esquerda', 'superior', 2, 10),
+	(1111111111116, 1, 'direita', 'chao', 2, 10),
+	(1111111111117, 2, 'esquerda', 'medio', 2, 10),
+	(1111111111118, 2, 'direita', 'superior', 2, 10),
+	(1111111111119, 1, 'esquerda', 'superior', 2, 10),
+	(1111111111120, 1, 'direita', 'chao', 2, 10);
