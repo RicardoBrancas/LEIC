@@ -10,19 +10,23 @@ try {
 	$supercat2 = $_POST["subcategoryremove2"];
 
 	if ($catinsert != "") {
-		$sql = "INSERT INTO categoria VALUES ($catinsert);
-            INSERT INTO categoria_simples VALUES($catinsert)"; //TODO
-		$db->query($sql);
+		$stmt1 = $db->prepare('INSERT INTO categoria VALUES (?);');
+		$stmt2 = $db->prepare('INSERT INTO categoria_simples VALUES(?);');
+
+		$db->beginTransaction();
+		$stmt1->execute([$catinsert]);
+		$stmt2->execute([$catinsert]);
+		$db->commit();
 	}
 
 	if ($catremove != "") {
-		$sql = "DELETE FROM categoria WHERE nome=?";
+		$sql = "DELETE FROM categoria WHERE nome=?;";
 		$stmt = $db->prepare($sql);
 		$stmt->execute([$catremove]);
 	}
 
 	if ($subcatinsert != "" and $supercat1 != "") {
-		$sql = "INSERT INTO constituida VALUES (:super, :sub)";
+		$sql = "INSERT INTO constituida VALUES (:super, :sub);";
 		$stmt = $db->prepare($sql);
 		$stmt->execute(['super' => $supercat1, 'sub' => $subcatinsert]);
 	}
