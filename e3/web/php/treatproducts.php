@@ -18,7 +18,7 @@ try
 
  if ($ean != "" and $design !="" and $fornecedor_primario != "" and $categoria != ""){
   $sql = "INSERT INTO produto VALUES ($ean, $design, $categoria, $nif_fornecedor_primario, CURRENT_TIMESTAMP);
-           INSERT INTO fornecedor VALUES ($nif_fornecedor_primario, $nome_fornecedor_primario);"
+           INSERT INTO fornecedor VALUES ($nif_fornecedor_primario, $nome_fornecedor_primario)";
   $db->query($sql);
  }
 

@@ -18,12 +18,12 @@ try
 
  if ($catinsert != ""){
    $sql = "INSERT INTO categoria VALUES ($catinsert);
-            INSERT INTO categoria_simles VALUES($catinsert)"; //TODO
+            INSERT INTO categoria_simples VALUES($catinsert)"; //TODO
    $db->query($sql);
  }
 
  if ($catremove != ""){
-   $sql = "DELETE FROM categoria WHERE nome=$catremove;";
+   $sql = "DELETE FROM categoria WHERE nome=$catremove";
    $db->query($sql);
  }
 
