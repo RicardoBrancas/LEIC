@@ -1,19 +1,15 @@
 <?php
 try {
-	$host = "db.ist.utl.pt";
-	$user = "ist424836";
-	$password = "xxxxxxxx";
-	$dbname = $user;
+	require 'connection.php';
+
 	$ean = $_POST["ean"];
 	$newdesign = $_POST["newdesign"];
 
-	$db = new PDO("pgsql:host=$host;dbname=$dbname", $user, $password);
-	$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
 	if (is_numeric($ean) and strlen($ean) == 13)
 		if ($newdesign != '') {
-			$sql = "UPDATE produto SET designacao=$newdesign WHERE ean=$ean";
-			$db->query($sql);
+			$sql = "UPDATE produto SET design=:des WHERE ean=:ean";
+			$stmt = $db->prepare($sql);
+			$stmt->execute(['des' => $newdesign, 'ean' => 'ean']);
 		}
 
 	$db = null;
