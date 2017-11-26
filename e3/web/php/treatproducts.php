@@ -11,9 +11,6 @@ try {
     $removeean = $_POST["removeean"];
 
 
-    $db = new PDO("pgsql:host=$host;dbname=$dbname", $user, $password);
-    $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
     if ($ean != "" and $design != "" and $nif_fornecedor_primario != "" and $categoria != "" and $nome_fornecedor_primario != "" and $nif_fornecedor_secundario != "" and $nome_fornecedor_secundario != "") {
         $stmt = $db->prepare('INSERT INTO fornecedor VALUES (:nif, :nome)');
         $stmt1 = $db->prepare('INSERT INTO produto VALUES (:ean, :design, :categoria, :nif_fornecedor_primario, CURRENT_TIMESTAMP);');

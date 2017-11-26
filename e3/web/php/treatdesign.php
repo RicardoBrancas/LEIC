@@ -2,15 +2,16 @@
 try {
 	require 'connection.php';
 
-	$ean = $_POST["ean"];
-	$newdesign = $_POST["newdesign"];
+	$ean = $_POST['ean'];
+	$newdesign = $_POST['newdesign'];
 
 	if (is_numeric($ean) and strlen($ean) == 13)
 		if ($newdesign != '') {
-			$sql = "UPDATE produto SET design=:des WHERE ean=:ean";
-			$stmt = $db->prepare($sql);
-			$stmt->execute(['des' => $newdesign, 'ean' => 'ean']);
-		}
+			$stmt = $db->prepare("UPDATE produto SET design=:des WHERE ean=:ean");
+			$db->beginTransaction();
+			$stmt->execute(['des' => $newdesign, 'ean' => $ean]);
+			$db->commit();
+		}a
 
 	$db = null;
 }
