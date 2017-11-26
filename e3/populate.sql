@@ -1,10 +1,10 @@
-INSERT INTO categoria VALUES ('Charcutaria'), ('Laticineos'), ('Talho'), ('Legumes'), ('Queijaria'), ('Padaria');
+INSERT INTO categoria VALUES ('Charcutaria'), ('Laticineos'), ('Talho'), ('Legumes'), ('Queijaria'), ('Padaria'), ('Queijaria Gourmet');
 
-INSERT INTO categoria_simples VALUES ('Talho'), ('Queijaria'), ('Legumes'), ('Padaria');
+INSERT INTO categoria_simples VALUES ('Talho'), ('Legumes'), ('Padaria'), ('Queijaria Gourmet');
 
-INSERT INTO super_categoria VALUES ('Charcutaria'), ('Laticineos');
+INSERT INTO super_categoria VALUES ('Charcutaria'), ('Laticineos'), ('Queijaria');
 
-INSERT INTO constituida VALUES ('Charcutaria', 'Talho'), ('Laticineos', 'Queijaria');
+INSERT INTO constituida VALUES ('Charcutaria', 'Talho'), ('Laticineos', 'Queijaria'), ('Queijaria', 'Queijaria Gourmet');
 
 INSERT INTO fornecedor VALUES (111111111, 'Ibramugi'), (111111112, 'Ramos e Pereira'), (111111113, 'Amanhecer'), (111111114, 'Espiga da Planicie');
 
