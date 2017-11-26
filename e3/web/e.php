@@ -18,7 +18,7 @@ $result = $db->query($sql);
         <select name="category">
             <?php
             while ($row = $result->fetch()) {
-                echo "<option>$row[0]</option>";
+                echo "<option>$row[0]</option>\n";
             }
             ?>
         </select>
