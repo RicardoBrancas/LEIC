@@ -1,7 +1,7 @@
 <?php
 require 'php/connection.php';
 
-$sql = 'SELECT (ean,nome) FROM produto';
+$sql = 'SELECT ean FROM produto';
 
 $result = $db->query($sql);
 
@@ -18,7 +18,7 @@ $result = $db->query($sql);
 	<select name="ean">
 		<?php
 			while ($row = $result->fetch()) {
-				echo "<option>$row[1]</option>\n";
+				echo "<option>$row[0]</option>\n";
 		}
 		?>
 	</select>
