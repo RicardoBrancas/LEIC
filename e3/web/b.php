@@ -2,10 +2,7 @@
 require 'php/connection.php';
 
 $sql = 'SELECT ean FROM produto';
-
-$result = $db->query($sql);
-
-$cats = $db->query($sql1);
+$cats = $db->query($sql);
 
 ?>
 <!DOCTYPE html>
