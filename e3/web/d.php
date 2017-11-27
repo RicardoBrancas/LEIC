@@ -17,8 +17,8 @@ $result = $db->query($sql);
 	Insira o EAN do produto: <br>
 	<select name="ean">
 		<?php
-            while ($row = $result->fetch()) {
-		echo "<option>$row[0]</option>\n";
+			while ($row = $result->fetch()) {
+				echo "<option>$row[1]</option>\n";
 		}
 		?>
 	</select>
