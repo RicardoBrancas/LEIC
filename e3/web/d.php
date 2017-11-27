@@ -14,7 +14,7 @@ $result = $db->query($sql);
 <body>
 <h3>Alterar designacao do produto</h3>
 <form action="php/treatdesign.php" method="POST">
-	Insira o EAN do produto: <br>
+	Escolha o produto: <br>
 	<select name="ean">
 		<?php
 			while ($row = $result->fetch()) {
