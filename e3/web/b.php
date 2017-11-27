@@ -1,3 +1,13 @@
+<?php
+require 'php/connection.php';
+
+$sql = 'SELECT ean FROM produto';
+
+$result = $db->query($sql);
+
+$cats = $db->query($sql1);
+
+?>
 <!DOCTYPE html>
 <html>
 <head>
@@ -5,7 +15,7 @@
 </head>
 <body>
   <h3>Adicionar produto</h3>
-  <form action="/treatproducts.php" method="POST">
+  <form action="php/treatproducts.php" method="POST">
     EAN:<br>
     <input type="text" name="ean"> <br>
     Design:<br>
@@ -23,9 +33,15 @@
     <input type="submit" value="Submit">
   </form>
   <h3>Remover produto</h3>
-  <form action="/treatproducts.php" method="POST">
+  <form action="php/treatproducts.php" method="POST">
     Escreva o EAN do produto:<br>
-    <input type="text" name="removeean"> <br>
+    <select name="removeean">
+        <?php
+        while ($row = $cats->fetch()) {
+            echo "<option>$row[0]</option>\n";
+        }
+        ?>
+    </select> <br>
     <input type="submit" value="Submit">
   </form>
 
