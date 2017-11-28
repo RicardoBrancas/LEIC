@@ -5,11 +5,11 @@ require 'connection.php';
 $ean = $_POST['ean'];
 
 $stmt = $db->prepare("SELECT * 
-															FROM (reposicao NATURAL JOIN evento_reposicao) 
-															WHERE ean=:ean");
+											FROM reposicao NATURAL JOIN evento_reposicao
+											WHERE ean=:ean");
 $stmt->execute(['ean' => $ean]);
 
-if($stmt->columnCount() > 0) {
+if($stmt->rowCount() > 0) {
 ?>
 
 <table>
@@ -17,7 +17,7 @@ if($stmt->columnCount() > 0) {
 	echo("<tr><th>EAN</th><th>Operador</th><th>Instante</th><th>Unidades Repostas</th></tr>");
 
 	while($row = $stmt->fetch())
-		echo "<tr><td>$row[2]</td><td>$row[0]</td><td>$row[1]</td><td>$row[4]</td></tr>";
+		echo "<tr><td>$row['ean']</td><td>$row['operador']</td><td>$row['instante']</td><td>$row['unidades']</td></tr>";
 
 ?>
 </table>
