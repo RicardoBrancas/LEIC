@@ -50,5 +50,5 @@ INSERT INTO planograma VALUES (1111111111111, 1, 'esquerda', 'superior', 2, 10),
 INSERT INTO evento_reposicao VALUES ('Jorge', 'Fri 24 Nov 17:03:30 WET 2017'),
 ('Manuel', 'Sat 25 Nov 17:03:30 WET 2017');
 
-INSERT INTO reposicao VALUES (1111111111111, 1, 'esquerda', 'superior', 2, 10, 'Manuel', 'Sat 25 Nov 17:03:30 WET 2017', 10),
-(1111111111112, 1, 'direita', 'chao', 2, 10, 'Jorge', 'Fri 24 Nov 17:03:30 WET 2017', 3);
+INSERT INTO reposicao VALUES (1111111111111, 1, 'esquerda', 'superior', 'Manuel', 'Sat 25 Nov 17:03:30 WET 2017', 10),
+(1111111111112, 1, 'direita', 'chao', 'Jorge', 'Fri 24 Nov 17:03:30 WET 2017', 3);
