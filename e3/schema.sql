@@ -120,3 +120,39 @@ CREATE TABLE reposicao (
 	FOREIGN KEY (ean, nro, lado, altura) REFERENCES planograma (ean, nro, lado, altura),
 	FOREIGN KEY (operador, instante) REFERENCES evento_reposicao (operador, instante)
 );
+
+CREATE OR REPLACE FUNCTION all_subcategories(nome VARCHAR(80))
+	RETURNS SETOF VARCHAR(80) AS $$
+DECLARE temp_name VARCHAR(80);
+BEGIN
+
+	DROP TABLE IF EXISTS result;
+	DROP TABLE IF EXISTS temp;
+
+	CREATE TEMP TABLE result (
+		nome VARCHAR(80)
+	);
+
+	CREATE TEMP TABLE temp AS
+		SELECT categoria
+		FROM constituida
+		WHERE super_categoria = nome;
+
+	WHILE EXISTS(SELECT * FROM temp)
+	LOOP
+		FOR temp_name IN SELECT * FROM temp
+		LOOP
+			INSERT INTO temp
+				SELECT categoria
+				FROM constituida
+				WHERE super_categoria = temp_name;
+
+			DELETE FROM temp WHERE categoria = temp_name;
+
+			INSERT INTO result VALUES (temp_name);
+		END LOOP;
+	END LOOP;
+
+	RETURN QUERY SELECT * FROM result;
+END;
+$$ LANGUAGE plpgsql;
