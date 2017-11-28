@@ -17,7 +17,7 @@ if($stmt->rowCount() > 0) {
 	echo("<tr><th>EAN</th><th>Operador</th><th>Instante</th><th>Unidades Repostas</th></tr>");
 
 	while($row = $stmt->fetch())
-		echo "<tr><td>$row['ean']</td><td>$row['operador']</td><td>$row['instante']</td><td>$row['unidades']</td></tr>";
+		echo "<tr><td>$row[ean]</td><td>$row[operador]</td><td>$row[instante]</td><td>$row[unidades]</td></tr>";
 
 ?>
 </table>
