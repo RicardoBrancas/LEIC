@@ -103,7 +103,7 @@ CREATE TABLE evento_reposicao (
 	PRIMARY KEY (operador),
 	UNIQUE (instante),
 	UNIQUE (operador, instante),
-	CHECK (instante > CURRENT_TIMESTAMP)
+	CHECK (instante < CURRENT_TIMESTAMP)
 );
 
 CREATE TABLE reposicao (

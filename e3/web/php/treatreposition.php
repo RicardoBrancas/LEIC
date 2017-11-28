@@ -17,7 +17,7 @@ if($stmt->columnCount() > 0) {
 	echo("<tr><th>EAN</th><th>Operador</th><th>Instante</th><th>Unidades Repostas</th></tr>");
 
 	while($row = $stmt->fetch())
-		echo "<tr><td>$row[0]</td><td>$row[1]</td><td>$row[2]</td><td>$row[3]</td></tr>";
+		echo "<tr><td>$row[2]</td><td>$row[0]</td><td>$row[1]</td><td>$row[4]</td></tr>";
 
 ?>
 </table>
