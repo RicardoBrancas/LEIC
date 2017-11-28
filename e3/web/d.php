@@ -21,7 +21,7 @@ $result = $db->query($sql);
 				echo "<option>$row[0]</option>\n";
 		}
 		?>
-	</select>
+	</select> <br>
 	Insira a nova designacao para esse produto: <br>
 	<input type="text" name="novadesign"> <br>
 	<input type="submit" value="Submit">

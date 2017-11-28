@@ -9,9 +9,7 @@ try {
 		$stmt = $db->prepare("SELECT (:table) 
 																	FROM (reposicao NATURAL JOIN evento_reposicao) 
 																	WHERE ean=:ean");
-		$db->beginTransaction();
 		$stmt->execute(['table' => $table,'ean' => $ean]);
-		$db->commit();
 
 		echo("<table border=\"1\">\n");
 		echo("<tr><td>EAN</td><td>Operador</td><td>Instante</td><td>Unidades Repostas</td></tr>");
@@ -28,8 +26,6 @@ try {
 		}
 		echo("</table>\n");
 	}
-
-	$db = null;
 }
 catch (PDOException $e) {
 	echo("<p>ERROR: {$e->getMessage()}</p>");
