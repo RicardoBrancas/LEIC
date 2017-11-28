@@ -14,24 +14,30 @@ $sql =
     )
     SELECT * FROM recurse;";
 
-$stmt = $db->prepare($sql);
-$stmt->execute([$cat_name]);
+try {
+	$stmt = $db->prepare($sql);
+	$stmt->execute([$cat_name]);
 
-if($stmt->columnCount() > 0) {
-?>
+	if($stmt->rowCount() > 0) {
+		?>
 
-<table>
-    <th>Nome</th>
+		<table>
+			<th>Nome</th>
 
-<?php
-while($row = $stmt->fetch()) {
-    echo "<tr><td>$row[0]</td></tr>";
+			<?php
+			while($row = $stmt->fetch()) {
+				echo "<tr><td>$row[0]</td></tr>";
+			}
+			?>
+
+		</table>
+
+	<?php } else {
+		echo 'A categoria escolhida nao existe ou nao tem subcategorias.';
+	}
+
+} catch (PDOException $e) {
+	echo("<p>Ocorreu um erro inesperado: {$e->getMessage()}</p>");
 }
-?>
 
-</table>
-
-<?php } else {
-    echo 'A categoria escolhida nao existe ou nao tem subcategorias.';
-}
 
