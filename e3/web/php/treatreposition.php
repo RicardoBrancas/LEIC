@@ -1,33 +1,25 @@
 <?php
-try {
-	require 'connection.php';
 
-	$ean = $_POST['ean'];
-	$table;
+require 'connection.php';
 
-	if (is_numeric($ean) and strlen($ean) == 13) {
-		$stmt = $db->prepare("SELECT (:table) 
-																	FROM (reposicao NATURAL JOIN evento_reposicao) 
-																	WHERE ean=:ean");
-		$stmt->execute(['table' => $table,'ean' => $ean]);
+$ean = $_POST['ean'];
 
-		echo("<table border=\"1\">\n");
-		echo("<tr><td>EAN</td><td>Operador</td><td>Instante</td><td>Unidades Repostas</td></tr>");
-		foreach ($table as $row) {
-			echo("<tr><td>");
-			echo($row['ean1']);
-			echo("</td></td>");
-			echo($row['operador']);
-			echo("</td></td>");
-			echo($row['instante']);
-			echo("</td></td>");
-			echo($row['unidades']);
-			echo("</td></tr>\n");
-		}
-		echo("</table>\n");
-	}
-}
-catch (PDOException $e) {
-	echo("<p>ERROR: {$e->getMessage()}</p>");
-}
+$stmt = $db->prepare("SELECT * 
+															FROM (reposicao NATURAL JOIN evento_reposicao) 
+															WHERE ean=:ean");
+$stmt->execute(['ean' => $ean]);
+
+if($stmt->columnCount() > 0) {
 ?>
+
+<table>
+	<?php
+	echo("<tr><th>EAN</th><th>Operador</th><th>Instante</th><th>Unidades Repostas</th></tr>");
+
+	while($row = $stmt->fetch())
+		echo "<tr><td>$row[2]</td><td>$row[0]</td><td>$row[1]</td><td>$row[4]</td></tr>";
+
+?>
+</table>
+<?php
+}
