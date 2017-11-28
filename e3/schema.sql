@@ -121,6 +121,58 @@ CREATE TABLE reposicao (
 	FOREIGN KEY (operador, instante) REFERENCES evento_reposicao (operador, instante)
 );
 
+CREATE OR REPLACE FUNCTION remove_cat(name VARCHAR(80))
+	RETURNS VOID AS $$
+DECLARE temp_name VARCHAR(80);
+BEGIN
+	SET CONSTRAINTS ALL DEFERRED;
+
+	DELETE FROM constituida
+	WHERE categoria = name;
+
+	DELETE FROM categoria_simples
+	WHERE nome = name;
+
+	DELETE FROM categoria
+	WHERE nome = name;
+
+	FOR temp_name IN SELECT *
+	                 FROM super_categoria AS outter
+	                 WHERE NOT EXISTS(SELECT *
+	                                  FROM constituida
+	                                  WHERE super_categoria = outter.nome)
+	LOOP
+		INSERT INTO categoria_simples VALUES (temp_name);
+		DELETE FROM super_categoria
+		WHERE nome = temp_name;
+	END LOOP;
+
+	SET CONSTRAINTS ALL IMMEDIATE;
+END
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION sub_cat_insert(super_name VARCHAR(80), sub_name VARCHAR(80))
+	RETURNS VOID AS $$
+BEGIN
+	SET CONSTRAINTS ALL DEFERRED;
+
+	IF NOT EXISTS(SELECT * FROM categoria WHERE nome = super_name) THEN
+		RAISE 'err'; -- TODO
+	END IF;
+
+	IF EXISTS(SELECT nome FROM categoria_simples WHERE nome = super_name) THEN
+		DELETE FROM categoria_simples WHERE nome = super_name;
+		INSERT INTO super_categoria VALUES (super_name);
+	END IF;
+
+	INSERT INTO categoria VALUES (sub_name);
+	INSERT INTO categoria_simples VALUES (sub_name);
+	INSERT INTO constituida VALUES (super_name, sub_name);
+
+	SET CONSTRAINTS ALL IMMEDIATE;
+END;
+$$ LANGUAGE plpgsql;
+
 CREATE OR REPLACE FUNCTION all_subcategories(nome VARCHAR(80))
 	RETURNS SETOF VARCHAR(80) AS $$
 DECLARE temp_name VARCHAR(80);
@@ -138,21 +190,25 @@ BEGIN
 		FROM constituida
 		WHERE super_categoria = nome;
 
-	WHILE EXISTS(SELECT * FROM temp)
+	WHILE EXISTS(SELECT *
+	             FROM temp)
 	LOOP
-		FOR temp_name IN SELECT * FROM temp
+		FOR temp_name IN SELECT *
+		                 FROM temp
 		LOOP
 			INSERT INTO temp
 				SELECT categoria
 				FROM constituida
 				WHERE super_categoria = temp_name;
 
-			DELETE FROM temp WHERE categoria = temp_name;
+			DELETE FROM temp
+			WHERE categoria = temp_name;
 
 			INSERT INTO result VALUES (temp_name);
 		END LOOP;
 	END LOOP;
 
-	RETURN QUERY SELECT * FROM result;
+	RETURN QUERY SELECT *
+	             FROM result;
 END;
 $$ LANGUAGE plpgsql;
