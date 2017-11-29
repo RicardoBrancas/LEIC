@@ -190,19 +190,13 @@ BEGIN
 		FROM constituida
 		WHERE super_categoria = nome;
 
-	WHILE EXISTS(SELECT *
-	             FROM temp)
+	WHILE EXISTS(SELECT * FROM temp)
 	LOOP
-		FOR temp_name IN SELECT *
-		                 FROM temp
+		FOR temp_name IN SELECT * FROM temp
 		LOOP
-			INSERT INTO temp
-				SELECT categoria
-				FROM constituida
-				WHERE super_categoria = temp_name;
+			INSERT INTO temp SELECT categoria FROM constituida	WHERE super_categoria = temp_name;
 
-			DELETE FROM temp
-			WHERE categoria = temp_name;
+			DELETE FROM temp WHERE categoria = temp_name;
 
 			INSERT INTO result VALUES (temp_name);
 		END LOOP;

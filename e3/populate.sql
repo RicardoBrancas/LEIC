@@ -1,16 +1,16 @@
-INSERT INTO categoria VALUES ('Charcutaria'), ('Laticineos'), ('Talho'), ('Legumes'), ('Queijaria'), ('Padaria'), ('Queijaria Gourmet');
+INSERT INTO categoria VALUES ('Charcutaria'), ('Laticinios'), ('Talho'), ('Legumes'), ('Queijaria'), ('Padaria'), ('Queijaria Gourmet');
 
 INSERT INTO categoria_simples VALUES ('Talho'), ('Legumes'), ('Padaria'), ('Queijaria Gourmet');
 
-INSERT INTO super_categoria VALUES ('Charcutaria'), ('Laticineos'), ('Queijaria');
+INSERT INTO super_categoria VALUES ('Charcutaria'), ('Laticinios'), ('Queijaria');
 
-INSERT INTO constituida VALUES ('Charcutaria', 'Talho'), ('Laticineos', 'Queijaria'), ('Queijaria', 'Queijaria Gourmet');
+INSERT INTO constituida VALUES ('Charcutaria', 'Talho'), ('Laticinios', 'Queijaria'), ('Queijaria', 'Queijaria Gourmet');
 
 INSERT INTO fornecedor VALUES (111111111, 'Ibramugi'), (111111112, 'Ramos e Pereira'), (111111113, 'Amanhecer'), (111111114, 'Espiga da Planicie');
 
 INSERT INTO produto VALUES (1111111111111, 'Desc1', 'Talho', 111111111, 'Fri 24 Nov 17:03:30 WET 2017'),
 	(1111111111112, 'Desc2', 'Queijaria', 111111111, 'Fri 24 Nov 17:03:30 WET 2017'),
-	(1111111111113, 'Desc3', 'Laticineos', 111111112, 'Fri 24 Nov 17:03:30 WET 2017'),
+	(1111111111113, 'Desc3', 'Laticinios', 111111112, 'Fri 24 Nov 17:03:30 WET 2017'),
 	(1111111111114, 'Desc4', 'Legumes', 111111113, 'Fri 24 Nov 17:03:30 WET 2017'),
 	(1111111111115, 'Desc5', 'Charcutaria', 111111111, 'Fri 24 Nov 17:03:30 WET 2017'),
 	(1111111111116, 'Desc6', 'Padaria', 111111114, 'Fri 24 Nov 17:03:30 WET 2017'),

@@ -7,6 +7,7 @@
 \usepackage{amsmath}
 \usepackage{courier}
 \usepackage{listings}
+\usepackage{qtree}
 
 \lstset{language=SQL}
 \lstset{basicstyle=\footnotesize\ttfamily,breaklines=true,morekeywords={IF,REFERENCES,TYPE,ENUM,REPLACE,FUNCTION,RETURNS,VOID,DECLARE,BEGIN,DEFERRED,FOR,LOOP,LANGUAGE,RAISE,SETOF,WHILE,RETURN,QUERY}}
@@ -41,5 +42,13 @@
 
     \section{SQL}
     \lstinputlisting{queries.sql}
+
+    \section{PHP}
+    \Tree{}[ .index.html [ .a.php [ .treatcategories.php ] ] %
+    [.b.php [ .treatproducts.php ] ] %
+[ .c.php [ .treatreposition.php ] ]%
+[ .d.php [ .treatdesign.php ] ]%
+[ .e.php [ .cat\_children.php ] ] ]
+
 
 \end{document}
