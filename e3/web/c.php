@@ -13,7 +13,7 @@ $result = $db->query($sql);
 </head>
 <body>
 <h3>Listar eventos de reposicao</h3>
-<form action="php/treatreposition.php" method="GET">
+<form action="php/do_c.php" method="GET">
 	Escolha o produto: <select name="ean">
 		<?php
 		while ($row = $result->fetch()) {

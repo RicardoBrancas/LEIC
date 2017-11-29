@@ -13,7 +13,7 @@ $result = $db->query($sql);
 </head>
 <body>
 <h3>Alterar designacao do produto</h3>
-<form action="php/treatdesign.php" method="POST">
+<form action="php/do_d.php" method="POST">
 	Escolha o produto: <select name="ean">
 		<?php
 		while ($row = $result->fetch()) {

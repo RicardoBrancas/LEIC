@@ -15,13 +15,13 @@ $simple_cats = $db->query($sql);
 </head>
 <body>
 <h3>Inserir categoria</h3>
-<form action="php/treatcategories.php" method="POST">
+<form action="php/do_a.php" method="POST">
 	Escreva o nome da categoria: <input type="text" name="simple_insert_cat"> <br>
 	<input type="submit">
 </form>
 
 <h3>Inserir sub-categoria</h3>
-<form action="php/treatcategories.php" method="POST">
+<form action="php/do_a.php" method="POST">
 	Escreva o nome da sub-categoria: <input type="text" name="insert_sub_cat"> <br>
 	Escolha a super-categoria: <select name="insert_super_cat">
 		<?php
@@ -34,7 +34,7 @@ $simple_cats = $db->query($sql);
 </form>
 
 <h3>Remover categoria</h3>
-<form action="php/treatcategories.php" method="POST">
+<form action="php/do_a.php" method="POST">
 	Escreva o nome da categoria: <select name="remove_cat">
 		<?php
 		while ($row = $simple_cats->fetch()) {

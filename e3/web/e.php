@@ -13,7 +13,7 @@ $result = $db->query($sql);
 </head>
 <body>
 <h3>Listar todas as sub-categorias de uma super-categoria</h3>
-<form action="php/cat_children.php" method="GET">
+<form action="php/do_e.php" method="GET">
 	Escolha o nome da super-categoria <br>
 	<select name="category">
 		<?php

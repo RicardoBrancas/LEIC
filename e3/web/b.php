@@ -13,7 +13,7 @@ $eans = $db->query('SELECT ean FROM produto;');
 </head>
 <body>
 <h3>Adicionar produto</h3>
-<form action="php/treatproducts.php" method="POST">
+<form action="php/do_b.php" method="POST">
 
 	EAN: <input type="text" name="ean"> <br>
 
@@ -55,7 +55,7 @@ $eans = $db->query('SELECT ean FROM produto;');
 </form>
 
 <h3>Remover produto</h3>
-<form action="php/treatproducts.php" method="POST">
+<form action="php/do_b.php" method="POST">
 	Escreva o EAN do produto:
 	<select name="removeean">
 		<?php
