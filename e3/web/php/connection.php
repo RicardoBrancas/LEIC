@@ -1,8 +1,8 @@
 <?php
 
 $host = "db.tecnico.ulisboa.pt";
-$user = "ist425186";
-$password = "svkz6085";
+$user = "ist424860";
+$password = "cngg7415";
 $dbname = $user;
 
 $db = new PDO("pgsql:host=$host;dbname=$dbname", $user, $password);

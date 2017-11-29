@@ -1,3 +1,10 @@
+<html>
+
+<head>
+	<title>Results - Alinea E</title>
+</head>
+
+<body>
 <?php
 
 require 'connection.php';
@@ -10,9 +17,11 @@ $sql =
         UNION
         SELECT categoria AS nome
         FROM recurse
-        JOIN constituida ON constituida.super_categoria = nome
+        JOIN constituida ON constituida.super_categoria = nome  
     )
     SELECT * FROM recurse;";
+
+//$sql = "SELECT all_subcategories(?);";
 
 try {
 	$stmt = $db->prepare($sql);
@@ -40,4 +49,18 @@ try {
 	echo("<p>Ocorreu um erro inesperado: {$e->getMessage()}</p>");
 }
 
+echo "<pre>OK! ran:\nWITH RECURSIVE recurse(nome) AS (
+        SELECT categoria from constituida WHERE super_categoria = '$cat_name'
+        UNION
+        SELECT categoria AS nome
+        FROM recurse
+        JOIN constituida ON constituida.super_categoria = nome  
+    )
+    SELECT * FROM recurse;</pre>";
+?>
+
+<a href="../e.php">Back</a>
+
+</body>
+</html>
 

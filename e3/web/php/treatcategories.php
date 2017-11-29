@@ -1,3 +1,10 @@
+<html>
+
+<head>
+	<title>Results - Alinea A</title>
+</head>
+
+<body>
 <?php
 try {
 	require 'connection.php';
@@ -15,26 +22,38 @@ try {
 		$stmt1->execute([$cat_insert]);
 		$stmt2->execute([$cat_insert]);
 		$db->commit();
+
+		echo "<pre>OK! ran:\nINSERT INTO categoria VALUES ('$cat_insert');\nINSERT INTO categoria_simples VALUES('$cat_insert');</pre>";
 	}
 
 	if (!empty($cat_remove)) {
 		$stmt = $db->prepare("SELECT remove_cat(?);");
 
-		$db->beginTransaction();
 		$stmt->execute([$cat_remove]);
-		$db->commit();
+
+		echo "<pre>OK! ran:\nSELECT remove_cat('$cat_remove');</pre>";
 	}
 
 	if (!empty($sub_cat_insert) and !empty($super_cat_insert)) {
 		$stmt = $db->prepare("SELECT sub_cat_insert(:super, :sub);");
-		$db->beginTransaction();
+
 		$stmt->execute(['super' => $super_cat_insert, 'sub' => $sub_cat_insert]);
-		$db->commit();
+
+		echo "<pre>OK! ran:\nSELECT sub_cat_insert('$super_cat_insert', '$sub_cat_insert');</pre>";
 	}
 
 
 	$db = null;
 } catch (PDOException $e) {
+	try {
+		$db->rollBack();
+	} catch (Exception $e) {}
+
 	echo("<p>ERROR: {$e->getMessage()}</p>");
 }
 ?>
+
+<a href="../a.php">Back</a>
+
+</body>
+</html>

@@ -91,5 +91,7 @@ $eans = $db->query('SELECT ean FROM produto;');
     });
 </script>
 
+<a href="index.html">Index</a>
+
 </body>
 </html>
