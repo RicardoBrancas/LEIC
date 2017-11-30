@@ -50,23 +50,26 @@ CREATE TABLE constituida (
 CREATE TABLE fornecedor (
 	nif  NUMERIC(9)  NOT NULL,
 	nome VARCHAR(80) NOT NULL,
-	PRIMARY KEY (nif)
+	PRIMARY KEY (nif),
+	CHECK (nif > 0)
 );
 
 CREATE TABLE produto (
-	ean           NUMERIC(13) NOT NULL,
-	design        VARCHAR(80) NOT NULL,
-	categoria     VARCHAR(80) NOT NULL,
-	forn_primario NUMERIC(9)  NOT NULL,
-	data          TIMESTAMP   NOT NULL,
+	ean           NUMERIC(13)  NOT NULL,
+	design        VARCHAR(200) NOT NULL,
+	categoria     VARCHAR(80)  NOT NULL,
+	forn_primario NUMERIC(9)   NOT NULL,
+	data          TIMESTAMP    NOT NULL,
 	PRIMARY KEY (ean),
 	FOREIGN KEY (categoria) REFERENCES categoria (nome),
-	FOREIGN KEY (forn_primario) REFERENCES fornecedor (nif)
+	FOREIGN KEY (forn_primario) REFERENCES fornecedor (nif),
+	CHECK (ean > 0)
 );
 
 CREATE TABLE fornece_sec (
 	nif NUMERIC(9)  NOT NULL,
 	ean NUMERIC(13) NOT NULL,
+	PRIMARY KEY (nif, ean),
 	FOREIGN KEY (nif) REFERENCES fornecedor (nif),
 	FOREIGN KEY (ean) REFERENCES produto (ean)
 );
@@ -74,7 +77,9 @@ CREATE TABLE fornece_sec (
 CREATE TABLE corredor (
 	nro     SMALLINT NOT NULL,
 	largura SMALLINT NOT NULL,
-	PRIMARY KEY (nro)
+	PRIMARY KEY (nro),
+	CHECK (nro > 0),
+	CHECK (largura > 0)
 );
 
 CREATE TABLE prateleira (
@@ -92,18 +97,22 @@ CREATE TABLE planograma (
 	altura   HEIGHT      NOT NULL,
 	face     SMALLINT    NOT NULL,
 	unidades SMALLINT    NOT NULL,
+	loc      SMALLINT    NOT NULL,
 	PRIMARY KEY (ean, nro, lado, altura),
 	FOREIGN KEY (ean) REFERENCES produto (ean),
-	FOREIGN KEY (nro, lado, altura) REFERENCES prateleira (nro, lado, altura)
+	FOREIGN KEY (nro, lado, altura) REFERENCES prateleira (nro, lado, altura),
+	CHECK (face > 0),
+	CHECK (unidades > 0),
+	CHECK (loc > 0)
 );
 
 CREATE TABLE evento_reposicao (
 	operador VARCHAR(80) NOT NULL,
 	instante TIMESTAMP   NOT NULL,
-	PRIMARY KEY (operador),
-	UNIQUE (instante),
+	PRIMARY KEY (instante),
+	UNIQUE (operador),
 	UNIQUE (operador, instante),
-	CHECK (instante < CURRENT_TIMESTAMP)
+	CHECK (instante <= CURRENT_TIMESTAMP)
 );
 
 CREATE TABLE reposicao (
@@ -120,7 +129,8 @@ CREATE TABLE reposicao (
 	FOREIGN KEY (ean, nro, lado, altura)
 		REFERENCES planograma (ean, nro, lado, altura),
 	FOREIGN KEY (operador, instante)
-		REFERENCES evento_reposicao (operador, instante)
+		REFERENCES evento_reposicao (operador, instante),
+	CHECK (unidades > 0)
 );
 
 
