@@ -14,7 +14,7 @@ $result = $db->query($sql);
 <body>
 <h3>Alterar designacao do produto</h3>
 <form action="php/do_d.php" method="POST">
-	Escolha o produto: <select name="ean">
+	Escolha o produto: <select name="insert_ean">
 		<?php
 		while ($row = $result->fetch()) {
 			echo "<option>$row[0]</option>\n";
@@ -22,7 +22,7 @@ $result = $db->query($sql);
 		?>
 	</select> <br>
 
-	Insira a nova designacao para esse produto: <input type="text" name="newdesign"> <br>
+	Insira a nova designacao para esse produto: <input type="text" name="insert_design"> <br>
 
 	<input type="submit">
 </form>

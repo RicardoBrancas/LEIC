@@ -14,7 +14,7 @@ $result = $db->query($sql);
 <body>
 <h3>Listar eventos de reposicao</h3>
 <form action="php/do_c.php" method="GET">
-	Escolha o produto: <select name="ean">
+	Escolha o produto: <select name="insert_ean">
 		<?php
 		while ($row = $result->fetch()) {
 			echo "<option>$row[0]</option>\n";

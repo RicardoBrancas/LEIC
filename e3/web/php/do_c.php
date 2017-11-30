@@ -8,7 +8,7 @@
 <?php
 require 'connection.php';
 
-$ean = $_GET['ean'];
+$ean = $_GET['insert_ean'];
 
 $stmt = $db->prepare("SELECT * FROM reposicao NATURAL JOIN evento_reposicao WHERE ean=:ean");
 

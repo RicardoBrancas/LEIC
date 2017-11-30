@@ -15,11 +15,11 @@ $eans = $db->query('SELECT ean FROM produto;');
 <h3>Adicionar produto</h3>
 <form action="php/do_b.php" method="POST">
 
-	EAN: <input type="text" name="ean"> <br>
+	EAN: <input type="text" name="insert_ean"> <br>
 
-	Design: <input type="text" name="design"> <br>
+	Design: <input type="text" name="insert_design"> <br>
 
-	Fornecedor Primario: <select id="forn-prim" name="forn_prim"><?php
+	Fornecedor Primario: <select id="forn-prim" name="insert_forn_prim"><?php
 		foreach ($forns as $row) {
 			echo "<option>$row[0]</option>\n";
 		}
@@ -28,11 +28,11 @@ $eans = $db->query('SELECT ean FROM produto;');
 	</select><br>
 
 	<div id="novo-forn-prim" style="display: none">
-		NIF: <input type="text" name="nif_fornecedor_primario"> <br>
-		Nome: <input type="text" name="nome_fornecedor_primario"> <br>
+		NIF: <input type="text" name="insert_nif_forn_prim"> <br>
+		Nome: <input type="text" name="insert_nome_forn_prim"> <br>
 	</div>
 
-	Fornecedor Secundario: <select id="forn-sec" name="forn_sec"><?php
+	Fornecedor Secundario: <select id="forn-sec" name="insert_forn_sec"><?php
 		foreach ($forns as $row) {
 			echo "<option>$row[0]</option>\n";
 		}
@@ -41,11 +41,11 @@ $eans = $db->query('SELECT ean FROM produto;');
 	</select><br>
 
 	<div id="novo-forn-sec" style="display: none">
-		NIF: <input type="text" name="nif_fornecedor_secundario"> <br>
-		Nome: <input type="text" name="nome_fornecedor_secundario"> <br>
+		NIF: <input type="text" name="insert_nif_forn_sec"> <br>
+		Nome: <input type="text" name="insert_nome_forn_sec"> <br>
 	</div>
 
-	Categoria: <select name="categoria"><?php
+	Categoria: <select name="insert_cat"><?php
 		while ($row = $cats->fetch()) {
 			echo "<option>$row[0]</option>\n";
 		}
@@ -57,7 +57,7 @@ $eans = $db->query('SELECT ean FROM produto;');
 <h3>Remover produto</h3>
 <form action="php/do_b.php" method="POST">
 	Escreva o EAN do produto:
-	<select name="removeean">
+	<select name="remove_ean">
 		<?php
 		while ($row = $eans->fetch()) {
 			echo "<option>$row[0]</option>\n";

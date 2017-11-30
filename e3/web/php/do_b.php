@@ -8,16 +8,16 @@
 <?php
 try {
 	require 'connection.php';
-	$ean = $_POST["ean"];
-	$design = $_POST["design"];
-	$forn_prim = $_POST["forn_prim"];
-	$forn_sec = $_POST["forn_sec"];
-	$nif_fornecedor_primario = $_POST["nif_fornecedor_primario"];
-	$nome_fornecedor_primario = $_POST["nome_fornecedor_primario"];
-	$nif_fornecedor_secundario = $_POST["nif_fornecedor_secundario"];
-	$nome_fornecedor_secundario = $_POST["nome_fornecedor_secundario"];
-	$categoria = $_POST["categoria"];
-	$removeean = $_POST["removeean"];
+	$ean = $_POST["insert_ean"];
+	$design = $_POST["insert_design"];
+	$forn_prim = $_POST["insert_forn_prim"];
+	$forn_sec = $_POST["insert_forn_sec"];
+	$nif_forn_prim = $_POST["insert_nif_forn_prim"];
+	$nome_forn_prim = $_POST["insert_nome_forn_prim"];
+	$nif_forn_sec = $_POST["insert_nif_forn_sec"];
+	$nome_forn_sec = $_POST["insert_nome_forn_sec"];
+	$categoria = $_POST["insert_cat"];
+	$remove_ean = $_POST["remove_ean"];
 
 	$executed_sql = "";
 
@@ -27,11 +27,11 @@ try {
 		$stmt = $db->prepare('INSERT INTO fornecedor VALUES (:nif, :nome)');
 
 		if($forn_prim == 'new') {
-			if(!empty($nif_fornecedor_primario) and !empty($nome_fornecedor_primario)) {
-				$stmt->execute(['nif' => $nif_fornecedor_primario, 'nome' => $nome_fornecedor_primario]);
-				$forn_prim = $nif_fornecedor_primario;
+			if(!empty($nif_forn_prim) and !empty($nome_forn_prim)) {
+				$stmt->execute(['nif' => $nif_forn_prim, 'nome' => $nome_forn_prim]);
+				$forn_prim = $nif_forn_prim;
 
-				$executed_sql .= "INSERT INTO fornecedor VALUES ($nif_fornecedor_primario, '$nome_fornecedor_primario');\n";
+				$executed_sql .= "INSERT INTO fornecedor VALUES ($nif_forn_prim, '$nome_forn_prim');\n";
 			} else {
 				//TODO
 			}
@@ -39,10 +39,10 @@ try {
 		}
 
 		if($forn_sec == 'new') {
-			if(!empty($nif_fornecedor_secundario) and !empty($nome_fornecedor_secundario)) {
-				$stmt->execute(['nif' => intval($nif_fornecedor_secundario), 'nome' => $nome_fornecedor_secundario]);
-				$forn_sec = $nif_fornecedor_secundario;
-				$executed_sql .= "INSERT INTO fornecedor VALUES ($nif_fornecedor_secundario, '$nome_fornecedor_secundario');\n";
+			if(!empty($nif_forn_sec) and !empty($nome_forn_sec)) {
+				$stmt->execute(['nif' => intval($nif_forn_sec), 'nome' => $nome_forn_sec]);
+				$forn_sec = $nif_forn_sec;
+				$executed_sql .= "INSERT INTO fornecedor VALUES ($nif_forn_sec, '$nome_forn_sec');\n";
 			} else {
 				//TODO
 			}
@@ -60,20 +60,20 @@ try {
 		echo "<pre>OK! ran:\n$executed_sql</pre>";
 	}
 
-	if(!empty($removeean)) {
+	if(!empty($remove_ean)) {
 		$stmt1 = $db->prepare('DELETE FROM reposicao WHERE ean = ?');
 		$stmt2 = $db->prepare('DELETE FROM planograma WHERE ean = ?');
 		$stmt3 = $db->prepare('DELETE FROM fornece_sec WHERE ean = ?');
 		$stmt4 = $db->prepare('DELETE FROM produto WHERE ean = ?');
 
 		$db->beginTransaction();
-		$stmt1->execute([$removeean]);
-		$stmt2->execute([$removeean]);
-		$stmt3->execute([$removeean]);
-		$stmt4->execute([$removeean]);
+		$stmt1->execute([$remove_ean]);
+		$stmt2->execute([$remove_ean]);
+		$stmt3->execute([$remove_ean]);
+		$stmt4->execute([$remove_ean]);
 		$db->commit();
 
-		echo "<pre>OK! ran:\nDELETE FROM reposicao WHERE ean = $removeean;\nDELETE FROM planograma WHERE ean = $removeean;\nDELETE FROM fornece_sec WHERE ean = $removeean;\nDELETE FROM produto WHERE ean = $removeean;</pre>";
+		echo "<pre>OK! ran:\nDELETE FROM reposicao WHERE ean = $remove_ean;\nDELETE FROM planograma WHERE ean = $remove_ean;\nDELETE FROM fornece_sec WHERE ean = $remove_ean;\nDELETE FROM produto WHERE ean = $remove_ean;</pre>";
 	}
 
 	$db = null;
@@ -90,5 +90,3 @@ try {
 
 </body>
 </html>
-
-
