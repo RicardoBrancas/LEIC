@@ -36,16 +36,16 @@ INSERT INTO corredor VALUES (1, 100), (2, 150), (3, 100), (4, 120);
 INSERT INTO prateleira VALUES (1, 'esquerda', 'superior'), (1, 'direita', 'chao'),
 	(2, 'esquerda', 'medio'), (2, 'direita', 'superior');
 
-INSERT INTO planograma VALUES (1111111111111, 1, 'esquerda', 'superior', 2, 10),
-	(1111111111112, 1, 'direita', 'chao', 2, 10),
-	(1111111111113, 2, 'esquerda', 'medio', 2, 10),
-	(1111111111114, 2, 'direita', 'superior', 2, 10),
-	(1111111111115, 1, 'esquerda', 'superior', 2, 10),
-	(1111111111116, 1, 'direita', 'chao', 2, 10),
-	(1111111111117, 2, 'esquerda', 'medio', 2, 10),
-	(1111111111118, 2, 'direita', 'superior', 2, 10),
-	(1111111111119, 1, 'esquerda', 'superior', 2, 10),
-	(1111111111120, 1, 'direita', 'chao', 2, 10);
+INSERT INTO planograma VALUES (1111111111111, 1, 'esquerda', 'superior', 2, 10, 1),
+	(1111111111112, 1, 'direita', 'chao', 2, 10, 1),
+	(1111111111113, 2, 'esquerda', 'medio', 2, 10, 1),
+	(1111111111114, 2, 'direita', 'superior', 2, 10, 1),
+	(1111111111115, 1, 'esquerda', 'superior', 2, 10, 1),
+	(1111111111116, 1, 'direita', 'chao', 2, 10, 1),
+	(1111111111117, 2, 'esquerda', 'medio', 2, 10, 1),
+	(1111111111118, 2, 'direita', 'superior', 2, 10, 1),
+	(1111111111119, 1, 'esquerda', 'superior', 2, 10, 1),
+	(1111111111120, 1, 'direita', 'chao', 2, 10, 1);
 
 INSERT INTO evento_reposicao VALUES ('Jorge', 'Fri 24 Nov 17:03:30 WET 2017'),
 ('Manuel', 'Sat 25 Nov 17:03:30 WET 2017');
