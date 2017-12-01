@@ -1,10 +1,10 @@
-INSERT INTO categoria VALUES ('Charcutaria'), ('Laticinios'), ('Talho'), ('Legumes'), ('Queijaria'), ('Padaria'), ('Queijaria Gourmet');
+INSERT INTO categoria VALUES ('Charcutaria'), ('Laticinios'), ('Talho'), ('Legumes'), ('Queijaria'), ('Padaria'), ('Queijaria Gourmet'), ('Produtos de Beleza'), ('Bebidas'), ('Banho'), ('Sumos'), ('Alcool'), ('Refrigerantes'), ('Perfumes');
 
-INSERT INTO categoria_simples VALUES ('Talho'), ('Legumes'), ('Padaria'), ('Queijaria Gourmet');
+INSERT INTO categoria_simples VALUES ('Talho'), ('Legumes'), ('Padaria'), ('Queijaria Gourmet'), ('Sumos'), ('Alcool'), ('Perfumes');
 
-INSERT INTO super_categoria VALUES ('Charcutaria'), ('Laticinios'), ('Queijaria');
+INSERT INTO super_categoria VALUES ('Charcutaria'), ('Laticinios'), ('Queijaria'), ('Produtos de Beleza'), ('Bebidas'), ('Refrigerantes');
 
-INSERT INTO constituida VALUES ('Charcutaria', 'Talho'), ('Laticinios', 'Queijaria'), ('Queijaria', 'Queijaria Gourmet');
+INSERT INTO constituida VALUES ('Charcutaria', 'Talho'), ('Laticinios', 'Queijaria'), ('Queijaria', 'Queijaria Gourmet'), ('Produtos de Beleza', 'Perfumes'), ('Produtos de Beleza', 'Banho'), ('Bebidas', 'Refrigerantes'), ('Refrigerantes', 'Sumos'), ('Bebidas', 'Alcool');
 
 INSERT INTO fornecedor VALUES (111111111, 'Ibramugi'), (111111112, 'Ramos e Pereira'), (111111113, 'Amanhecer'), (111111114, 'Espiga da Planicie');
 
