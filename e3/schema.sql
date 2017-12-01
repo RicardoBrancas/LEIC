@@ -1,4 +1,4 @@
--- Drop tables in case they already exist. Will delete all data
+-- Drop tables if they already exist. Will delete all data
 
 DROP TABLE IF EXISTS reposicao;
 DROP TABLE IF EXISTS evento_reposicao;
@@ -189,9 +189,8 @@ CREATE OR REPLACE FUNCTION all_subcategories(nome VARCHAR(80))
 	RETURNS SETOF VARCHAR(80) AS $$
 DECLARE temp_name VARCHAR(80);
 BEGIN
-
 	DROP TABLE IF EXISTS result;
-	DROP TABLE IF EXISTS temp;
+	DROP TABLE IF EXISTS temp_names;
 
 	CREATE TEMP TABLE result (nome VARCHAR(80));
 
