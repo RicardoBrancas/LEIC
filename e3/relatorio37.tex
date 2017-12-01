@@ -9,6 +9,7 @@
 \usepackage{listings}
 \usepackage{tikz}
 \usepackage{tikz-qtree}
+\usepackage{enumitem}
 
 \lstset{language=SQL}
 \lstset{basicstyle=\footnotesize\ttfamily,breaklines=true,morekeywords={IF,REFERENCES,TYPE,ENUM,REPLACE,FUNCTION,RETURNS,VOID,DECLARE,BEGIN,DEFERRED,FOR,LOOP,LANGUAGE,RAISE,SETOF,WHILE,RETURN,QUERY,TEMP}}
@@ -24,7 +25,7 @@
         \Large
         \begin{tabular}{llll}
             83533 & Mihail Brinza & .\% & h \\
-            38557 & Ricardo Brancas & .\% & h \\
+            83557 & Ricardo Brancas & .\% & 16h \\
             83883 & David Nunes & .\% & h
         \end{tabular}
         }
@@ -45,21 +46,52 @@
     \lstinputlisting{queries.sql}
 
     \section{Desenvolvimento da Aplicação}
-    Na nossa aplicação existe uma página \texttt{index.html} que contem hiperligações para 5 páginas, cada uma correspondente
+    A nossa aplicação em PHP segue o modelo típico cliente-servidor, em que a parte cliente se liga e faz pedidos ao SGBD
+    via a interface PDO (PHP Data Objects).
+    A página inicial, \texttt{index.html}, contem hiperligações para 5 outras páginas, cada uma correspondente
     a uma das alíneas pedidas; tal como demonstrado no esquema seguinte:
 
     \begin{center}
-        \Tree[ .index.html [ .a.php [ .do\_a.php ] ] %
-        [.b.php [ .do\_b.php ] ] %
-        [ .c.php [ .do\_c.php ] ]%
-        [ .d.php [ .do\_d.php ] ]%
+        \Tree[ .index.html [ .a.php [ .do\_a.php ] ]
+        [.b.php [ .do\_b.php ] ]
+        [ .c.php [ .do\_c.php ] ]
+        [ .d.php [ .do\_d.php ] ]
         [ .e.php [ .do\_e.php ] ] ]
     \end{center}
 
 
     Para fazer os pedidos às respetivas páginas de execução (\texttt{do\_*.php}) utilizámos o verbo \texttt{GET} no caso das alíneas
-    \textbf{c} e \textbf{e}, por se tratar de um pedido sem "efeitos secundários" e \texttt{POST} nos restantes, por realizarem
+    \textbf{c} e \textbf{e}, por se tratar de um pedido sem ``efeitos secundários'' e \texttt{POST} nos restantes, por realizarem
     modificaçoes à base de dados.
+
+    De um modo geral, em cada uma das páginas de input, existem formulários que o utilizador preenche e que, ao serem submetidos,
+    enviam um pedido para a respetiva página de ação. Nessa página verificamos sumariamente o input do utilizador
+    e executamos os \textit{statements} correspondentes, utilizando transações quando se trata de uma ação \textit{multi-statement} e
+    fazendo \textit{rollback} quando necessário.
+
+    No fim, em caso de sucesso, é mostrado ao utilizador qual o output, caso exista, e as \textit{queries} que foram executadas.
+    Se acontecer um erro, o mesmo é mostrado.
+
+    Descrevemos em seguida os detalhes de funcionamento para as alínas relevantes:
+
+    \begin{enumerate}[label=\textbf{\alph*)}]
+        \item Inserir e remover categorias e sub-categorias;
+
+        Na página de input (\texttt{a.php}) existem 3 opções diponíveis para o utilizador: inserir uma categoria (simples),
+        inserir uma subcategoria ou remover uma categoria.
+
+        Consoante o formulário em que o utilizador faça \textit{submit}, diferentes parâmetros vão ser passados no \texttt{POST}
+        o que vai corresponder a ações diferentes realizadas no \texttt{do\_a.php}.
+
+        \item Inserir e remover um novo produto e os seus respetivos fornecedores (primários ou secundários) garantindo que esta operação seja atómica;
+
+        São, novamente, dadas duas opções ao utilizador: inserir ou remover o produto. Tal como na alínea anteriror,
+        a form submetida define qual a ação a ser realizada.
+
+%        \item Listar eventos de reposição de um dado produto, incluindo o número de unidades respostas;
+%        \item Alterar a designação de um produto;
+%        \item Listar todas as subcategorias de uma super-categoria, a todos os níveis de profundidade.
+    \end{enumerate}
 
 
 \end{document}
