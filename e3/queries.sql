@@ -25,7 +25,7 @@ HAVING COUNT(categoria) >= ALL (
 
 -- b
 SELECT DISTINCT nif, nome
-FROM produto AS outter
+FROM produto AS out
 	JOIN fornecedor ON forn_primario = nif
 WHERE NOT EXISTS(
 	SELECT nome
@@ -35,7 +35,7 @@ WHERE NOT EXISTS(
 	FROM fornece_sec
 		NATURAL JOIN produto
 	WHERE nif = outter.forn_primario
-	      OR forn_primario = outter.forn_primario
+	      OR forn_primario = out.forn_primario
 );
 
 -- c
