@@ -10,10 +10,10 @@ FROM (
      ) AS c
 	NATURAL JOIN fornecedor
 GROUP BY nif, nome
-HAVING COUNT(categoria) >= ALL (
+HAVING COUNT(DISTINCT categoria) >= ALL (
 	SELECT MAX(count)
 	FROM (
-		     SELECT nif, COUNT(categoria) AS count
+		     SELECT nif, COUNT(DISTINCT categoria) AS count
 		     FROM (SELECT forn_primario AS nif, categoria
 		           FROM produto
 		           UNION ALL
@@ -32,9 +32,9 @@ WHERE NOT EXISTS(
 	FROM categoria_simples
 	EXCEPT
 	SELECT categoria AS nome
-	FROM fornece_sec
-		NATURAL JOIN produto
-	WHERE nif = outter.forn_primario
+	FROM produto
+		NATURAL JOIN fornece_sec
+	WHERE nif = out.forn_primario
 	      OR forn_primario = out.forn_primario
 );
 

@@ -167,7 +167,7 @@ BEGIN
 	SET CONSTRAINTS ALL DEFERRED;
 
 	IF NOT EXISTS(SELECT * FROM categoria WHERE nome = super_name) THEN
-		RAISE EXCEPTION 'A super categoria escolhida nao existe.'; -- TODO
+		RAISE EXCEPTION 'A super categoria escolhida nao existe.';
 	END IF;
 
 	IF EXISTS(SELECT nome FROM categoria_simples WHERE nome = super_name) THEN
