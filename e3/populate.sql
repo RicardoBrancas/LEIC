@@ -85,9 +85,9 @@ INSERT INTO evento_reposicao VALUES ('Jorge', 'Fri 24 Nov 17:03:30 WET 2017'),
 ('David', 'Fri 1 Dec 17:03:30 WET 2017');
 
 
-INSERT INTO reposicao VALUES (1111111111114, 1, 'direita', 'chao', 'Jorge', 'Fri 24 Nov 17:03:30 WET 2017', 3),
-(1111111111120, 1, 'esquerda', 'medio', 'Ricardo', '24 Nov 18:03:30 WET 2017', 10),
+INSERT INTO reposicao VALUES (1111111111114, 2, 'direita', 'superior', 'Jorge', 'Fri 24 Nov 17:03:30 WET 2017', 3),
+(1111111111120, 1, 'direita', 'chao', 'Ricardo', '24 Nov 18:03:30 WET 2017', 10),
 (1111111111111, 1, 'esquerda', 'superior', 'Manuel', 'Sat 25 Nov 17:03:30 WET 2017', 10),
-(1111111111112, 1, 'direita', 'medio', 'Tozé', 'Mon 27 Nov 17:03:30 WET 2017', 3),
-(1111111111114, 1, 'direita', 'medio', 'Mihail', 'Thu 30 Nov 17:03:30 WET 2017', 3),
-(1111111111123, 1, 'esquerda', 'superior', 'David', 'Fri 1 Dec 17:03:30 WET 2017', 10);
+(1111111111112, 1, 'direita', 'chao', 'Tozé', 'Mon 27 Nov 17:03:30 WET 2017', 3),
+(1111111111114, 1, 'direita', 'superior', 'Mihail', 'Thu 30 Nov 17:03:30 WET 2017', 3),
+(1111111111123, 1, 'esquerda', 'medio', 'David', 'Fri 1 Dec 17:03:30 WET 2017', 10);
