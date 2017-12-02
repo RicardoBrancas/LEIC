@@ -33,7 +33,8 @@ try {
 
 				$executed_sql .= "INSERT INTO fornecedor VALUES ($nif_forn_prim, '$nome_forn_prim');\n";
 			} else {
-				//TODO
+				echo "Erro: novo fornecedor primário inválido.";
+				exit();
 			}
 
 		}
@@ -44,7 +45,8 @@ try {
 				$forn_sec = $nif_forn_sec;
 				$executed_sql .= "INSERT INTO fornecedor VALUES ($nif_forn_sec, '$nome_forn_sec');\n";
 			} else {
-				//TODO
+				echo "Erro: novo fornecedor secundário inválido.";
+				exit();
 			}
 		}
 
