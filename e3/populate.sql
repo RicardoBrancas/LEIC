@@ -6,7 +6,7 @@ INSERT INTO super_categoria VALUES ('Charcutaria'), ('Laticinios'), ('Queijaria'
 
 INSERT INTO constituida VALUES ('Charcutaria', 'Talho'), ('Laticinios', 'Queijaria'), ('Queijaria', 'Queijaria Gourmet'), ('Produtos de Beleza', 'Perfumes'), ('Produtos de Beleza', 'Banho'), ('Bebidas', 'Refrigerantes'), ('Refrigerantes', 'Sumos'), ('Bebidas', 'Alcool');
 
-INSERT INTO fornecedor VALUES (111111111, 'Ibramugi'), (111111112, 'Ramos e Pereira'), (111111113, 'Amanhecer'), (111111114, 'Espiga da Planicie'), (111111115, 'Nestle'), (111111116, 'Dia'), (111111117, 'Continente');
+INSERT INTO fornecedor VALUES (111111111, 'Ibramugi'), (111111112, 'Ramos e Pereira'), (111111113, 'Amanhecer'), (111111114, 'Espiga da Planicie'), (111111115, 'Nestle'), (111111116, 'Dia'), (111111117, 'Continente'), (111111118, 'Unilever'), (111111119, 'Jeronimo Martins'), (111111120, 'LSA'), (111111121, 'MP'), (111111122, 'Elos');
 
 INSERT INTO produto VALUES (1111111111111, 'Desc1', 'Talho', 111111111, 'Fri 24 Nov 17:03:30 WET 2017'),
 	(1111111111112, 'Desc2', 'Queijaria', 111111117, 'Fri 24 Nov 17:03:30 WET 2017'),
@@ -31,7 +31,17 @@ INSERT INTO produto VALUES (1111111111111, 'Desc1', 'Talho', 111111111, 'Fri 24 
 
 INSERT INTO fornece_sec VALUES (111111113, 1111111111112),
 	(111111114, 1111111111112),
+	(111111112, 1111111111111),
+	(111111113, 1111111111111),
 	(111111114, 1111111111111),
+	(111111115, 1111111111111),
+	(111111116, 1111111111111),
+	(111111117, 1111111111111),
+	(111111118, 1111111111111),
+	(111111119, 1111111111111),
+	(111111120, 1111111111111),
+	(111111121, 1111111111111),
+	(111111122, 1111111111111),
 	(111111111, 1111111111113),
 	(111111111, 1111111111114),
 	(111111112, 1111111111115),
@@ -90,4 +100,4 @@ INSERT INTO reposicao VALUES (1111111111114, 2, 'direita', 'superior', 'Jorge', 
 (1111111111111, 1, 'esquerda', 'superior', 'Manuel', 'Sat 25 Nov 17:03:30 WET 2017', 10),
 (1111111111112, 1, 'direita', 'chao', 'Tozé', 'Mon 27 Nov 17:03:30 WET 2017', 3),
 (1111111111115, 1, 'esquerda', 'superior', 'Mihail', 'Thu 30 Nov 17:03:30 WET 2017', 3),
-(1111111111123, 1, 'esquerda', 'medio', 'David', 'Fri 1 Dec 17:03:30 WET 2017', 10);
+(1111111111123, 2, 'esquerda', 'medio', 'David', 'Fri 1 Dec 17:03:30 WET 2017', 10);
