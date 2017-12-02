@@ -18,16 +18,16 @@ INSERT INTO produto VALUES (1111111111111, 'Desc1', 'Talho', 111111111, 'Fri 24 
 	(1111111111118, 'Desc8', 'Padaria', 111111113, 'Fri 24 Nov 17:03:30 WET 2017'),
 	(1111111111119, 'Desc9', 'Queijaria', 111111112, 'Fri 24 Nov 17:03:30 WET 2017'),
 	(1111111111120, 'Desc10', 'Talho', 111111112, 'Fri 24 Nov 17:03:30 WET 2017')
-	(1111111111121, 'Desc11', 'Alcool', 111111117, 'Fri 31 Nov 17:03:30 WET 2017'),
-	(1111111111122, 'Desc12', 'Perfumes', 111111117, 'Fri 31 Nov 17:03:30 WET 2017'),
-	(1111111111123, 'Desc13', 'Banho', 111111115, 'Fri 31 Nov 17:03:30 WET 2017'),
-	(1111111111124, 'Desc14', 'Sumos', 111111116, 'Fri 31 Nov 17:03:30 WET 2017'),
-	(1111111111125, 'Desc15', 'Charcutaria', 111111115, 'Fri 31 Nov 17:03:30 WET 2017'),
-	(1111111111126, 'Desc16', 'Padaria', 111111114, 'Fri 31 Nov 17:03:30 WET 2017'),
-	(1111111111127, 'Desc17', 'Alcool', 111111114, 'Fri 31 Nov 17:03:30 WET 2017'),
-	(1111111111128, 'Desc18', 'Padaria', 111111115, 'Fri 31 Nov 17:03:30 WET 2017'),
-	(1111111111129, 'Desc19', 'Sumos', 111111116, 'Fri 31 Nov 17:03:30 WET 2017'),
-	(1111111111130, 'Desc10', 'Talho', 111111112, 'Fri 31 Nov 17:03:30 WET 2017');
+	(1111111111121, 'Desc11', 'Alcool', 111111117, 'Fri 1 Dec 17:03:30 WET 2017'),
+	(1111111111122, 'Desc12', 'Perfumes', 111111117, 'Fri 1 Dec 17:03:30 WET 2017'),
+	(1111111111123, 'Desc13', 'Banho', 111111115, 'Fri 1 Dec 17:03:30 WET 2017'),
+	(1111111111124, 'Desc14', 'Sumos', 111111116, 'Fri 1 Dec 17:03:30 WET 2017'),
+	(1111111111125, 'Desc15', 'Charcutaria', 111111115, 'Fri 1 Dec 17:03:30 WET 2017'),
+	(1111111111126, 'Desc16', 'Padaria', 111111114, 'Fri 1 Dec 17:03:30 WET 2017'),
+	(1111111111127, 'Desc17', 'Alcool', 111111114, 'Fri 1 Dec 17:03:30 WET 2017'),
+	(1111111111128, 'Desc18', 'Padaria', 111111115, 'Fri 1 Dec 17:03:30 WET 2017'),
+	(1111111111129, 'Desc19', 'Sumos', 111111116, 'Fri 1 Dec 17:03:30 WET 2017'),
+	(1111111111130, 'Desc10', 'Talho', 111111112, 'Fri 1 Dec 17:03:30 WET 2017');
 
 INSERT INTO fornece_sec VALUES (111111113, 1111111111112),
 	(111111114, 1111111111112),
@@ -82,12 +82,12 @@ INSERT INTO evento_reposicao VALUES ('Jorge', 'Fri 24 Nov 17:03:30 WET 2017'),
 ('Manuel', 'Sat 25 Nov 17:03:30 WET 2017'),
 ('Tozé', 'Mon 27 Nov 17:03:30 WET 2017'),
 ('Mihail', 'Thu 30 Nov 17:03:30 WET 2017'),
-('David', 'Fri 31 Nov 17:03:30 WET 2017');
+('David', 'Fri 1 Dec 17:03:30 WET 2017');
 
 
 INSERT INTO reposicao VALUES (1111111111114, 1, 'direita', 'chao', 'Jorge', 'Fri 24 Nov 17:03:30 WET 2017', 3),
 (1111111111120, 1, 'esquerda', 'medio', 'Ricardo', '24 Nov 18:03:30 WET 2017', 10),
 (1111111111111, 1, 'esquerda', 'superior', 'Manuel', 'Sat 25 Nov 17:03:30 WET 2017', 10),
 (1111111111112, 1, 'direita', 'medio', 'Tozé', 'Mon 27 Nov 17:03:30 WET 2017', 3),
-(1111111111114, 1, 'direita', 'medio', 'Mihail', 'Thu 30 Nov 17:03:30 WET 2017', 3), 
-(1111111111123, 1, 'esquerda', 'superior', 'David', 'Fri 31 Nov 17:03:30 WET 2017', 10);
+(1111111111114, 1, 'direita', 'medio', 'Mihail', 'Thu 30 Nov 17:03:30 WET 2017', 3),
+(1111111111123, 1, 'esquerda', 'superior', 'David', 'Fri 1 Dec 17:03:30 WET 2017', 10);
