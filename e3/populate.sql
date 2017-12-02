@@ -1,6 +1,6 @@
 INSERT INTO categoria VALUES ('Charcutaria'), ('Laticinios'), ('Talho'), ('Legumes'), ('Queijaria'), ('Padaria'), ('Queijaria Gourmet'), ('Produtos de Beleza'), ('Bebidas'), ('Banho'), ('Sumos'), ('Alcool'), ('Refrigerantes'), ('Perfumes');
 
-INSERT INTO categoria_simples VALUES ('Talho'), ('Legumes'), ('Padaria'), ('Queijaria Gourmet'), ('Sumos'), ('Alcool'), ('Perfumes');
+INSERT INTO categoria_simples VALUES ('Talho'), ('Legumes'), ('Padaria'), ('Queijaria Gourmet'), ('Sumos'), ('Alcool'), ('Perfumes'), ('Banho');
 
 INSERT INTO super_categoria VALUES ('Charcutaria'), ('Laticinios'), ('Queijaria'), ('Produtos de Beleza'), ('Bebidas'), ('Refrigerantes');
 
@@ -9,19 +9,19 @@ INSERT INTO constituida VALUES ('Charcutaria', 'Talho'), ('Laticinios', 'Queijar
 INSERT INTO fornecedor VALUES (111111111, 'Ibramugi'), (111111112, 'Ramos e Pereira'), (111111113, 'Amanhecer'), (111111114, 'Espiga da Planicie'), (111111115, 'Nestle'), (111111116, 'Dia'), (111111117, 'Continente');
 
 INSERT INTO produto VALUES (1111111111111, 'Desc1', 'Talho', 111111111, 'Fri 24 Nov 17:03:30 WET 2017'),
-	(1111111111112, 'Desc2', 'Queijaria', 111111117, 'Fri 24 Nov 17:03:30 WET 2017'),
-	(1111111111113, 'Desc3', 'Laticinios', 111111112, 'Fri 24 Nov 17:03:30 WET 2017'),
-	(1111111111114, 'Desc4', 'Legumes', 111111113, 'Fri 24 Nov 17:03:30 WET 2017'),
+	(1111111111112, 'Desc2', 'Queijaria Gourmet', 111111111, 'Fri 24 Nov 17:03:30 WET 2017'),
+	(1111111111113, 'Desc3', 'Laticinios', 111111111, 'Fri 24 Nov 17:03:30 WET 2017'),
+	(1111111111114, 'Desc4', 'Legumes', 111111111, 'Fri 24 Nov 17:03:30 WET 2017'),
 	(1111111111115, 'Desc5', 'Charcutaria', 111111111, 'Fri 24 Nov 17:03:30 WET 2017'),
-	(1111111111116, 'Desc6', 'Padaria', 111111117, 'Fri 24 Nov 17:03:30 WET 2017'),
+	(1111111111116, 'Desc6', 'Padaria', 111111111, 'Fri 24 Nov 17:03:30 WET 2017'),
 	(1111111111117, 'Desc7', 'Legumes', 111111114, 'Fri 24 Nov 17:03:30 WET 2017'),
 	(1111111111118, 'Desc8', 'Padaria', 111111113, 'Fri 24 Nov 17:03:30 WET 2017'),
 	(1111111111119, 'Desc9', 'Queijaria', 111111112, 'Fri 24 Nov 17:03:30 WET 2017'),
 	(1111111111120, 'Desc10', 'Talho', 111111112, 'Fri 24 Nov 17:03:30 WET 2017')
-	(1111111111121, 'Desc11', 'Alcool', 111111117, 'Fri 1 Dec 17:03:30 WET 2017'),
-	(1111111111122, 'Desc12', 'Perfumes', 111111117, 'Fri 1 Dec 17:03:30 WET 2017'),
-	(1111111111123, 'Desc13', 'Banho', 111111115, 'Fri 1 Dec 17:03:30 WET 2017'),
-	(1111111111124, 'Desc14', 'Sumos', 111111116, 'Fri 1 Dec 17:03:30 WET 2017'),
+	(1111111111121, 'Desc11', 'Alcool', 111111111, 'Fri 1 Dec 17:03:30 WET 2017'),
+	(1111111111122, 'Desc12', 'Perfumes', 111111111, 'Fri 1 Dec 17:03:30 WET 2017'),
+	(1111111111123, 'Desc13', 'Banho', 111111111, 'Fri 1 Dec 17:03:30 WET 2017'),
+	(1111111111124, 'Desc14', 'Sumos', 111111111, 'Fri 1 Dec 17:03:30 WET 2017'),
 	(1111111111125, 'Desc15', 'Charcutaria', 111111115, 'Fri 1 Dec 17:03:30 WET 2017'),
 	(1111111111126, 'Desc16', 'Padaria', 111111114, 'Fri 1 Dec 17:03:30 WET 2017'),
 	(1111111111127, 'Desc17', 'Alcool', 111111114, 'Fri 1 Dec 17:03:30 WET 2017'),
