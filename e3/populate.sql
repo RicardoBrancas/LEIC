@@ -89,5 +89,5 @@ INSERT INTO reposicao VALUES (1111111111114, 2, 'direita', 'superior', 'Jorge', 
 (1111111111120, 1, 'direita', 'chao', 'Ricardo', '24 Nov 18:03:30 WET 2017', 10),
 (1111111111111, 1, 'esquerda', 'superior', 'Manuel', 'Sat 25 Nov 17:03:30 WET 2017', 10),
 (1111111111112, 1, 'direita', 'chao', 'Tozé', 'Mon 27 Nov 17:03:30 WET 2017', 3),
-(1111111111114, 2, 'direita', 'superior', 'Mihail', 'Thu 30 Nov 17:03:30 WET 2017', 3),
+(1111111111115, 1, 'esquerda', 'superior', 'Mihail', 'Thu 30 Nov 17:03:30 WET 2017', 3),
 (1111111111123, 1, 'esquerda', 'medio', 'David', 'Fri 1 Dec 17:03:30 WET 2017', 10);
