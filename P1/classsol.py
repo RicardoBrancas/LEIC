@@ -11,24 +11,24 @@ def features(X):
     F = np.zeros((len(X),5))
     for x in range(0,len(X)):
         F[x,0] = len(X[x])
-        F[x,1] = 
+        F[x, 1] =
         F[x,2] = 
-        F[x,3] = 
-        F[x,4] = 
-
-    return F     
+        F[x,3] =
+        F[x, 4] =
+    return F
 
 def mytraining(f,Y):
-    
-   
-    return clf
+    reg = linear_model.LinearRegression()
+    reg = reg.fit(f, Y)
+
+    return reg
     
 def mytrainingaux(f,Y,par):
-    
-    return clf
+    return reg
 
-def myprediction(f, clf):
-    Ypred = clf.predict(f)
+
+def myprediction(f, reg):
+    Ypred = reg.predict(f)
 
     return Ypred
 
