@@ -1,9 +1,13 @@
-\documentclass[a4paper]{article}
+\documentclass[a4paper,twocolumn]{article}
 \usepackage[margin=3cm]{geometry}
 \usepackage[portuguese]{babel}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
-\usepackage{multicol}
+\usepackage{extarrows}
+\usepackage{tikz}
+\usepackage{float}
+
+\usetikzlibrary{automata,positioning,calc}
 
 \linespread{1.1}
 
@@ -13,13 +17,82 @@
 \begin{document}
     \maketitle
 
-    \begin{multicols}{2}
     \section{Métodos de Classificação}
 
     \section{Métodos de Regressão}
 
     \section{Aprendizagem por Reforço}
+    \subsection{Trajetórias Aprendidas}
+    \subsubsection{Exemplo 1}
+    $ 5 \xlongrightarrow{0} 6 \xlongrightarrow{0} 6 \xlongrightarrow{0} 6 \xlongrightarrow{0} 6 $
 
-    \end{multicols}
+    \subsubsection{Exemplo 2}
+    $ 5 \xlongrightarrow{0} 6 \xlongrightarrow{0} 1 \xlongrightarrow{1} 0 \xlongrightarrow{1} 0 $
+
+
+    \subsection{Modelo do Mundo}
+    \subsubsection{Exemplo 1}
+    Neste primeiro exemplo o ambiente consiste numa série de quadrículas sequênciais, tal como demonstrado na
+    figura~\ref{fig:amb1}, em que a ação $1$ corresponde a dar um passo para a esquerda e a ação $0$ corresponde a
+    dar um passo para a direita. Tentar andar para fora dos limites não tem qualquer efeito.
+
+    \begin{figure}[H]
+        \centering
+        \begin{tikzpicture}
+            \draw[step=1cm,gray,very thin] (0,0) grid (7,1);
+            \foreach \x in {0,1,2,3,4,5,6}
+            {
+            \pgfmathparse{\x+0.5}
+            \xdef\pos{\pgfmathresult}
+            \draw (\pos cm,0pt) -- (\pos cm,0pt) node[anchor=south] {$\x$};
+            }
+        \end{tikzpicture}
+        \caption{Ambiente 1} \label{fig:amb1}
+    \end{figure}
+
+    Por fim determinámos que o agente é recompensado sempre que o estado
+    inicial (antes da ação) é um estado limite. (i.e.~0 ou 6).
+
+    Como tal, quando começamos no estado 5 o melhor curso de ação é andar rapidamente
+    para o estado limite mais próximo, o 6, e depois mantermo-nos lá.
+
+    \subsubsection{Exemplo 2}
+    No segundo exemplo o ambiente é muito semelhante ao primeiro com exceção do estado 6. Agora quando
+    tentamos andar para a direita (ação 1) nesse estado voltamos para o estado 1, tal como representado na figura~\ref{fig:amb2}.
+    A função de recompensa mantem-se também inalterada, sendo 1 quando o estado inicial é o zero ou o seis, e
+    0 caso contrário.
+
+    Como tal [quando começamos no estado 5] já não é possível usar a estratégia anterior de ficar parado no estado 6.
+    Assim, o melhor a fazer nesta situação é tentermo-nos dirigir para o estado 0, de modo a maximizar a recompensa a
+    longo termo, que é exatamente o que obtemos com o algoritmo Q-learning.
+
+    \begin{figure}
+        \centering
+        \begin{tikzpicture}[shorten >=1pt,node distance=1.8cm,on grid,auto]
+            \node[state] (q_0)   {0};
+            \node[state] (q_1) [right=of q_0] {1};
+            \node[state] (q_2) [below right=of q_1]   {2};
+            \node[state] (q_3) [above right=of q_2]   {3};
+            \node[state] (q_4) [above=of q_3]   {4};
+            \node[state] (q_5) [above left=of q_4]   {5};
+            \node[state] (q_6) [below left=of q_5]   {6};
+            \path[->]
+            (q_0) edge [bend left=20] node {0} (q_1)
+                  edge [loop above] node {1} ()
+            (q_1) edge [bend left=20] node {0} (q_2)
+                  edge [bend left=20] node {1} (q_0)
+            (q_2) edge [bend left=20] node {0} (q_3)
+                  edge [bend left=20] node {1} (q_1)
+            (q_3) edge [bend left=20] node {0} (q_4)
+                  edge [bend left=20] node {1} (q_2)
+            (q_4) edge [bend left=20] node {0} (q_5)
+                  edge [bend left=20] node {1} (q_3)
+            (q_5) edge [bend left=20] node {0} (q_6)
+                  edge [bend left=20] node {1} (q_4)
+            (q_6) edge             node {0} (q_1)
+                  edge [bend left=20] node {1} (q_5);
+        \end{tikzpicture}
+        \caption{Ambiente 2} \label{fig:amb2}
+    \end{figure}
 
 \end{document}
