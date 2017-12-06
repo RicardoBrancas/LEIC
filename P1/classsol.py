@@ -19,7 +19,7 @@ def features(X):
 
 
 def mytraining(f, Y):
-    reg = linear_model.LinearRegression()
+    reg = neighbors.KNeighborsClassifier()
     reg = reg.fit(f, Y)
 
     return reg
