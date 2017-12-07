@@ -19,9 +19,9 @@ def features(X):
 
 
 def mytraining(f, Y):
-    reg = neighbors.KNeighborsClassifier(1)
+    reg = neighbors.KNeighborsClassifier(3)
     reg = reg.fit(f, Y)
-
+    print(cross_val_score(reg, f, Y))
     return reg
 
 
