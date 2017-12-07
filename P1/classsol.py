@@ -19,7 +19,7 @@ def features(X):
 
 
 def mytraining(f, Y):
-    reg = neighbors.KNeighborsClassifier(3)
+    reg = neighbors.KNeighborsClassifier(1)
     reg = reg.fit(f, Y)
 
     return reg
