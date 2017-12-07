@@ -23,6 +23,23 @@
         \item Paridade do número de consoantes;
         \item Número de caracteres ``a'';
     \end{enumerate}
+    Testamos, com recurso a \textit{cross validation} os classificadores \textit{k-neighbors}, com $ k = \{1,3,5,7,9\}$
+    e \textit{decision tree}, obtendo os resultados indicados na tabela~\ref{tab:cv1}
+
+    \begin{table}[ht]
+        \centering
+        \begin{tabular}{ l c c }
+            & Conjunto 1 & Conjunto 2 \\
+         \textit{1-neighbor}  & $92.54\%$ & $86.75\%$ \\
+         \textit{3-neighbors} & $85.79\%$ & $85.79\%$ \\
+         \textit{5-neighbors} & $86.76\%$ & $85.55\%$ \\
+         \textit{7-neighbors} & $85.79\%$ & $83.87\%$ \\
+         \textit{9-neighbors} & $85.79\%$ & $85.32\%$ \\
+         \textit{Decision Tree} & $100\%$ & $98.80\%$
+        \end{tabular}
+        \caption{Resultados da validação cruzada para o problema 1.}
+        \label{tab:cv1}
+    \end{table}
 
     \section{Métodos de Regressão}
 
@@ -43,7 +60,7 @@
     Para além disto, no estado 5 a ação 0 não é determinística; ao realizar esta ação, o agente pode ir ter ao estado
     6 ou permanecer no estado 5.
 
-    \begin{figure}[h]
+    \begin{figure}[ht]
         \centering
         \begin{tikzpicture}[shorten >=1pt,node distance=1.8cm,on grid,auto]
             \node[state,accepting] (q_0)   {0};
@@ -86,7 +103,7 @@
     A função de recompensa mantem-se também inalterada, sendo 1 quando o estado inicial é o zero ou o seis, e
     0 caso contrário.
 
-    \begin{figure}[h]
+    \begin{figure}[ht]
         \centering
         \begin{tikzpicture}[shorten >=1pt,node distance=1.8cm,on grid,auto]
             \node[state,accepting] (q_0)                {0};

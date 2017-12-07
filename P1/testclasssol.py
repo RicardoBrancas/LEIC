@@ -20,7 +20,9 @@ for test in ["wordsclass.npy", "wordsclass2.npy"]:
     Y=np.load(test)
     
     f = classsol.features(X)    
-    
+
+    # classsol.test_params(f, Y)
+
     clf = classsol.mytraining(f,Y)
       
     Ypred = classsol.myprediction(f, clf)
