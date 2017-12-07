@@ -5,11 +5,8 @@
 \usepackage[T1]{fontenc}
 \usepackage{extarrows}
 \usepackage{tikz}
-\usepackage{float}
 
 \usetikzlibrary{automata,positioning,calc}
-
-\linespread{1.1}
 
 \title{\LARGE \textbf{Relatório do Projeto 2 de Inteligência Artificial}}
 \author{Mihail Brinza \\ \scriptsize 83533 \normalsize \and Ricardo Brancas \\ \scriptsize 83557 \normalsize}
@@ -18,16 +15,24 @@
     \maketitle
 
     \section{Métodos de Classificação}
+    Para classificar as plavras, considerámos as seguintes \textit{features}:
+    \begin{enumerate}
+        \item Tamanho da palavra;
+        \item Número de vogais;
+        \item Paridade do número de vogais;
+        \item Paridade do número de consoantes;
+        \item Número de caracteres ``a'';
+    \end{enumerate}
 
     \section{Métodos de Regressão}
 
     \section{Aprendizagem por Reforço}
     \subsection{Trajetórias Aprendidas}
     \subsubsection{Exemplo 1}
-    $ 5 \xlongrightarrow{0} 6 \xlongrightarrow{0} 6 \xlongrightarrow{0} 6 \xlongrightarrow{0} 6 $
+    $ 5_0 \xlongrightarrow{0} 6_1 \xlongrightarrow{0} 6_1 \xlongrightarrow{0} 6_1 \xlongrightarrow{0} 6_{(1)} $
 
     \subsubsection{Exemplo 2}
-    $ 5 \xlongrightarrow{0} 6 \xlongrightarrow{0} 1 \xlongrightarrow{1} 0 \xlongrightarrow{1} 0 $
+    $ 5_0 \xlongrightarrow{0} 6_1 \xlongrightarrow{0} 1_0 \xlongrightarrow{1} 0_1 \xlongrightarrow{1} 0_{(1)} $
 
 
     \subsection{Modelo do Mundo}
@@ -35,47 +40,62 @@
     Neste primeiro exemplo o ambiente consiste numa série de quadrículas sequênciais, tal como demonstrado na
     figura~\ref{fig:amb1}, em que a ação $1$ corresponde a dar um passo para a esquerda e a ação $0$ corresponde a
     dar um passo para a direita. Tentar andar para fora dos limites não tem qualquer efeito.
+    Para além disto, no estado 5 a ação 0 não é determinística; ao realizar esta ação, o agente pode ir ter ao estado
+    6 ou permanecer no estado 5.
 
-    \begin{figure}[H]
+    \begin{figure}[h]
         \centering
-        \begin{tikzpicture}
-            \draw[step=1cm,gray,very thin] (0,0) grid (7,1);
-            \foreach \x in {0,1,2,3,4,5,6}
-            {
-            \pgfmathparse{\x+0.5}
-            \xdef\pos{\pgfmathresult}
-            \draw (\pos cm,0pt) -- (\pos cm,0pt) node[anchor=south] {$\x$};
-            }
+        \begin{tikzpicture}[shorten >=1pt,node distance=1.8cm,on grid,auto]
+            \node[state,accepting] (q_0)   {0};
+            \node[state] (q_1) [right=of q_0] {1};
+            \node[state] (q_2) [right=of q_1]   {2};
+            \node[state] (q_3) [above right=of q_2]   {3};
+            \node[state] (q_4) [above left=of q_3]   {4};
+            \node[state] (q_5) [left =of q_4]   {5};
+            \node[state,accepting] (q_6) [left =of q_5]   {6};
+            \path[->]
+            (q_0) edge [bend left=20] node {0} (q_1)
+                  edge [loop below] node {1} ()
+            (q_1) edge [bend left=20] node {0} (q_2)
+                  edge [bend left=20] node {1} (q_0)
+            (q_2) edge [bend left=20] node {0} (q_3)
+                  edge [bend left=20] node {1} (q_1)
+            (q_3) edge [bend left=20] node {0} (q_4)
+                  edge [bend left=20] node {1} (q_2)
+            (q_4) edge [bend left=20] node {0} (q_5)
+                  edge [bend left=20] node {1} (q_3)
+            (q_5) edge [bend left=20] node {0} (q_6)
+                  edge [bend left=20] node {1} (q_4)
+                  edge [loop below] node {0} (q_5)
+            (q_6) edge [loop below] node {0} (q_6)
+                  edge [bend left=20] node {1} (q_5);
         \end{tikzpicture}
-        \caption{Ambiente 1} \label{fig:amb1}
+        \caption{Ambiente 1. Os nós com duplo contorno são os nós de recompensa.} \label{fig:amb1}
     \end{figure}
 
-    Por fim determinámos que o agente é recompensado sempre que o estado
-    inicial (antes da ação) é um estado limite. (i.e.~0 ou 6).
+    Por fim determinámos que o agente é recompensado ($r = 1$) sempre que o estado
+    inicial (antes da ação) é um estado limite. (i.e.~0 ou 6), não sendo recompensado
+    nas outras situações ($r = 0$).
 
     Como tal, quando começamos no estado 5 o melhor curso de ação é andar rapidamente
     para o estado limite mais próximo, o 6, e depois mantermo-nos lá.
 
     \subsubsection{Exemplo 2}
     No segundo exemplo o ambiente é muito semelhante ao primeiro com exceção do estado 6. Agora quando
-    tentamos andar para a direita (ação 1) nesse estado voltamos para o estado 1, tal como representado na figura~\ref{fig:amb2}.
+    tentamos andar para a direita (ação 0) nesse estado voltamos para o estado 1, tal como representado na figura~\ref{fig:amb2}.
     A função de recompensa mantem-se também inalterada, sendo 1 quando o estado inicial é o zero ou o seis, e
     0 caso contrário.
 
-    Como tal [quando começamos no estado 5] já não é possível usar a estratégia anterior de ficar parado no estado 6.
-    Assim, o melhor a fazer nesta situação é tentermo-nos dirigir para o estado 0, de modo a maximizar a recompensa a
-    longo termo, que é exatamente o que obtemos com o algoritmo Q-learning.
-
-    \begin{figure}
+    \begin{figure}[h]
         \centering
         \begin{tikzpicture}[shorten >=1pt,node distance=1.8cm,on grid,auto]
-            \node[state] (q_0)   {0};
-            \node[state] (q_1) [right=of q_0] {1};
-            \node[state] (q_2) [below right=of q_1]   {2};
-            \node[state] (q_3) [above right=of q_2]   {3};
-            \node[state] (q_4) [above=of q_3]   {4};
-            \node[state] (q_5) [above left=of q_4]   {5};
-            \node[state] (q_6) [below left=of q_5]   {6};
+            \node[state,accepting] (q_0)                {0};
+            \node[state]           (q_1) [right=of q_0] {1};
+            \node[state]           (q_2) [right=of q_1] {2};
+            \node[state]           (q_3) [right=of q_2] {3};
+            \node[state]           (q_4) [above=of q_3] {4};
+            \node[state]           (q_5) [left=of q_4]  {5};
+            \node[state,accepting] (q_6) [left=of q_5]  {6};
             \path[->]
             (q_0) edge [bend left=20] node {0} (q_1)
                   edge [loop above] node {1} ()
@@ -89,10 +109,15 @@
                   edge [bend left=20] node {1} (q_3)
             (q_5) edge [bend left=20] node {0} (q_6)
                   edge [bend left=20] node {1} (q_4)
+                  edge [loop above] node {0} (q_5)
             (q_6) edge             node {0} (q_1)
                   edge [bend left=20] node {1} (q_5);
         \end{tikzpicture}
-        \caption{Ambiente 2} \label{fig:amb2}
+        \caption{Ambiente 2. Os nós com duplo contorno são os nós de recompensa.} \label{fig:amb2}
     \end{figure}
+
+    Como tal [quando começamos no estado 5] já não é possível usar a estratégia anterior de ficar parado no estado 6.
+    Assim, o melhor a fazer nesta situação é tentermo-nos dirigir para o estado 0, de modo a maximizar a recompensa a
+    longo prazo, que é exatamente o que obtemos com o algoritmo Q-learning.
 
 \end{document}

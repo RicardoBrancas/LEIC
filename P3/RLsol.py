@@ -10,6 +10,7 @@ import numpy as np
 def Q2pol(Q, eta=5):
 	return np.exp(eta * Q) / np.dot(np.exp(eta * Q), np.array([[1, 1], [1, 1]]))
 
+
 def alpha(n):
 	return 50 / (50 + n)
 
