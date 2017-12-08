@@ -1,11 +1,6 @@
 import numpy as np
-from sklearn import datasets, tree, linear_model
-from sklearn.kernel_ridge import KernelRidge
 from sklearn.model_selection import cross_val_score
-from sklearn.externals import joblib
-import timeit
 import matplotlib.pyplot as plt
-from matplotlib.colors import ListedColormap
 
 import regsol
 
@@ -19,6 +14,13 @@ for ii, test in enumerate(["regress.npy", "regress2.npy"]):
 	reg = regsol.mytraining(X, Y)
 
 	Ypred = regsol.myprediction(Xp, reg)
+
+	# f = open('../p2_' + str(ii) + ".csv", 'w')
+	# for i in range(len(Xp)):
+	# 	if i < len(X):
+	# 		f.write(str(Xp[i][0]) + ", " + str(Yp[i][0]) + ", " + str(Ypred[i][0]) + ", " + str(X[i][0]) + ", " + str(Y[i][0]) + "\n")
+	# 	else:
+	# 		f.write(str(Xp[i][0]) + ", " + str(Yp[i][0]) + ", " + str(Ypred[i][0]) + "\n")
 
 	if -cross_val_score(reg, X, Y, cv=5, scoring='neg_mean_squared_error').mean() < tres[ii]:
 		print("Erro dentro dos limites de tolerância. OK\n")

@@ -4,11 +4,29 @@
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage{extarrows}
+\usepackage{pgfplots}
+\usepackage{xcolor}
 \usepackage{tikz}
+
 
 \usetikzlibrary{automata,positioning,calc}
 
 \setlength{\columnsep}{0.75cm}
+\pgfplotsset{compat=1.13}
+
+\pgfplotsset{every axis/.append style={
+        scale only axis,
+        width=0.35\textwidth,
+        height=0.21\textwidth
+    },every axis legend/.append style={
+        at={(0.5,-.18)},
+        anchor=north
+    },/tikz/every picture/.append style={
+        trim axis left,
+        trim axis right,
+    }}
+
+\definecolor{lightblue}{RGB}{205, 236, 247}
 
 \title{\LARGE \textbf{Relatório do Projeto 2 de Inteligência Artificial}}
 \author{Mihail Brinza \\ \scriptsize 83533 \normalsize \and Ricardo Brancas \\ \scriptsize 83557 \normalsize}
@@ -50,6 +68,71 @@
     utilizamos \textit{features} piores.
 
     \section{Métodos de Regressão}
+    Para escolher o método de regressão mais apropriado usamos \textit{cross validation} pontuado pelo erro quadrático
+    médio, obtendo os resultados dispostos na tabela~\ref{tab:cv2}.
+
+    \begin{table}[ht]
+        \centering
+        \begin{tabular}{ l c c }
+            & $g_1()$ & $g_2()$ \\
+         \textit{Linear Regression}                                      & $0.94$ & $816$ \\
+         \textit{KR\footnotemark[1]} ($\gamma = 0.05$, $\alpha = 0.1$)   & $0.67$ & $1235$ \\
+         \textit{KR\footnotemark[1]} ($\gamma = 0.05$, $\alpha = 0.01$)  & $0.34$ & \colorbox{lightblue}{$707$} \\
+         \textit{KR\footnotemark[1]} ($\gamma = 0.05$, $\alpha = 0.001$) & \colorbox{lightblue}{$0.14$} & \colorbox{lightblue}{$428$} \\
+         \textit{KR\footnotemark[1]} ($\gamma = 0.1$,  $\alpha = 0.1$)   & \colorbox{lightblue}{$0.23$} & $1265$ \\
+         \textit{KR\footnotemark[1]} ($\gamma = 0.1$,  $\alpha = 0.01$)  & \colorbox{lightblue}{$0.10$} & $811$ \\
+         \textit{KR\footnotemark[1]} ($\gamma = 0.1$,  $\alpha = 0.001$) & \colorbox{lightblue}{$0.10$} & \colorbox{lightblue}{$548$} \\
+         \textit{KR\footnotemark[1]} ($\gamma = 0.2$,  $\alpha = 0.1$)   & $0.40$ & $1445$ \\
+         \textit{KR\footnotemark[1]} ($\gamma = 0.2$,  $\alpha = 0.01$)  & \colorbox{lightblue}{$0.24$} & $1104$ \\
+         \textit{KR\footnotemark[1]} ($\gamma = 0.2$,  $\alpha = 0.001$) & $0.66$ & \colorbox{lightblue}{$799$} \\
+         \textit{KR\footnotemark[2]} (degree $= 2$)                      & $2.27$ & $3589$ \\
+         \textit{KR\footnotemark[2]} (degree $= 3$)                      & $7.75$ & \colorbox{lightblue}{$0.38$} \\
+         \textit{KR\footnotemark[2]} (degree $= 4$)                      & $0.93$ & \colorbox{lightblue}{$1.25$} \\
+         \textit{KR\footnotemark[2]} (degree $= 5$)                      & $21.72$ & \colorbox{lightblue}{$4.39$} \\
+         \textit{Decision Tree}                                          & $0.73$ & $1290$ \\
+        \end{tabular}
+        \caption{\textit{MSE scores} da validação cruzada para o problema 2.
+        Os erros dentro do \textit{threshold} definido estão marcados a azul.}
+        \label{tab:cv2}
+    \end{table}
+    \footnotetext[1]{\textit{Kernel Ridge} com \textit{radial basis function kernel}}
+    \footnotetext[2]{\textit{Kernel Ridge} com \textit{polynomial kernel}}
+
+    Das duas parametrizações testadas que apresentam resulados aceitáveis para ambas as funções decidimos utilizar
+    a \textit{Kernel Ridge Regression} com \textit{kernels} do tipo \textit{radial basis function} e parâmetros
+    \{$\gamma = 0.1$,  $\alpha = 0.001$\}. Apresentamos nas figuras~\ref{fig:reg1}~e~\ref{fig:reg2} os resultados obtidos.
+
+    \begin{figure}[ht]
+        \centering
+        \begin{tikzpicture}
+            \begin{axis}
+                \addplot+ [only marks, mark size=0.6pt] table [x index=0, y index=1, col sep=comma] {p2_0.csv};
+                \addlegendentry{Dados de teste}
+                \addplot+ [mark=none,thick] table [x index=0, y index=2, col sep=comma] {p2_0.csv};
+                \addlegendentry{Previsão}
+                \addplot+ [only marks, mark size=3pt, mark=+] table [x index=3, y index=4, col sep=comma] {p2_0.csv};
+                \addlegendentry{Dados de treino}
+            \end{axis}
+        \end{tikzpicture}
+        \caption{Resultados obtidos para a função 1.}
+        \label{fig:reg1}
+    \end{figure}
+
+    \begin{figure}[ht]
+        \centering
+        \begin{tikzpicture}
+            \begin{axis}
+                \addplot+ [only marks, mark size=0.6pt] table [x index=0, y index=1, col sep=comma] {p2_1.csv};
+                \addlegendentry{Dados de teste}
+                \addplot+ [mark=none,thick] table [x index=0, y index=2, col sep=comma] {p2_1.csv};
+                \addlegendentry{Previsão}
+                \addplot+ [only marks, mark size=3pt, mark=+] table [x index=3, y index=4, col sep=comma] {p2_1.csv};
+                \addlegendentry{Dados de treino}
+            \end{axis}
+        \end{tikzpicture}
+        \caption{Resultados obtidos para a função 2.}
+        \label{fig:reg2}
+    \end{figure}
 
     \section{Aprendizagem por Reforço}
     \subsection{Trajetórias Aprendidas}

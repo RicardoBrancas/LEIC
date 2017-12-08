@@ -13,7 +13,7 @@ def mytraining(X, Y):
 
 def test_param(reg, legend, X, Y):
 	reg = reg.fit(X, Y)
-	print(type(reg).__name__, str(legend), -cross_val_score(reg, X, Y, cv=5, scoring='neg_mean_squared_error').mean())
+	print(type(reg).__name__, str(legend), "{:1.2f}".format(-cross_val_score(reg, X, Y, cv=5, scoring='neg_mean_squared_error').mean()))
 
 	# plt.figure()
 	# plt.plot(X, Y, 'k+', label='datatrain')
