@@ -1,5 +1,5 @@
 \documentclass[a4paper,twocolumn]{article}
-\usepackage[margin=3cm]{geometry}
+\usepackage[margin=2.5cm]{geometry}
 \usepackage[portuguese]{babel}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
@@ -8,6 +8,8 @@
 
 \usetikzlibrary{automata,positioning,calc}
 
+\setlength{\columnsep}{0.75cm}
+
 \title{\LARGE \textbf{Relatório do Projeto 2 de Inteligência Artificial}}
 \author{Mihail Brinza \\ \scriptsize 83533 \normalsize \and Ricardo Brancas \\ \scriptsize 83557 \normalsize}
 
@@ -15,31 +17,37 @@
     \maketitle
 
     \section{Métodos de Classificação}
-    Para classificar as plavras, considerámos as seguintes \textit{features}:
+    Para classificar as plavras escolhemos de entre outras, com recurso a \textit{cross validation}, as seguintes \textit{features}:
     \begin{enumerate}
-        \item Tamanho da palavra;
-        \item Número de vogais;
+        \item Paridade do número de caracteres;
+        \item Paridade do número de caracteres ``z'';
         \item Paridade do número de vogais;
         \item Paridade do número de consoantes;
-        \item Número de caracteres ``a'';
+        \item Número de caracteres ``a''.
     \end{enumerate}
-    Testamos, com recurso a \textit{cross validation} os classificadores \textit{k-neighbors}, com $ k = \{1,3,5,7,9\}$
-    e \textit{decision tree}, obtendo os resultados indicados na tabela~\ref{tab:cv1}
+    Para escolher o classificador, usámos novamente \textit{cross validation} com os classificadores \textit{k-neighbors},
+    com $ k = \{1,3,5,7,9\}$ e \textit{decision tree}, obtendo os resultados indicados na tabela~\ref{tab:cv1}.
 
     \begin{table}[ht]
         \centering
         \begin{tabular}{ l c c }
             & Conjunto 1 & Conjunto 2 \\
-         \textit{1-neighbor}  & $92.54\%$ & $86.75\%$ \\
-         \textit{3-neighbors} & $85.79\%$ & $85.79\%$ \\
-         \textit{5-neighbors} & $86.76\%$ & $85.55\%$ \\
-         \textit{7-neighbors} & $85.79\%$ & $83.87\%$ \\
-         \textit{9-neighbors} & $85.79\%$ & $85.32\%$ \\
-         \textit{Decision Tree} & $100\%$ & $98.80\%$
+         \textit{1-neighbor}    & $1.0$ & $1.0$ \\
+         \textit{3-neighbors}   & $1.0$ & $1.0$ \\
+         \textit{5-neighbors}   & $1.0$ & $1.0$ \\
+         \textit{7-neighbors}   & $1.0$ & $1.0$ \\
+         \textit{9-neighbors}   & $1.0$ & $1.0$ \\
+         \textit{Decision Tree} & $1.0$ & $1.0$
         \end{tabular}
-        \caption{Resultados da validação cruzada para o problema 1.}
+        \caption{\textit{$F_1$ scores} da validação cruzada para o problema 1.}
         \label{tab:cv1}
     \end{table}
+
+    Concluímos portanto que, para estas \textit{features}, qualquer um dos classificadores testados escolhe sempre bem dentro do
+    conjunto de treino. Mais tarde verificámos que a escolha também é sempre acertada no conjunto de testes.
+
+    Decidimos utilizar o \textit{Decision Tree Classifier} porque escolhe corretamente com maior probabilidade mesmo quando
+    utilizamos \textit{features} piores.
 
     \section{Métodos de Regressão}
 
