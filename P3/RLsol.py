@@ -1,9 +1,4 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Mon Oct 16 20:31:54 2017
-
-@author: mlopes
-"""
+#83533, Mihail Brinza; 83557, Ricardo Brancas; grupo 4
 import numpy as np
 
 

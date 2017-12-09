@@ -1,3 +1,4 @@
+#83533, Mihail Brinza; 83557, Ricardo Brancas; grupo 4
 import numpy as np
 from sklearn import datasets, tree, linear_model, kernel_ridge
 from sklearn.model_selection import cross_val_score
