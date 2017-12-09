@@ -11,7 +11,7 @@ for ii, test in enumerate(["regress.npy", "regress2.npy"]):
 	print("Testing " + test)
 	X, Y, Xp, Yp = np.load(test)
 
-	regsol.test_params(X, Y)
+	# regsol.test_params(X, Y)
 
 	reg = regsol.mytraining(X, Y)
 
