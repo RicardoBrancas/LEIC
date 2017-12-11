@@ -1,0 +1,72 @@
+\documentclass[a4paper]{article}
+\usepackage[margin=3cm]{geometry}
+\usepackage[portuguese]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{courier}
+\usepackage{listings}
+\usepackage{tikz}
+\usepackage{tikz-qtree}
+
+\lstset{language=SQL}
+\lstset{basicstyle=\footnotesize\ttfamily,morekeywords={IF,REFERENCES,TYPE,ENUM,REPLACE,FUNCTION,RETURNS,VOID,DECLARE,BEGIN,DEFERRED,FOR,LOOP,LANGUAGE,RAISE,SETOF,WHILE,RETURN,QUERY,HASH,TEMP,BTREE}}
+
+\begin{document}
+
+    \begin{titlepage}
+        \centering
+        \includegraphics[width=0.5\textwidth]{IST_A_CMYK_POS.pdf}\par
+        {\huge\bfseries Projeto de Bases de Dados, Parte 4\par}
+        \vspace{2cm}
+        {
+        \Large
+        \begin{tabular}{llll}
+            83533 & Mihail Brinza & .\% & h \\
+            83557 & Ricardo Brancas & .\% & h \\
+            83883 & David Nunes & .\% & h
+        \end{tabular}
+        }
+        \vfill
+        \large
+        Grupo 37, turno BD2251795L10 \par
+        Professor Miguel Amaral
+
+        \vspace{3cm}
+
+        {\normalsize \today\par}
+    \end{titlepage}
+
+    \section{Restrições de Integridade}
+
+    \section{Índices}
+
+    \subsection{Índice 1}
+    Para acelerar esta \textit{query} é necessário um índice que permita ordenação (como um índice
+    \lstinline{btree}) na coluna \lstinline{fornecedor.nif} para que uma das colunas do join esteja
+    indexada. No entanto esta coluna já uma \textit{primary key}, já possuindo um índice nestas condições.
+%    Para acelerar da melhor forma esta \textit{query} são neceesários um \lstinline{btree} index
+%    para a coluna \lstinline{fornecedor.nif} e outro para a coluna \lstinline{produto.forn_primario}
+%    (de modo a permitir a execução de um \textit{merge join}).
+
+    É ainda necessário um \lstinline{hash} index para a coluna \lstinline{produto.categoria}.
+    Apresenta-se o código SQL correspondente:
+
+    \begin{lstlisting}
+-- CREATE INDEX fornecedor_nif_idx        ON fornecedor USING BTREE (nif);
+-- CREATE INDEX produto_forn_primario_idx ON produto    USING BTREE (forn_primario);
+CREATE INDEX produto_categoria_idx     ON produto    USING HASH  (categoria);
+    \end{lstlisting}
+
+    \subsection{Índice 2}
+    É, pelos mesmos motivos que na alínea anterior, necessário existir um índice que permita a ordenação da coluna \lstinline{produto.ean}
+    como, por exemplo, um índice \lstinline{btree}.
+    No entanto como esta coluna já é uma \textit{primary key}, já existe um índice com estas
+    características.
+
+    \section{Modelo Multidimensional}
+
+    \section{\textit{Data Analytics}}
+
+\end{document}
