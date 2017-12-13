@@ -10,38 +10,41 @@ CREATE TABLE d_produto (
 );
 
 CREATE TABLE d_tempo (
-	dia SMALLINT,
-	mes SMALLINT,
-	ano INT,
-	PRIMARY KEY (dia, mes, ano),
-	CHECK (dia > 0 AND dia <= 31),
-	CHECK (mes > 0 AND mes <= 12),
-	CHECK (ano > 0)
+	tid NUMERIC(8),
+	dia NUMERIC(2),
+	mes NUMERIC(2),
+	ano NUMERIC(4),
+	PRIMARY KEY (tid),
+	CHECK (CAST(tid AS INT) / 10000 = ano),
+	CHECK (CAST(tid AS INT) % 10000 / 100 = mes),
+	CHECK (CAST(tid AS INT) % 100 = dia)
 );
 
 CREATE TABLE reposition_facts (
 	cean NUMERIC(13),
-	dia SMALLINT,
-	mes SMALLINT,
-	ano INT,
-	PRIMARY KEY (cean, dia, mes, ano),
+	tid  NUMERIC(8),
+	PRIMARY KEY (cean, tid),
 	FOREIGN KEY (cean) REFERENCES d_produto (cean),
-	FOREIGN KEY (dia, mes, ano) REFERENCES d_tempo (dia, mes, ano)
+	FOREIGN KEY (tid) REFERENCES d_tempo (tid)
 );
 
 INSERT INTO d_tempo
-	SELECT DISTINCT date_part('day', instante),
-	                date_part('month', instante),
-	                date_part('year', instante)
+	SELECT DISTINCT
+		to_number(to_char(instante, 'YYYYMMDD'), '00000000'),
+		date_part('day', instante),
+		date_part('month', instante),
+		date_part('year', instante)
 	FROM evento_reposicao;
 
 INSERT INTO d_produto
-	SELECT DISTINCT ean, categoria, forn_primario
+	SELECT DISTINCT
+		ean,
+		categoria,
+		forn_primario
 	FROM reposicao NATURAL JOIN produto;
 
 INSERT INTO reposition_facts
-	SELECT ean,
-	       date_part('day', instante),
-	       date_part('month', instante),
-	       date_part('year', instante)
+	SELECT
+		ean,
+		to_number(to_char(instante, 'YYYYMMDD'), '00000000')
 	FROM reposicao;
