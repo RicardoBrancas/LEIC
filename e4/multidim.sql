@@ -34,7 +34,7 @@ INSERT INTO d_tempo
 		date_part('day', instante),
 		date_part('month', instante),
 		date_part('year', instante)
-	FROM evento_reposicao;
+	FROM reposicao;
 
 INSERT INTO d_produto
 	SELECT DISTINCT

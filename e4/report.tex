@@ -7,11 +7,9 @@
 \usepackage{amsmath}
 \usepackage{courier}
 \usepackage{listings}
-\usepackage{tikz}
-\usepackage{tikz-qtree}
 
 \lstset{language=SQL}
-\lstset{basicstyle=\footnotesize\ttfamily,morekeywords={IF,REFERENCES,TYPE,ENUM,REPLACE,FUNCTION,RETURNS,VOID,DECLARE,BEGIN,DEFERRED,FOR,LOOP,LANGUAGE,RAISE,SETOF,WHILE,RETURN,QUERY,HASH,TEMP,BTREE}}
+\lstset{basicstyle=\footnotesize\ttfamily,morekeywords={BEFORE,EACH,ROW,PROCEDURE,NEW,IF,REFERENCES,TYPE,ENUM,REPLACE,FUNCTION,RETURNS,VOID,DECLARE,BEGIN,DEFERRED,FOR,LOOP,LANGUAGE,RAISE,SETOF,WHILE,RETURN,QUERY,HASH,TEMP,BTREE}}
 
 \begin{document}
 
@@ -39,6 +37,7 @@
     \end{titlepage}
 
     \section{Restrições de Integridade}
+    \lstinputlisting{ri.sql}
 
     \section{Índices}
 
@@ -72,5 +71,6 @@
     \lstinputlisting{multidim.sql}
 
     \section{\textit{Data Analytics}}
+    \lstinputlisting{dataAnalytic.sql}
 
 \end{document}
