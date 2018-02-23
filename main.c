@@ -10,7 +10,7 @@
 #define AEROPORTO_FECHADO 0
 
 typedef struct {
-    char nome[NOMEAEROPORTO + 1];
+    char nome[NOMEAEROPORTO + 1]; 
     int capacidade;
     short estado;
 } Aeroporto;
