@@ -3,6 +3,7 @@
 Grupo A60
 
 Margarida Ferreira    80832     margaridaacferreira@hotmail.com
+
 Ricardo Brancas       83557     ricardo.brancas@tecnico.ulisboa.pt
 
 ... ... ...
