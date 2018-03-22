@@ -1,45 +1,67 @@
 package org.binas.station.ws;
 
+import javax.xml.ws.Endpoint;
 import java.io.IOException;
 
-import javax.xml.ws.Endpoint;
-
-/** The endpoint manager starts and registers the service. */
+/**
+ * The endpoint manager starts and registers the service.
+ */
 public class StationEndpointManager {
 
-	/** UDDI naming server location */
+	/**
+	 * UDDI naming server location
+	 */
 	private String uddiURL = null;
-	/** Web Service name */
+
+	/**
+	 * Web Service name
+	 */
 	private String wsName = null;
 
-	/** Get Web Service UDDI publication name */
+	/**
+	 * Get Web Service UDDI publication name
+	 */
 	public String getWsName() {
 		return wsName;
 	}
 
-	/** Web Service location to publish */
+	/**
+	 * Web Service location to publish
+	 */
 	private String wsURL = null;
 
-	/** Port implementation */
+	/**
+	 * Port implementation
+	 */
 	private StationPortImpl portImpl = new StationPortImpl(this);
 
-	// /** Obtain Port implementation */
-	// public StationPortType getPort() {
-	// return portImpl;
-	// }
+	/**
+	 * Obtain Port implementation
+	 */
+	public StationPortType getPort() {
+		return portImpl;
+	}
 
-	/** Web Service end point */
+	/**
+	 * Web Service end point
+	 */
 	private Endpoint endpoint = null;
 
-	// /** UDDI Naming instance for contacting UDDI server */
-	// private UDDINaming uddiNaming = null;
-	//
-	// /** Get UDDI Naming instance for contacting UDDI server */
-	// UDDINaming getUddiNaming() {
-	// return uddiNaming;
-	// }
+	/**
+	 * UDDI Naming instance for contacting UDDI server
+	 */
+//	private UDDINaming uddiNaming = null;
 
-	/** output option */
+	/**
+	 * Get UDDI Naming instance for contacting UDDI server
+	 */
+//	UDDINaming getUddiNaming() {
+//		return uddiNaming;
+//	}
+
+	/**
+	 * output option
+	 */
 	private boolean verbose = true;
 
 	public boolean isVerbose() {
@@ -50,14 +72,18 @@ public class StationEndpointManager {
 		this.verbose = verbose;
 	}
 
-	/** constructor with provided UDDI location, WS name, and WS URL */
+	/**
+	 * constructor with provided UDDI location, WS name, and WS URL
+	 */
 	public StationEndpointManager(String uddiURL, String wsName, String wsURL) {
 		this.uddiURL = uddiURL;
 		this.wsName = wsName;
 		this.wsURL = wsURL;
 	}
 
-	/** constructor with provided web service URL */
+	/**
+	 * constructor with provided web service URL
+	 */
 	public StationEndpointManager(String wsName, String wsURL) {
 		this.wsName = wsName;
 		this.wsURL = wsURL;

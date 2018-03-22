@@ -1,11 +1,12 @@
 package org.binas.station.ws.it;
 
-import java.io.IOException;
-import java.util.Properties;
-
 import org.binas.station.ws.cli.StationClient;
+import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+
+import java.io.IOException;
+import java.util.Properties;
 
 /**
  * Base class for testing a station Load properties from test.properties
@@ -43,10 +44,16 @@ public class BaseIT {
 			client = new StationClient(wsURL);
 		}
 		client.setVerbose("true".equalsIgnoreCase(verboseEnabled));
+
+		client.testClear();
 	}
 
 	@AfterClass
 	public static void cleanup() {
 	}
 
+	@After
+	public void clear() {
+		client.testClear();
+	}
 }

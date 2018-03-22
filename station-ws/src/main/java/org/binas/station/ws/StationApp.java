@@ -17,7 +17,7 @@ public class StationApp {
 		}
 		String wsName = args[0];
 		String wsURL = args[1];
-		
+
 		// TODO handle UDDI arguments
 
 		StationEndpointManager endpoint = new StationEndpointManager(wsName, wsURL);
@@ -25,13 +25,12 @@ public class StationApp {
 
 		System.out.println(StationApp.class.getSimpleName() + " running");
 
-		// TODO start Web Service
-		// try {
-		// endpoint.start();
-		// endpoint.awaitConnections();
-		// } finally {
-		// endpoint.stop();
-		// }
+		try {
+			endpoint.start();
+			endpoint.awaitConnections();
+		} finally {
+			endpoint.stop();
+		}
 
 	}
 
