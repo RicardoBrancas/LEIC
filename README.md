@@ -1,15 +1,12 @@
 # Projeto de Sistemas Distribuídos 2017/18 #
 
-Grupo CXX
-*(preencher com identificador de grupo e depois apagar esta linha)*
+Grupo A60
 
-... ... ...
-
-... ... ...
-
-... ... ...
-*(preencher com nome, número e email de membro do grupo e depois apagar esta linha)*
-
+| Número | Nome               | Email                              |
+|--------|--------------------|------------------------------------|
+| 80832  | Margarida Ferreira |                                    |
+| 81805  | Duarte David       |                                    |
+| 83557  | Ricardo Brancas    | ricardo.brancas@tecnico.ulisboa.pt |
 
 -------------------------------------------------------------------------------
 **FIM**
