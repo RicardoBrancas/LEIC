@@ -34,3 +34,5 @@ bin/
 target/
 
 .idea
+*.iml
+*/*.iml
