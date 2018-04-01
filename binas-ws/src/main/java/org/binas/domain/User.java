@@ -1,0 +1,51 @@
+package org.binas.domain;
+
+import org.binas.domain.exception.InvalidEmailException;
+import org.binas.ws.UserView;
+
+public class User {
+
+	private final static String EMAIL_FORMAT = "[[:alnum:]]+(\\.[[:alnum:]]+)*@[[:alnum:]]+(\\.[[:alnum:]]+)*";
+
+	private String email;
+	private boolean hasBina;
+	private int credit;
+
+	public User(String email) throws InvalidEmailException {
+		checkParams(email);
+	}
+
+	private void checkParams(String email) throws InvalidEmailException {
+		if (!email.matches(EMAIL_FORMAT))
+			throw new InvalidEmailException();
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public boolean hasBina() {
+		return hasBina;
+	}
+
+	public void setHasBina(boolean hasBina) {
+		this.hasBina = hasBina;
+	}
+
+	public int getCredit() {
+		return credit;
+	}
+
+	public void setCredit(int credit) {
+		this.credit = credit;
+	}
+
+	public UserView getView() {
+		UserView v = new UserView();
+		v.setEmail(email);
+		v.setHasBina(hasBina);
+		v.setCredit(credit);
+
+		return v;
+	}
+}
