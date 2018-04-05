@@ -1,5 +1,8 @@
 package org.binas.station.ws;
 
+import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINaming;
+import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINamingException;
+
 import javax.xml.ws.Endpoint;
 import java.io.IOException;
 
@@ -17,60 +20,26 @@ public class StationEndpointManager {
 	 * Web Service name
 	 */
 	private String wsName = null;
-
-	/**
-	 * Get Web Service UDDI publication name
-	 */
-	public String getWsName() {
-		return wsName;
-	}
-
 	/**
 	 * Web Service location to publish
 	 */
 	private String wsURL = null;
-
 	/**
 	 * Port implementation
 	 */
 	private StationPortImpl portImpl = new StationPortImpl(this);
-
-	/**
-	 * Obtain Port implementation
-	 */
-	public StationPortType getPort() {
-		return portImpl;
-	}
-
 	/**
 	 * Web Service end point
 	 */
 	private Endpoint endpoint = null;
-
 	/**
 	 * UDDI Naming instance for contacting UDDI server
 	 */
-//	private UDDINaming uddiNaming = null;
-
-	/**
-	 * Get UDDI Naming instance for contacting UDDI server
-	 */
-//	UDDINaming getUddiNaming() {
-//		return uddiNaming;
-//	}
-
+	private UDDINaming uddiNaming = null;
 	/**
 	 * output option
 	 */
 	private boolean verbose = true;
-
-	public boolean isVerbose() {
-		return verbose;
-	}
-
-	public void setVerbose(boolean verbose) {
-		this.verbose = verbose;
-	}
 
 	/**
 	 * constructor with provided UDDI location, WS name, and WS URL
@@ -87,6 +56,35 @@ public class StationEndpointManager {
 	public StationEndpointManager(String wsName, String wsURL) {
 		this.wsName = wsName;
 		this.wsURL = wsURL;
+	}
+
+	/**
+	 * Get Web Service UDDI publication name
+	 */
+	public String getWsName() {
+		return wsName;
+	}
+
+	/**
+	 * Obtain Port implementation
+	 */
+	public StationPortType getPort() {
+		return portImpl;
+	}
+
+	/**
+	 * Get UDDI Naming instance for contacting UDDI server
+	 */
+	UDDINaming getUddiNaming() {
+		return uddiNaming;
+	}
+
+	public boolean isVerbose() {
+		return verbose;
+	}
+
+	public void setVerbose(boolean verbose) {
+		this.verbose = verbose;
 	}
 
 	/* end point management */
@@ -145,11 +143,16 @@ public class StationEndpointManager {
 	/* UDDI */
 
 	void publishToUDDI() throws Exception {
-		// TODO
+		uddiNaming = new UDDINaming(uddiURL);
+		uddiNaming.rebind(wsName, wsURL);
 	}
 
 	void unpublishFromUDDI() {
-		// TODO
+		try {
+			uddiNaming.unbind(wsName);
+		} catch (UDDINamingException e) {
+			System.err.println("Could not unpublish from jUDDI");
+		}
 	}
 
 }

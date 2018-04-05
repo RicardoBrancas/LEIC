@@ -13,9 +13,10 @@ public class StationClientApp {
 		String uddiURL = null;
 		String wsName = null;
 		String wsURL = null;
+
 		if (args.length == 1) {
 			wsURL = args[0];
-		} else if (args.length >= 2) {
+		} else /* if (args.length >= 2) */ {
 			uddiURL = args[0];
 			wsName = args[1];
 		}

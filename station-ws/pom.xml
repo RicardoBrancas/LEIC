@@ -32,7 +32,7 @@
 		<!-- Please replace 'A60' below with your C (campus) with A (Alameda) /
 			T (Tagus); and your group number with two digits. Then delete this comment. -->
 		<ws.name>A60_Station${ws.i}</ws.name>
-		<uddi.url>http://localhost:9090</uddi.url>
+		<uddi.url>http://a60:DY34xbE@uddi.sd.rnl.tecnico.ulisboa.pt:9090</uddi.url>
 
 	</properties>
 
@@ -41,6 +41,11 @@
 			<groupId>com.sun.xml.ws</groupId>
 			<artifactId>jaxws-rt</artifactId>
 			<version>2.2.10</version>
+		</dependency>
+		<dependency>
+			<groupId>pt.ulisboa.tecnico.sdis</groupId>
+			<artifactId>uddi-naming</artifactId>
+			<version>1.2</version>
 		</dependency>
 	</dependencies>
 
@@ -97,6 +102,7 @@
 					<arguments>
 						<argument>${ws.name}</argument>
 						<argument>${ws.url}</argument>
+						<argument>${uddi.url}</argument>
 					</arguments>
 				</configuration>
 			</plugin>
