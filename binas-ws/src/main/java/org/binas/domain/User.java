@@ -48,4 +48,8 @@ public class User {
 
 		return v;
 	}
+
+	public synchronized void increaseCredit(int credit	) {
+		setCredit(getCredit()+credit);
+	}
 }
