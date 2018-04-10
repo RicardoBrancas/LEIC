@@ -24,10 +24,4 @@ public class PingIT extends BaseIT {
 		Assert.assertEquals("Hello friend from " + testProps.getProperty("ws.name"), client.testPing(null));
 	}
 
-	@Override
-	@After
-	public void clear() {
-		super.clear();
-	}
-
 }

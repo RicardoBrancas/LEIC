@@ -12,6 +12,7 @@ import org.binas.ws.BinasPortType;
 /**
  * The endpoint manager starts and registers the service.
  */
+@SuppressWarnings("Duplicates")
 public class BinasEndpointManager {
 
 	/**

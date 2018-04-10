@@ -1,6 +1,8 @@
 package org.binas.ws.cli;
 
 import org.binas.ws.*;
+import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINaming;
+import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINamingException;
 
 import javax.xml.ws.BindingProvider;
 import java.util.List;
@@ -77,7 +79,12 @@ public class BinasClient implements BinasPortType {
 	 * UDDI lookup
 	 */
 	private void uddiLookup() throws BinasClientException {
-		// TODO
+		try {
+			UDDINaming uddiNaming = new UDDINaming(uddiURL);
+			wsURL = uddiNaming.lookup(wsName);
+		} catch (UDDINamingException e) {
+			throw new BinasClientException(e);
+		}
 	}
 
 	/**

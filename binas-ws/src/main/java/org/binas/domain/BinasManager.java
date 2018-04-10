@@ -3,11 +3,7 @@ package org.binas.domain;
 import org.binas.domain.exception.*;
 import org.binas.station.ws.NoSlotAvail_Exception;
 import org.binas.station.ws.cli.StationClient;
-import org.binas.ws.*;
-import org.binas.ws.InvalidStation;
-import org.binas.ws.NoBinaAvail_Exception;
-import org.binas.ws.NoCredit_Exception;
-import org.binas.ws.UserNotExists_Exception;
+import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINaming;
 
 import java.util.HashMap;
 import java.util.List;
@@ -18,16 +14,21 @@ public class BinasManager {
 
 	private final Map<String, User> users = new HashMap<>();
 	private final Map<String, StationClient> stations = new HashMap<>();
+
 	private BinasManager() {
 	}
 
-	public List<StationClient> getStations(){
-		return new ArrayList<StationClient>(stations.values());
+	public static synchronized BinasManager getInstance() {
+		return SingletonHolder.INSTANCE;
 	}
 
-	public StationClient getStation(String stationId) throws InvalidStationException{
+	public List<StationClient> getStations() {
+		return new ArrayList<>(stations.values());
+	}
+
+	public StationClient getStation(String stationId) throws InvalidStationException {
 		StationClient s = stations.get(stationId);
-		if(s==null){
+		if (s == null) {
 			throw new InvalidStationException();
 		}
 		return s;
@@ -35,48 +36,48 @@ public class BinasManager {
 
 	public void rentBina(String stationId, String email) throws AlreadyHasBinaException, InvalidStationException, NoBinaAvailException, NoCreditException, UserNotExistsException {
 		User u = getUser(email);
-		if(u.hasBina()){
+		if (u.hasBina()) {
 			throw new AlreadyHasBinaException();
 		}
-		if(u.getCredit()<=0){
+		if (u.getCredit() <= 0) {
 			throw new NoCreditException();
 		}
 
-		StationClient s=getStation(stationId);
-		try{
+		StationClient s = getStation(stationId);
+		try {
 			s.getBina();
-		} catch(org.binas.station.ws.NoBinaAvail_Exception e){
+		} catch (org.binas.station.ws.NoBinaAvail_Exception e) {
 			throw new NoBinaAvailException();
 		}
 
 	}
-	public void returnBina(String stationId, String email) throws FullStationException, InvalidStationException, NoBinaRentedException, UserNotExistsException{
+
+	public void returnBina(String stationId, String email) throws FullStationException, InvalidStationException, NoBinaRentedException, UserNotExistsException {
 		User u = getUser(email);
 		int result = 0;
-		if(!u.hasBina()){
+		if (!u.hasBina()) {
 			throw new NoBinaRentedException();
 		}
 
-		StationClient s=getStation(stationId);
+		StationClient s = getStation(stationId);
 		try {
 			result = s.returnBina();
-		} catch (NoSlotAvail_Exception e){
+		} catch (NoSlotAvail_Exception e) {
 			throw new FullStationException();
 		}
 		u.increaseCredit(result);
-	}
-	public static synchronized BinasManager getInstance() {
-		return SingletonHolder.INSTANCE;
 	}
 
 	public User getUser(String email) throws UserNotExistsException {
 		User u = null;
 		users.get(email);
-		if(u==null){
+		if (u == null) {
 			throw new UserNotExistsException();
 		}
 		return u;
-	};
+	}
+
+	;
 
 	public User createUser(String email) throws EmailExistsException, InvalidEmailException {
 		if (users.containsKey(email))
@@ -89,6 +90,10 @@ public class BinasManager {
 		return u;
 	}
 
+	public void clear() {
+		stations.clear();
+	}
+
 	/**
 	 * SingletonHolder is loaded on the first execution of Singleton.getInstance()
 	 * or the first access to SingletonHolder.INSTANCE, not before.
@@ -99,6 +104,6 @@ public class BinasManager {
 
 
 	// TODO
-    //im not sure what is left. Constructor?
+	//im not sure what is left. Constructor?
 
 }
