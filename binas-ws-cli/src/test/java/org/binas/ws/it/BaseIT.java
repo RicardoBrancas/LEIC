@@ -18,6 +18,22 @@ public class BaseIT {
 	protected static Properties testProps;
 
 	protected static BinasClient client;
+	protected static String stationName = "A60_Station";
+
+	protected static int station1X = 22;
+	protected static int station1Y = 7;
+	protected static int station1Capacity = 6;
+	protected static int station1Prize = 2;
+
+	protected static int station2X = 80;
+	protected static int station2Y = 20;
+	protected static int station2Capacity = 12;
+	protected static int station2Prize = 1;
+
+	protected static int station3X = 50;
+	protected static int station3Y = 50;
+	protected static int station3Capacity = 20;
+	protected static int station3Prize = 0;
 
 	@BeforeClass
 	public static void oneTimeSetup() throws Exception {
@@ -46,9 +62,9 @@ public class BaseIT {
 		}
 		client.setVerbose("true".equalsIgnoreCase(verboseEnabled));
 
-		client.testInitStation("1", 22,  7,  6, 2);
-		client.testInitStation("2", 80, 20, 12, 1);
-		client.testInitStation("3", 50, 50, 20, 0);
+		client.testInitStation("1", station1X,  station1Y,  station1Capacity, station1Prize);
+		client.testInitStation("2", station2X,  station2Y,  station2Capacity, station2Prize);
+		client.testInitStation("3", station3X,  station3Y,  station3Capacity, station3Prize);
 
 	}
 

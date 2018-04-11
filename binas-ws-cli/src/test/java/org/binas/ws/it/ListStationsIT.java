@@ -44,4 +44,6 @@ public class ListStationsIT extends BaseIT {
 		Assert.assertEquals(3, stations.size());
 	}
 
+	//TODO Error cases (negative number of stations?)
+
 }
