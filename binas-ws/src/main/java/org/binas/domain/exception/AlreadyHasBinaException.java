@@ -2,8 +2,6 @@ package org.binas.domain.exception;
 
 import org.binas.ws.AlreadyHasBina;
 import org.binas.ws.AlreadyHasBina_Exception;
-import org.binas.ws.EmailExists;
-import org.binas.ws.EmailExists_Exception;
 
 public class AlreadyHasBinaException extends Exception {
 

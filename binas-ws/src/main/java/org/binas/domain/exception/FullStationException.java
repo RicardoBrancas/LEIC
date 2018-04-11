@@ -1,7 +1,5 @@
 package org.binas.domain.exception;
 
-import org.binas.ws.EmailExists;
-import org.binas.ws.EmailExists_Exception;
 import org.binas.ws.FullStation;
 import org.binas.ws.FullStation_Exception;
 

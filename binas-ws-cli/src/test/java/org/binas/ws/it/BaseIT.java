@@ -46,6 +46,10 @@ public class BaseIT {
 		}
 		client.setVerbose("true".equalsIgnoreCase(verboseEnabled));
 
+		client.testInitStation("1", 22,  7,  6, 2);
+		client.testInitStation("2", 80, 20, 12, 1);
+		client.testInitStation("3", 50, 50, 20, 0);
+
 	}
 
 	@AfterClass
