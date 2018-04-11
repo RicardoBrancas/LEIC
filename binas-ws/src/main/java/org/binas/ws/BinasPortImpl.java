@@ -3,14 +3,10 @@ package org.binas.ws;
 import org.binas.domain.BinasManager;
 import org.binas.domain.User;
 import org.binas.domain.exception.*;
-import org.binas.station.ws.cli.StationClient;
-import org.binas.station.ws.cli.StationClientException;
-import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINamingException;
 
 import javax.jws.WebService;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @SuppressWarnings("Duplicates")
@@ -39,84 +35,45 @@ public class BinasPortImpl implements BinasPortType {
 
 	public BinasPortImpl(BinasEndpointManager endpointManager) {
 		this.endpointManager = endpointManager;
-	}
-
-	private CoordinatesView convertCoordinatesView(org.binas.station.ws.CoordinatesView cv) {
-		CoordinatesView coordinatesView = new CoordinatesView();
-		coordinatesView.setX(cv.getX());
-		coordinatesView.setY(cv.getY());
-		return coordinatesView;
-	}
-
-	private StationView convertStationView(org.binas.station.ws.StationView sv) {
-		StationView stationView = new StationView();
-		stationView.setId(sv.getId());
-		stationView.setCoordinate(convertCoordinatesView(sv.getCoordinate()));
-		stationView.setCapacity(sv.getCapacity());
-		stationView.setTotalGets(sv.getTotalGets());
-		stationView.setTotalReturns(sv.getTotalReturns());
-		stationView.setAvailableBinas(sv.getAvailableBinas());
-		stationView.setFreeDocks(sv.getFreeDocks());
-		return stationView;
+		BinasManager.getInstance().setEndpointManager(endpointManager);
 	}
 
 	@Override
 	public List<StationView> listStations(Integer numberOfStations, CoordinatesView coordinates) {
-		//TODO should probably be moved to BinasManager
-
-		try {
-			return endpointManager.getUddiNaming().listRecords("A60_Station%").stream()
-					.map(uddiRecord -> {
-						try {
-							return new StationClient(uddiRecord.getUrl());
-						} catch (StationClientException e) {
-							e.printStackTrace(); //TODO catch exceptions properly
-							return null;
-						}
-					})
-					.filter(Objects::nonNull)
-					.map(u -> convertStationView(u.getInfo()))
-					.sorted(Comparator.comparingInt(v ->
-							Math.abs(v.getCoordinate().getX() + v.getCoordinate().getY()
-									- coordinates.getX() - coordinates.getY()))
-					)
-					.limit(numberOfStations)
-					.collect(Collectors.toList());
-
-		} catch (UDDINamingException e) {
-			e.printStackTrace(); //TODO catch exceptions properly
-		}
-
-		return null;
+		return BinasManager.getInstance().listStations().stream()
+				.map(u -> BinasManager.convertStationView(u.getInfo()))
+				.sorted(Comparator.comparingInt(v ->
+						BinasManager.distanceBetween(coordinates, v.getCoordinate()))
+				)
+				.limit(numberOfStations)
+				.collect(Collectors.toList());
 	}
 
 	@Override
 	public StationView getInfoStation(String stationId) throws InvalidStation_Exception {
-		org.binas.station.ws.StationView sv = null;
 		try {
-			sv = BinasManager.getInstance().getStation(stationId).getInfo();
+			return BinasManager.convertStationView(
+					BinasManager.getInstance().getStation(stationId).getInfo());
 		} catch (InvalidStationException e) {
 			e.throwWSException();
 		}
-		return convertStationView(sv);
+		return null; //should never happen
 	}
 
 	@Override
 	public int getCredit(String email) throws UserNotExists_Exception {
-		int credit = 0;
 		try {
-			credit = BinasManager.getInstance().getUser(email).getCredit();
+			return BinasManager.getInstance().getUser(email).getCredit();
 		} catch (UserNotExistsException e) {
 			e.throwWSException();
 		}
-		return credit;
+		return 0;
 	}
 
 	@Override
 	public UserView activateUser(String email) throws EmailExists_Exception, InvalidEmail_Exception {
 		try {
 			User u = BinasManager.getInstance().createUser(email);
-
 			return u.getView();
 		} catch (EmailExistsException e) {
 			e.throwWSException();
@@ -142,7 +99,6 @@ public class BinasPortImpl implements BinasPortType {
 			e.throwWSException();
 		}
 	}
-
 
 	@Override
 	public void returnBina(String stationId, String email) throws FullStation_Exception, InvalidStation_Exception, NoBinaRented_Exception, UserNotExists_Exception {
@@ -171,10 +127,7 @@ public class BinasPortImpl implements BinasPortType {
 			wsName = "Station";
 
 		// Build a string with a message to return.
-		StringBuilder builder = new StringBuilder();
-		builder.append("Hello ").append(inputMessage);
-		builder.append(" from ").append(wsName);
-		return builder.toString();
+		return "Hello " + inputMessage + " from " + wsName;
 	}
 
 	@Override

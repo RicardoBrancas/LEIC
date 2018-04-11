@@ -79,7 +79,7 @@ public class BinasEndpointManager {
 	/**
 	 * Get UDDI Naming instance for contacting UDDI server
 	 */
-	UDDINaming getUddiNaming() {
+	public UDDINaming getUddiNaming() {
 		return uddiNaming;
 	}
 
