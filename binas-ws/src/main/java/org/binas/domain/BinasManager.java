@@ -3,12 +3,11 @@ package org.binas.domain;
 import org.binas.domain.exception.*;
 import org.binas.station.ws.NoSlotAvail_Exception;
 import org.binas.station.ws.cli.StationClient;
-import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINaming;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.ArrayList;
 
 public class BinasManager {
 
@@ -54,7 +53,7 @@ public class BinasManager {
 
 	public void returnBina(String stationId, String email) throws FullStationException, InvalidStationException, NoBinaRentedException, UserNotExistsException {
 		User u = getUser(email);
-		int result = 0;
+		int result;
 		if (!u.hasBina()) {
 			throw new NoBinaRentedException();
 		}
@@ -76,8 +75,6 @@ public class BinasManager {
 		}
 		return u;
 	}
-
-	;
 
 	public User createUser(String email) throws EmailExistsException, InvalidEmailException {
 		if (users.containsKey(email))
@@ -103,7 +100,6 @@ public class BinasManager {
 	}
 
 
-	// TODO
-	//im not sure what is left. Constructor?
+	// TODO im not sure what is left. Constructor?
 
 }

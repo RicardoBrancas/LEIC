@@ -5,7 +5,7 @@ import org.binas.ws.UserView;
 
 public class User {
 
-	private final static String EMAIL_FORMAT = "[[:alnum:]]+(\\.[[:alnum:]]+)*@[[:alnum:]]+(\\.[[:alnum:]]+)*";
+	private final static String EMAIL_FORMAT = "\\w+(\\.\\w+)*@\\w+(\\.\\w+)*";
 
 	private String email;
 	private boolean hasBina;
@@ -13,10 +13,12 @@ public class User {
 
 	public User(String email) throws InvalidEmailException {
 		checkParams(email);
+
+		this.email = email;
 	}
 
 	private void checkParams(String email) throws InvalidEmailException {
-		if (!email.matches(EMAIL_FORMAT))
+		if (email == null || email.isEmpty() || !email.matches(EMAIL_FORMAT))
 			throw new InvalidEmailException();
 	}
 
