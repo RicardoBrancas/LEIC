@@ -137,18 +137,18 @@ public class BinasPortImpl implements BinasPortType {
 	}
 
 	@Override
-	public void testInitStation(String stationId, int x, int y, int capacity, int returnPrize) throws BadInit_Exception {
+	public void testInitStation(String stationId, int x, int y, int capacity, int returnPrize) {
 		try {
 			StationClient stationClient = BinasManager.getInstance().getStation(stationId);
 			stationClient.testInit(x, y, capacity, returnPrize);
 
 		} catch (InvalidStationException | org.binas.station.ws.BadInit_Exception e) {
-			throw new BadInit_Exception(e.getMessage(), new BadInit(), e);
+			e.printStackTrace(); //TODO manage exception
 		}
 	}
 
 	@Override
-	public void testInit(int userInitialPoints) throws BadInit_Exception {
+	public void testInit(int userInitialPoints) {
 		//TODO
 	}
 }

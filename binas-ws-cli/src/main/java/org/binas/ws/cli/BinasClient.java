@@ -158,8 +158,7 @@ public class BinasClient implements BinasPortType {
 	}
 
 	@Override
-	public void testInitStation(String stationId, int x, int y, int capacity, int
-			returnPrize)
+	public void testInitStation(String stationId, int x, int y, int capacity, int returnPrize)
 			throws BadInit_Exception {
 		port.testInitStation(stationId, x, y, capacity, returnPrize);
 	}

@@ -72,7 +72,6 @@ public class BinasManager {
 	public StationClient getStation(String stationId) throws InvalidStationException {
 		try {
 			UDDIRecord record = endpointManager.getUddiNaming().lookupRecord("A60_Station" + stationId);
-
 			return new StationClient(record.getUrl());
 
 		} catch (UDDINamingException | StationClientException e) {
