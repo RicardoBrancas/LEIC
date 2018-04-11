@@ -3,6 +3,7 @@ package org.binas.ws;
 import org.binas.domain.BinasManager;
 import org.binas.domain.User;
 import org.binas.domain.exception.*;
+import org.binas.station.ws.cli.StationClient;
 
 import javax.jws.WebService;
 import java.util.Comparator;
@@ -137,7 +138,13 @@ public class BinasPortImpl implements BinasPortType {
 
 	@Override
 	public void testInitStation(String stationId, int x, int y, int capacity, int returnPrize) throws BadInit_Exception {
-		//TODO
+		try {
+			StationClient stationClient = BinasManager.getInstance().getStation(stationId);
+			stationClient.testInit(x, y, capacity, returnPrize);
+
+		} catch (InvalidStationException | org.binas.station.ws.BadInit_Exception e) {
+			throw new BadInit_Exception(e.getMessage(), new BadInit(), e);
+		}
 	}
 
 	@Override
