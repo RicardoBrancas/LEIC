@@ -70,6 +70,7 @@ public class BaseIT {
 
 	@AfterClass
 	public static void cleanup() {
+		client.testClear();
 	}
 
 }
