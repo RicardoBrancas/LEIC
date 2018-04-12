@@ -16,7 +16,7 @@ public class ActivateUserIT extends BaseIT {
 
 		Assert.assertNotNull(user);
 		Assert.assertEquals("a.c@b.d", user.getEmail());
-		Assert.assertEquals(0, (int) user.getCredit());
+		Assert.assertEquals(10, (int) user.getCredit());
 	}
 
 	@Test(expected = EmailExists_Exception.class)
@@ -74,10 +74,4 @@ public class ActivateUserIT extends BaseIT {
 	public void invalidEmail8() throws EmailExists_Exception, InvalidEmail_Exception {
 		client.activateUser("a@.b");
 	}
-
-	@After
-	public void tearDown() {
-		client.testClear();
-	}
-
 }

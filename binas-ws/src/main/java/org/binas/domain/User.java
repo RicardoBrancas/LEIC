@@ -11,10 +11,11 @@ public class User {
 	private boolean hasBina;
 	private int credit;
 
-	public User(String email) throws InvalidEmailException {
+	public User(String email, int credit) throws InvalidEmailException {
 		checkParams(email);
 
 		this.email = email;
+		this.credit = credit;
 	}
 
 	private void checkParams(String email) throws InvalidEmailException {
@@ -51,7 +52,10 @@ public class User {
 		return v;
 	}
 
-	public synchronized void increaseCredit(int credit	) {
+	public synchronized void increaseCredit(int credit) {
 		setCredit(getCredit()+credit);
+	}
+	public synchronized void decreaseCredit(int credit) {
+		setCredit(getCredit()-credit);
 	}
 }

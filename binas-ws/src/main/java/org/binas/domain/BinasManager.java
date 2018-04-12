@@ -15,6 +15,8 @@ import java.util.stream.Collectors;
 
 public class BinasManager {
 
+	private int initialCredit = 10;
+
 	private final Map<String, User> users = new HashMap<>();
 
 	private BinasEndpointManager endpointManager;
@@ -24,6 +26,10 @@ public class BinasManager {
 
 	public static synchronized BinasManager getInstance() {
 		return SingletonHolder.INSTANCE;
+	}
+
+	public void setInitialCredit(int initialCredit) {
+		this.initialCredit = initialCredit;
 	}
 
 	public static CoordinatesView convertCoordinatesView(org.binas.station.ws.CoordinatesView cv) {
@@ -72,6 +78,7 @@ public class BinasManager {
 	public StationClient getStation(String stationId) throws InvalidStationException {
 		try {
 			UDDIRecord record = endpointManager.getUddiNaming().lookupRecord("A60_Station" + stationId);
+			if (record == null) throw new InvalidStationException();
 			return new StationClient(record.getUrl());
 
 		} catch (UDDINamingException | StationClientException e) {
@@ -91,6 +98,8 @@ public class BinasManager {
 		StationClient s = getStation(stationId);
 		try {
 			s.getBina();
+			u.setHasBina(true);
+			u.decreaseCredit(1);
 		} catch (org.binas.station.ws.NoBinaAvail_Exception e) {
 			throw new NoBinaAvailException();
 		}
@@ -106,7 +115,7 @@ public class BinasManager {
 		StationClient s = getStation(stationId);
 		try {
 			u.increaseCredit(s.returnBina());
-
+			u.setHasBina(false);
 		} catch (NoSlotAvail_Exception e) {
 			throw new FullStationException();
 		}
@@ -123,7 +132,7 @@ public class BinasManager {
 		if (users.containsKey(email))
 			throw new EmailExistsException();
 
-		User u = new User(email);
+		User u = new User(email, this.initialCredit);
 
 		users.put(email, u);
 
