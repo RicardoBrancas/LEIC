@@ -1,10 +1,8 @@
 package org.binas.ws.it;
 
-import org.binas.ws.EmailExists;
 import org.binas.ws.EmailExists_Exception;
 import org.binas.ws.InvalidEmail_Exception;
 import org.binas.ws.UserView;
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 

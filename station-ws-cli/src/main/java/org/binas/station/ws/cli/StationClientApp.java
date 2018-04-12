@@ -1,6 +1,8 @@
 package org.binas.station.ws.cli;
 
-/** Client application. */
+/**
+ * Client application.
+ */
 public class StationClientApp {
 
 	public static void main(String[] args) throws Exception {
@@ -23,24 +25,13 @@ public class StationClientApp {
 
 		System.out.println(StationClientApp.class.getSimpleName() + " running");
 
-		// Create client.
-		StationClient client = null;
-
 		if (wsURL != null) {
 			System.out.printf("Creating client for server at %s%n", wsURL);
-			client = new StationClient(wsURL);
+			new StationClient(wsURL);
 		} else if (uddiURL != null) {
 			System.out.printf("Creating client using UDDI at %s for server with name %s%n", uddiURL, wsName);
-			client = new StationClient(uddiURL, wsName);
+			new StationClient(uddiURL, wsName);
 		}
-
-		// The following remote invocation is just a basic example.
-		// The actual tests are made using JUnit.
-
-		// System.out.println("Invoke ping()...");
-		// String result = client.testPing("client");
-		// System.out.print("Result: ");
-		// System.out.println(result);
 	}
 
 }

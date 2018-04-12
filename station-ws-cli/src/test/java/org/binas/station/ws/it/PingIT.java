@@ -1,6 +1,5 @@
 package org.binas.station.ws.it;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 

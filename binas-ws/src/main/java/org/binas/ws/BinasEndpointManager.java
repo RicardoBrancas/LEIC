@@ -6,9 +6,6 @@ import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINamingException;
 import javax.xml.ws.Endpoint;
 import java.io.IOException;
 
-import org.binas.ws.BinasPortType;
-
-
 /**
  * The endpoint manager starts and registers the service.
  */

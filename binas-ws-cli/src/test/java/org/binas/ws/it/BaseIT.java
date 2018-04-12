@@ -6,7 +6,6 @@ import java.util.Properties;
 import org.binas.ws.BadInit_Exception;
 import org.binas.ws.cli.BinasClient;
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 

@@ -47,7 +47,7 @@ public class StationClient implements StationPortType {
 	/**
 	 * constructor with provided web service URL
 	 */
-	public StationClient(String wsURL) throws StationClientException {
+	public StationClient(String wsURL) {
 		this.wsURL = wsURL;
 		createStub();
 	}

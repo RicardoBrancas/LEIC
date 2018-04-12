@@ -1,5 +1,5 @@
 package org.binas.ws;
-import org.binas.domain.BinasManager;
+
 public class BinasApp {
 
 	public static void main(String[] args) throws Exception {
@@ -16,9 +16,6 @@ public class BinasApp {
 
 		BinasEndpointManager endpoint = new BinasEndpointManager(uddiURL, wsName, wsURL);
 
-		//Binas needs no ID
-		//BinasManager.getInstance().setId(wsName);
-
 		System.out.println(BinasApp.class.getSimpleName() + " running");
 
 		try {
@@ -28,5 +25,4 @@ public class BinasApp {
 			endpoint.stop();
 		}
 	}
-
 }

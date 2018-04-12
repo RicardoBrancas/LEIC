@@ -33,7 +33,7 @@ public class ReturnBinaIT extends BaseIT {
     }
 
     @Test(expected = NoSlotAvail_Exception.class)
-    public void noAvailSlotReturnBinaTest() throws BadInit_Exception, NoBinaAvail_Exception, NoSlotAvail_Exception {
+    public void noAvailSlotReturnBinaTest() throws BadInit_Exception, NoSlotAvail_Exception {
         client.testInit(0, 0, 10, 0);
         client.returnBina();
 
