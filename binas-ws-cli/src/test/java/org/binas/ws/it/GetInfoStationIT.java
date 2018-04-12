@@ -1,5 +1,6 @@
 package org.binas.ws.it;
 
+import com.sun.xml.ws.fault.ServerSOAPFaultException;
 import org.binas.ws.*;
 import org.junit.Assert;
 import org.junit.Test;
@@ -14,8 +15,6 @@ public class GetInfoStationIT extends BaseIT {
 		Assert.assertEquals(station1X, (int) stationView.getCoordinate().getX());
 		Assert.assertEquals(station1Y, (int) stationView.getCoordinate().getY());
 		Assert.assertEquals(station1Capacity, stationView.getCapacity());
-		//TODO assert bonus, but bones not in StationView
-
 	}
 
 	@Test
@@ -26,7 +25,6 @@ public class GetInfoStationIT extends BaseIT {
 		Assert.assertEquals(station2X, (int) stationView.getCoordinate().getX());
 		Assert.assertEquals(station2Y, (int) stationView.getCoordinate().getY());
 		Assert.assertEquals(station2Capacity, stationView.getCapacity());
-		//TODO assert bonus, but bones not in StationView
 	}
 
 	@Test
@@ -37,15 +35,14 @@ public class GetInfoStationIT extends BaseIT {
 		Assert.assertEquals(station3X, (int) stationView.getCoordinate().getX());
 		Assert.assertEquals(station3Y, (int) stationView.getCoordinate().getY());
 		Assert.assertEquals(station3Capacity, stationView.getCapacity());
-		//TODO assert bonus, but bones not in StationView
 	}
 
-	@Test(expected = com.sun.xml.ws.fault.ServerSOAPFaultException.class)
+	@Test(expected = InvalidStation_Exception.class)
 	public void nonexistentStation() throws InvalidStation_Exception {
 		client.getInfoStation("4");
 	}
 
-	@Test(expected = com.sun.xml.ws.fault.ServerSOAPFaultException.class)
+	@Test(expected = InvalidStation_Exception.class)
 	public void nullStation() throws InvalidStation_Exception {
 		StationView stationView = client.getInfoStation(null);
 
