@@ -83,6 +83,7 @@ public class Station {
 		this.coordinates = new Coordinates(x, y);
 		this.maxCapacity = capacity;
 		this.bonus = returnPrize;
+		freeDocks.set(0);
 	}
 
 	public synchronized void reset() {
