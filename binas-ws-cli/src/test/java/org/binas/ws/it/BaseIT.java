@@ -3,8 +3,11 @@ package org.binas.ws.it;
 import java.io.IOException;
 import java.util.Properties;
 
+import org.binas.ws.BadInit_Exception;
 import org.binas.ws.cli.BinasClient;
+import org.junit.After;
 import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
 
 
@@ -61,15 +64,22 @@ public class BaseIT {
 			client = new BinasClient(wsURL);
 		}
 		client.setVerbose("true".equalsIgnoreCase(verboseEnabled));
-
-		client.testInitStation("1", station1X,  station1Y,  station1Capacity, station1Prize);
-		client.testInitStation("2", station2X,  station2Y,  station2Capacity, station2Prize);
-		client.testInitStation("3", station3X,  station3Y,  station3Capacity, station3Prize);
-
 	}
 
-	@AfterClass
-	public static void cleanup() {
+	@Before
+	public void setup() {
+		try {
+			client.testInitStation("1", station1X,  station1Y,  station1Capacity, station1Prize);
+			client.testInitStation("2", station2X,  station2Y,  station2Capacity, station2Prize);
+			client.testInitStation("3", station3X,  station3Y,  station3Capacity, station3Prize);
+			client.testInit(10);
+		} catch (BadInit_Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@After
+	public void cleanup() {
 		client.testClear();
 	}
 

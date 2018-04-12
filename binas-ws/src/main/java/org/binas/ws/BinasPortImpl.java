@@ -20,10 +20,7 @@ import java.util.stream.Collectors;
 		endpointInterface = "org.binas.ws.BinasPortType"
 )
 public class BinasPortImpl implements BinasPortType {
-	/*
-	 * TODO: Many things done here maybe should be done in BinasManager
-	 *
-	 */
+
 	/**
 	 * The Endpoint manager controls the Web Service instance during its whole
 	 * lifecycle.
@@ -149,6 +146,6 @@ public class BinasPortImpl implements BinasPortType {
 
 	@Override
 	public void testInit(int userInitialPoints) {
-		//TODO
+		BinasManager.getInstance().setInitialCredit(userInitialPoints);
 	}
 }
