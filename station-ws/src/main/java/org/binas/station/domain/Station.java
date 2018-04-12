@@ -78,20 +78,25 @@ public class Station {
 	 * Synchronized locks object to configure initial values
 	 */
 	public synchronized void init(int x, int y, int capacity, int returnPrize) throws BadInitException {
+
 		if (x < 0 || y < 0 || capacity < 0 || returnPrize < 0)
 			throw new BadInitException();
+
 		this.coordinates = new Coordinates(x, y);
 		this.maxCapacity = capacity;
 		this.bonus = returnPrize;
+
 		freeDocks.set(0);
+		totalGets.set(0);
+		totalReturns.set(0);
 	}
 
 	public synchronized void reset() {
-		freeDocks.set(0);
 		maxCapacity = DEFAULT_MAX_CAPACITY;
 		bonus = DEFAULT_BONUS;
 		coordinates = DEFAULT_COORDINATES;
 
+		freeDocks.set(0);
 		totalGets.set(0);
 		totalReturns.set(0);
 	}
