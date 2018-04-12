@@ -9,20 +9,23 @@ import org.junit.Assert;
 import org.junit.Test;
 
 public class ActivateUserIT extends BaseIT {
+	String email = "a.c@b.d";
 
 	@Test
 	public void success() throws EmailExists_Exception, InvalidEmail_Exception {
-		UserView user = client.activateUser("a.c@b.d");
+
+		UserView user = client.activateUser(email);
 
 		Assert.assertNotNull(user);
-		Assert.assertEquals("a.c@b.d", user.getEmail());
+		Assert.assertEquals(email, user.getEmail());
 		Assert.assertEquals(10, (int) user.getCredit());
+		Assert.assertEquals(false, user.isHasBina());
 	}
 
 	@Test(expected = EmailExists_Exception.class)
 	public void duplicateUser() throws EmailExists_Exception, InvalidEmail_Exception {
-		client.activateUser("a.c@b.d");
-		client.activateUser("a.c@b.d");
+		client.activateUser(email);
+		client.activateUser(email);
 	}
 
 	@Test(expected = InvalidEmail_Exception.class)

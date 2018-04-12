@@ -22,6 +22,7 @@ public class ListStationsIT extends BaseIT {
 		Assert.assertEquals(new Integer(7),  stations.get(0).getCoordinate().getY());
 	}
 
+	@Test
 	public void success2() {
 		CoordinatesView coordinates = new CoordinatesView();
 		coordinates.setX(50);
@@ -34,6 +35,7 @@ public class ListStationsIT extends BaseIT {
 		Assert.assertEquals(new Integer(50),  stations.get(0).getCoordinate().getY());
 	}
 
+	@Test
 	public void success3() {
 		CoordinatesView coordinates = new CoordinatesView();
 		coordinates.setX(50);
@@ -44,6 +46,26 @@ public class ListStationsIT extends BaseIT {
 		Assert.assertEquals(3, stations.size());
 	}
 
-	//TODO Error cases (negative number of stations?)
+	@Test
+	public void success4() {
+		CoordinatesView coordinates = new CoordinatesView();
+		coordinates.setX(50);
+		coordinates.setY(50);
+		List<StationView> stations = client.listStations(4, coordinates);
+
+		Assert.assertNotNull(stations);
+		Assert.assertEquals(3, stations.size());
+	}
+
+	@Test
+	public void zeroStations() {
+		CoordinatesView coordinates = new CoordinatesView();
+		coordinates.setX(50);
+		coordinates.setY(50);
+		List<StationView> stations = client.listStations(0, coordinates);
+
+		Assert.assertNotNull(stations);
+		Assert.assertEquals(0, stations.size());
+	}
 
 }
