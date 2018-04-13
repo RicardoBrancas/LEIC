@@ -74,9 +74,10 @@ public class BinasManager {
 					.collect(Collectors.toList());
 
 		} catch (UDDINamingException e) {
-			e.printStackTrace(); //TODO catch exceptions properly
+			System.out.println("Error with UDDI: e.getMessage()");
+			e.printStackTrace();
 		}
-		return null; //should never happen
+		return new ArrayList<StationClient>(); //should never happen
 	}
 
 	public synchronized StationClient getStation(String stationId) throws InvalidStationException {
