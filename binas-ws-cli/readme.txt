@@ -32,7 +32,7 @@ To run using exec plugin:
   mvn exec:java
   
 To run the tests:
-  mvn test
+  mvn integration-test
 Note: For the tests to pass, a binas server must be launched, as well as three station servers.
 
 

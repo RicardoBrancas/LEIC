@@ -31,7 +31,7 @@ To compile:
 To run using exec plugin:
   mvn exec:java
 To run the tests:
-  mvn test
+  mvn integration-test
 Note: For the tests to pass, one station server must be running
 
 To configure the Maven project in Eclipse:

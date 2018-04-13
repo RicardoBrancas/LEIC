@@ -6,6 +6,7 @@ import org.binas.domain.exception.*;
 import org.binas.station.ws.cli.StationClient;
 
 import javax.jws.WebService;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -38,6 +39,9 @@ public class BinasPortImpl implements BinasPortType {
 
 	@Override
 	public List<StationView> listStations(Integer numberOfStations, CoordinatesView coordinates) {
+		if(numberOfStations < 0 || coordinates == null)
+			return new ArrayList<>();
+		
 		return BinasManager.getInstance().listStations().stream()
 				.map(u -> BinasManager.convertStationView(u.getInfo()))
 				.sorted(Comparator.comparingInt(v ->
