@@ -79,8 +79,15 @@ public class Station {
 	 */
 	public synchronized void init(int x, int y, int capacity, int returnPrize) throws BadInitException {
 
-		if (x < 0 || y < 0 || capacity < 0 || returnPrize < 0)
-			throw new BadInitException();
+		if (x < 0) {
+			throw new BadInitException("X coordinate must be positive.");
+		} else if (y < 0) {
+			throw new BadInitException("Y coordinate must be positive.");
+		} else if (capacity < 0) {
+			throw new BadInitException("Initial station capacity must be positive.");
+		} else if (returnPrize < 0) {
+			throw new BadInitException("Return prize must be positive.");
+		}
 
 		this.coordinates = new Coordinates(x, y);
 		this.maxCapacity = capacity;
@@ -110,7 +117,7 @@ public class Station {
 	 */
 	public synchronized int returnBina() throws NoSlotAvailException {
 		if (getFreeDocks() == 0)
-			throw new NoSlotAvailException();
+			throw new NoSlotAvailException("Station " + getId() + " has no free slots.");
 		freeDocks.decrementAndGet();
 		totalReturns.incrementAndGet();
 		return getBonus();
@@ -121,7 +128,7 @@ public class Station {
 	 */
 	public synchronized void getBina() throws NoBinaAvailException {
 		if (getFreeDocks() == getMaxCapacity())
-			throw new NoBinaAvailException();
+			throw new NoBinaAvailException("There are no Binas at this station.");
 		freeDocks.incrementAndGet();
 		totalGets.incrementAndGet();
 	}

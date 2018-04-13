@@ -83,7 +83,9 @@ public class BinasManager {
 	public synchronized StationClient getStation(String stationId) throws InvalidStationException {
 		try {
 			UDDIRecord record = endpointManager.getUddiNaming().lookupRecord("A60_Station" + stationId);
-			if (record == null) throw new InvalidStationException();
+			if (record == null)
+				throw new InvalidStationException("Record is null");
+
 			return new StationClient(record.getUrl());
 
 		} catch (UDDINamingException | StationClientException e) {
@@ -95,10 +97,10 @@ public class BinasManager {
 		User u = getUser(email);
 
 		if (u.hasBina())
-			throw new AlreadyHasBinaException();
+			throw new AlreadyHasBinaException("User " + u.getEmail() + " is already renting a BINA.");
 
 		if (u.getCredit() <= 0)
-			throw new NoCreditException();
+			throw new NoCreditException("User " + u.getEmail() + " is out of credit");
 
 		StationClient s = getStation(stationId);
 		try {
@@ -106,7 +108,7 @@ public class BinasManager {
 			u.setHasBina(true);
 			u.decreaseCredit(1);
 		} catch (org.binas.station.ws.NoBinaAvail_Exception e) {
-			throw new NoBinaAvailException();
+			throw new NoBinaAvailException("No Binas available at station " + s.getInfo().getId());
 		}
 
 	}
@@ -115,30 +117,33 @@ public class BinasManager {
 		User u = getUser(email);
 
 		if (!u.hasBina())
-			throw new NoBinaRentedException();
+			throw new NoBinaRentedException("User " + u.getEmail() + " has no Bina to return.");
 
 		StationClient s = getStation(stationId);
 		try {
 			u.increaseCredit(s.returnBina());
 			u.setHasBina(false);
 		} catch (NoSlotAvail_Exception e) {
-			throw new FullStationException();
+			throw new FullStationException("Station " + s.getInfo().getId() + " has no free docks.");
 		}
 	}
 
 	public synchronized User getUser(String email) throws UserNotExistsException {
-		if (email == null|| !users.containsKey(email))
-			throw new UserNotExistsException();
+		if (email == null) {
+			throw new UserNotExistsException("Email is null");
+		} else if (!users.containsKey(email)) {
+			throw new UserNotExistsException("No user with email " + email);
+		}
 
 		return users.get(email);
 	}
 
 	public synchronized User createUser(String email) throws EmailExistsException, InvalidEmailException {
-		if(email == null)
+		if (email == null)
 			throw new InvalidEmailException("Email is null");
 
 		if (users.containsKey(email))
-			throw new EmailExistsException();
+			throw new EmailExistsException(email + " is already registered.");
 
 		User u = new User(email, this.initialCredit.get());
 

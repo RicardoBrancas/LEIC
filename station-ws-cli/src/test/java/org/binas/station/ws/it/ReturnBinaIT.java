@@ -17,26 +17,58 @@ public class ReturnBinaIT extends BaseIT {
             client.getBina();
 
             StationView sv = client.getInfo();
-            Assert.assertEquals(sv.getAvailableBinas(), 9);
-            Assert.assertEquals(sv.getFreeDocks(), 1);
-            Assert.assertEquals(sv.getTotalGets(), 1);
+            Assert.assertEquals(9, sv.getAvailableBinas());
+            Assert.assertEquals(1, sv.getFreeDocks());
+            Assert.assertEquals(1, sv.getTotalGets());
 
             client.returnBina();
 
             sv = client.getInfo();
-            Assert.assertEquals(sv.getAvailableBinas(), 10);
-            Assert.assertEquals(sv.getFreeDocks(), 0);
-            Assert.assertEquals(sv.getTotalReturns(), 1);
+            Assert.assertEquals(10, sv.getAvailableBinas());
+            Assert.assertEquals(0, sv.getFreeDocks());
+            Assert.assertEquals(1, sv.getTotalReturns());
         } catch (NoSlotAvail_Exception e) {
             Assert.fail();
         }
     }
 
-    @Test(expected = NoSlotAvail_Exception.class)
-    public void noAvailSlotReturnBinaTest() throws BadInit_Exception, NoSlotAvail_Exception {
+    @Test
+    public void success2ReturnBinaTest() throws BadInit_Exception, NoBinaAvail_Exception {
         client.testInit(0, 0, 10, 0);
-        client.returnBina();
+        try {
+            client.getBina();
+            client.getBina();
+            client.getBina();
 
+            StationView sv = client.getInfo();
+            Assert.assertEquals(7, sv.getAvailableBinas());
+            Assert.assertEquals(3, sv.getFreeDocks());
+            Assert.assertEquals(3, sv.getTotalGets());
+
+            client.returnBina();
+            client.returnBina();
+
+            sv = client.getInfo();
+            Assert.assertEquals(9, sv.getAvailableBinas());
+            Assert.assertEquals(1, sv.getFreeDocks());
+            Assert.assertEquals(2, sv.getTotalReturns());
+        } catch (NoSlotAvail_Exception e) {
+            Assert.fail();
+        }
+    }
+
+    @Test
+    public void noAvailSlotReturnBinaTest() throws BadInit_Exception {
+        client.testInit(0, 0, 10, 0);
+        try {
+            client.returnBina();
+            Assert.fail();
+        } catch (NoSlotAvail_Exception e) {
+            StationView sv = client.getInfo();
+            Assert.assertEquals(10, sv.getAvailableBinas());
+            Assert.assertEquals(0, sv.getFreeDocks());
+            Assert.assertEquals(0, sv.getTotalReturns());
+        }
     }
 
     @Override

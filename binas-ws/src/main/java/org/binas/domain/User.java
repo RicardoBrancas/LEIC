@@ -19,8 +19,13 @@ public class User {
 	}
 
 	private void checkParams(String email) throws InvalidEmailException {
-		if (email == null || email.isEmpty() || !email.matches(EMAIL_FORMAT))
-			throw new InvalidEmailException();
+		if (email == null) {
+			throw new InvalidEmailException("Email is null");
+		} else if (email.isEmpty()) {
+			throw new InvalidEmailException("Email is empty");
+		} else if (!email.matches(EMAIL_FORMAT)) {
+			throw new InvalidEmailException("Email doesn't match the format");
+		}
 	}
 
 	public String getEmail() {
@@ -53,9 +58,10 @@ public class User {
 	}
 
 	public synchronized void increaseCredit(int credit) {
-		setCredit(getCredit()+credit);
+		setCredit(getCredit() + credit);
 	}
+
 	public synchronized void decreaseCredit(int credit) {
-		setCredit(getCredit()-credit);
+		setCredit(getCredit() - credit);
 	}
 }
