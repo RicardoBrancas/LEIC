@@ -140,7 +140,7 @@ public class BinasPortImpl implements BinasPortType {
 			stationClient.testInit(x, y, capacity, returnPrize);
 
 		} catch (InvalidStationException | org.binas.station.ws.BadInit_Exception e) {
-			e.printStackTrace(); //TODO manage exception
+			throw new RuntimeException(e);
 		}
 	}
 
