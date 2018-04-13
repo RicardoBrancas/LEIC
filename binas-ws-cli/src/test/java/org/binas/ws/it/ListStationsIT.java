@@ -18,8 +18,8 @@ public class ListStationsIT extends BaseIT {
 
 		Assert.assertNotNull(stations);
 		Assert.assertEquals(1, stations.size());
-		Assert.assertEquals(new Integer(22), stations.get(0).getCoordinate().getX());
-		Assert.assertEquals(new Integer(7),  stations.get(0).getCoordinate().getY());
+		Assert.assertEquals(22, (int) stations.get(0).getCoordinate().getX());
+		Assert.assertEquals(7,  (int) stations.get(0).getCoordinate().getY());
 	}
 
 	@Test
@@ -31,8 +31,8 @@ public class ListStationsIT extends BaseIT {
 
 		Assert.assertNotNull(stations);
 		Assert.assertEquals(1, stations.size());
-		Assert.assertEquals(new Integer(50), stations.get(0).getCoordinate().getX());
-		Assert.assertEquals(new Integer(50),  stations.get(0).getCoordinate().getY());
+		Assert.assertEquals(50, (int) stations.get(0).getCoordinate().getX());
+		Assert.assertEquals(50, (int) stations.get(0).getCoordinate().getY());
 	}
 
 	@Test

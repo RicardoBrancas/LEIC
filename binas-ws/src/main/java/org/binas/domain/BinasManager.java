@@ -6,22 +6,26 @@ import org.binas.station.ws.cli.StationClient;
 import org.binas.station.ws.cli.StationClientException;
 import org.binas.ws.BinasEndpointManager;
 import org.binas.ws.CoordinatesView;
+import org.binas.ws.InvalidEmail;
 import org.binas.ws.StationView;
 import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINamingException;
 import pt.ulisboa.tecnico.sdis.ws.uddi.UDDIRecord;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 public class BinasManager {
 
-	private int initialCredit = 10;
+	private final AtomicInteger initialCredit;
 
-	private final Map<String, User> users = new HashMap<>();
+	private final Map<String, User> users = new ConcurrentHashMap<>();
 
 	private BinasEndpointManager endpointManager;
 
 	private BinasManager() {
+		initialCredit = new AtomicInteger(10);
 	}
 
 	public static synchronized BinasManager getInstance() {
@@ -29,7 +33,7 @@ public class BinasManager {
 	}
 
 	public void setInitialCredit(int initialCredit) {
-		this.initialCredit = initialCredit;
+		this.initialCredit.set(initialCredit);
 	}
 
 	public static CoordinatesView convertCoordinatesView(org.binas.station.ws.CoordinatesView cv) {
@@ -55,7 +59,7 @@ public class BinasManager {
 		return Math.abs(c1.getX() - c2.getX() + c1.getY() - c2.getY());
 	}
 
-	public List<StationClient> listStations() {
+	public synchronized List<StationClient> listStations() {
 		try {
 			return endpointManager.getUddiNaming().listRecords("A60_Station%").stream()
 					.map(uddiRecord -> {
@@ -75,7 +79,7 @@ public class BinasManager {
 		return null; //should never happen
 	}
 
-	public StationClient getStation(String stationId) throws InvalidStationException {
+	public synchronized StationClient getStation(String stationId) throws InvalidStationException {
 		try {
 			UDDIRecord record = endpointManager.getUddiNaming().lookupRecord("A60_Station" + stationId);
 			if (record == null) throw new InvalidStationException();
@@ -86,7 +90,7 @@ public class BinasManager {
 		}
 	}
 
-	public void rentBina(String stationId, String email) throws AlreadyHasBinaException, InvalidStationException, NoBinaAvailException, NoCreditException, UserNotExistsException {
+	public synchronized void rentBina(String stationId, String email) throws AlreadyHasBinaException, InvalidStationException, NoBinaAvailException, NoCreditException, UserNotExistsException {
 		User u = getUser(email);
 
 		if (u.hasBina())
@@ -106,7 +110,7 @@ public class BinasManager {
 
 	}
 
-	public void returnBina(String stationId, String email) throws FullStationException, InvalidStationException, NoBinaRentedException, UserNotExistsException {
+	public synchronized void returnBina(String stationId, String email) throws FullStationException, InvalidStationException, NoBinaRentedException, UserNotExistsException {
 		User u = getUser(email);
 
 		if (!u.hasBina())
@@ -121,18 +125,21 @@ public class BinasManager {
 		}
 	}
 
-	public User getUser(String email) throws UserNotExistsException {
-		if (!users.containsKey(email))
+	public synchronized User getUser(String email) throws UserNotExistsException {
+		if (email == null|| !users.containsKey(email))
 			throw new UserNotExistsException();
 
 		return users.get(email);
 	}
 
-	public User createUser(String email) throws EmailExistsException, InvalidEmailException {
+	public synchronized User createUser(String email) throws EmailExistsException, InvalidEmailException {
+		if(email == null)
+			throw new InvalidEmailException("Email is null");
+
 		if (users.containsKey(email))
 			throw new EmailExistsException();
 
-		User u = new User(email, this.initialCredit);
+		User u = new User(email, this.initialCredit.get());
 
 		users.put(email, u);
 
@@ -143,7 +150,7 @@ public class BinasManager {
 		users.clear();
 	}
 
-	public void setEndpointManager(BinasEndpointManager endpointManager) {
+	public synchronized void setEndpointManager(BinasEndpointManager endpointManager) {
 		this.endpointManager = endpointManager;
 	}
 
@@ -154,5 +161,4 @@ public class BinasManager {
 	private static class SingletonHolder {
 		private static final BinasManager INSTANCE = new BinasManager();
 	}
-
 }
