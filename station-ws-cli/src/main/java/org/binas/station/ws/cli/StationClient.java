@@ -4,7 +4,9 @@ import org.binas.station.ws.*;
 import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINaming;
 import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINamingException;
 
+import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.ws.BindingProvider;
+import javax.xml.ws.Holder;
 import java.util.Map;
 
 /**
@@ -122,6 +124,16 @@ public class StationClient implements StationPortType {
 	@Override
 	public int returnBina() throws NoSlotAvail_Exception {
 		return port.returnBina();
+	}
+
+	@Override
+	public void getBalance(String email, Holder<Integer> getBalance, Holder<XMLGregorianCalendar> tag) {
+		port.getBalance(email, getBalance, tag);
+	}
+
+	@Override
+	public void setBalance(String email, Integer balance, XMLGregorianCalendar tag) {
+		port.setBalance(email, balance, tag);
 	}
 
 	// test control operations ------------------------------------------------

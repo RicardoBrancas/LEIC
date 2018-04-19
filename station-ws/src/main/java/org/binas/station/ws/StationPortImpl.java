@@ -7,13 +7,15 @@ import org.binas.station.domain.exception.NoBinaAvailException;
 import org.binas.station.domain.exception.NoSlotAvailException;
 
 import javax.jws.WebService;
+import javax.xml.datatype.XMLGregorianCalendar;
+import javax.xml.ws.Holder;
 
 /**
  * This class implements the Web Service port type (interface). The annotations
  * below "map" the Java class to the WSDL definitions.
  */
 @WebService(endpointInterface = "org.binas.station.ws.StationPortType",
-		wsdlLocation = "station.1_0.wsdl",
+		wsdlLocation = "station.2_0.wsdl",
 		name = "StationWebService",
 		portName = "StationPort",
 		targetNamespace = "http://ws.station.binas.org/",
@@ -66,6 +68,16 @@ public class StationPortImpl implements StationPortType {
 		} catch (NoBinaAvailException e) {
 			throwNoBinaAvail(e.getMessage());
 		}
+	}
+
+	@Override
+	public void getBalance(String email, Holder<Integer> getBalance, Holder<XMLGregorianCalendar> tag) {
+		//NOTE: holders are like C references. Used by jax-ws since we can't return multiple values
+	}
+
+	@Override
+	public void setBalance(String email, Integer balance, XMLGregorianCalendar tag) {
+
 	}
 
 	/**
