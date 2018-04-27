@@ -156,7 +156,7 @@
             <xs:complexType name="getBalanceResponse">
                 <xs:sequence>
                     <xs:element name="getBalance" type="xs:int"/>
-                    <xs:element name="tag" type="xs:dateTime"/>
+                    <xs:element name="tag" type="xs:int"/>
                 </xs:sequence>
             </xs:complexType>
             <xs:element name="getBalanceResponse" type="tns:getBalanceResponse"/>
@@ -165,7 +165,7 @@
                 <xs:sequence>
                     <xs:element name="email" type="xs:string" maxOccurs="1" minOccurs="0"/>
                     <xs:element name="balance" type="xs:int" maxOccurs="1" minOccurs="0"/>
-                    <xs:element name="tag" type="xs:dateTime" maxOccurs="1" minOccurs="0"/>
+                    <xs:element name="tag" type="xs:int" maxOccurs="1" minOccurs="0"/>
                 </xs:sequence>
             </xs:complexType>
             <xs:element name="setBalance" type="tns:setBalance"/>

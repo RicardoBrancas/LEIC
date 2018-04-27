@@ -4,6 +4,8 @@ import org.binas.station.domain.exception.BadInitException;
 import org.binas.station.domain.exception.NoBinaAvailException;
 import org.binas.station.domain.exception.NoSlotAvailException;
 
+import javax.xml.ws.Holder;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -17,6 +19,28 @@ public class Station {
 	private static final Coordinates DEFAULT_COORDINATES = new Coordinates(5, 5);
 	private static final int DEFAULT_MAX_CAPACITY = 20;
 	private static final int DEFAULT_BONUS = 0;
+	private static class User{
+		private int balance;
+		private int tag;
+		public User(int balance, int tag){
+			this.balance = balance;
+			this.tag = tag;
+		}
+
+		public void setBalance(Integer balance) {
+			this.balance = balance;
+		}
+		public Integer getBalance(){
+			return this.balance;
+		}
+		public void setTag(Integer tag){
+			this.tag = tag;
+		}
+		public Integer getTag(){
+			return this.tag;
+		}
+	}
+	private static Map<String,User> users;
 
 	/**
 	 * Station identifier.
@@ -131,6 +155,26 @@ public class Station {
 			throw new NoBinaAvailException("There are no Binas at this station.");
 		freeDocks.incrementAndGet();
 		totalGets.incrementAndGet();
+	}
+
+
+	public synchronized void getBalance(String email, Holder<Integer> balance, Holder<Integer> tag) {
+		User u  = users.get(email);
+		if(u==null){
+			balance.value = 0;
+			tag.value = -1;
+		}
+		balance.value = u.getBalance();
+		tag.value = u.getTag();
+	}
+	public synchronized void setBalance(String email, Integer balance,Integer tag){
+		User u  = users.get(email);
+		if(u==null){
+			users.put(email, new User(balance,tag));
+		} else if(u.getTag()<tag){
+			u.setTag(tag);
+			u.setBalance(balance);
+		}
 	}
 
 	// Getters -------------------------------------------------------------

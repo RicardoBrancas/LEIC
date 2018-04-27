@@ -1,13 +1,24 @@
 package org.binas.station.ws.cli;
 
 import org.binas.station.ws.*;
+import org.binas.station.ws.BadInit_Exception;
+import org.binas.station.ws.GetBalanceResponse;
+import org.binas.station.ws.NoBinaAvail_Exception;
+import org.binas.station.ws.NoSlotAvail_Exception;
+import org.binas.station.ws.SetBalanceResponse;
+import org.binas.station.ws.StationPortType;
+import org.binas.station.ws.StationService;
+import org.binas.station.ws.StationView;
 import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINaming;
 import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINamingException;
 
 import javax.xml.datatype.XMLGregorianCalendar;
+import javax.xml.ws.AsyncHandler;
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.Holder;
+import javax.xml.ws.Response;
 import java.util.Map;
+import java.util.concurrent.Future;
 
 /**
  * Client port wrapper.
@@ -127,12 +138,32 @@ public class StationClient implements StationPortType {
 	}
 
 	@Override
-	public void getBalance(String email, Holder<Integer> getBalance, Holder<XMLGregorianCalendar> tag) {
+	public Response<GetBalanceResponse> getBalanceAsync(String email) {
+		return port.getBalanceAsync(email);
+	}
+
+	@Override
+	public Future<?> getBalanceAsync(String email, AsyncHandler<GetBalanceResponse> asyncHandler) {
+		return port.getBalanceAsync(email, asyncHandler);
+	}
+
+	@Override
+	public void getBalance(String email, Holder<Integer> getBalance, Holder<Integer> tag) {
 		port.getBalance(email, getBalance, tag);
 	}
 
 	@Override
-	public void setBalance(String email, Integer balance, XMLGregorianCalendar tag) {
+	public Response<SetBalanceResponse> setBalanceAsync(String email, Integer balance, Integer tag) {
+		return port.setBalanceAsync(email,balance,tag);
+	}
+
+	@Override
+	public Future<?> setBalanceAsync(String email, Integer balance, Integer tag, AsyncHandler<SetBalanceResponse> asyncHandler) {
+		return port.setBalanceAsync(email,balance,tag,asyncHandler);
+	}
+
+	@Override
+	public void setBalance(String email, Integer balance, Integer tag) {
 		port.setBalance(email, balance, tag);
 	}
 
@@ -152,7 +183,7 @@ public class StationClient implements StationPortType {
 	//
 	@Override
 	public void testInit(int x, int y, int capacity, int returnPrize) throws
-			BadInit_Exception {
+            BadInit_Exception {
 		port.testInit(x, y, capacity, returnPrize);
 	}
 

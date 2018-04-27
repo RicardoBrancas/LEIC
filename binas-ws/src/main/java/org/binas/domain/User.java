@@ -1,23 +1,36 @@
 package org.binas.domain;
 
 import org.binas.domain.exception.InvalidEmailException;
+import org.binas.station.ws.cli.StationClient;
 import org.binas.ws.UserView;
+
+import javax.xml.ws.Holder;
+import java.util.List;
 
 public class User {
 
 	private final static String EMAIL_FORMAT = "\\w+(\\.\\w+)*@\\w+(\\.\\w+)*";
-
+	private int mID = -1;
 	private String email;
 	private boolean hasBina;
-	private int credit;
+	private Integer credit;
+	private BinasManager binasInstance;
 
-	public User(String email, int credit) throws InvalidEmailException {
+
+	public User(String email, int credit, BinasManager binasInstance) throws InvalidEmailException {
 		checkParams(email);
 
 		this.email = email;
+		this.binasInstance = binasInstance;
+
+		//Only if user is not already in the system.
 		this.credit = credit;
+
+		//update credit (only if user is in system)
+		getCredit();
 	}
 
+	//TODO check all parameters
 	private void checkParams(String email) throws InvalidEmailException {
 		if (email == null) {
 			throw new InvalidEmailException("Email is null");
@@ -40,12 +53,57 @@ public class User {
 		this.hasBina = hasBina;
 	}
 
+	//TODO: confirm this is synchronized at every call
 	public int getCredit() {
+		if(credit!=null)
+			return credit;
+
+		//number of votes necessary
+		int nQC = binasInstance.getQC();
+
+		List<StationClient> scs = binasInstance.listStations();
+
+		Holder<Integer> newBalance = new Holder<Integer>();
+		Holder<Integer> newMID = new Holder<Integer>();
+		QuorumConsensus qc = new QuorumConsensusGetBalance(scs, nQC, getEmail(),newBalance,newMID);
+
+		while(!qc.isFinished()){
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+				//TODO: Handle exception
+				e.printStackTrace();
+			}
+		}
+		int newMIDVal = newMID.value;
+		int newBalanceVal = newBalance.value;
+		if(mID<newMIDVal){
+			mID = newMIDVal;
+			credit = newBalanceVal;
+		}
 		return credit;
 	}
 
 	public void setCredit(int credit) {
-		this.credit = credit;
+		List<StationClient> scs = binasInstance.listStations();
+		//number of votes necessary
+		int nQC = binasInstance.getQC();
+		QuorumConsensus qc = new QuorumConsensusSetBalance(scs, nQC, getEmail(),credit,mID);
+
+		while(!qc.isFinished()){
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+				//TODO handle exception
+				e.printStackTrace();
+			}
+		}
+
+		//this increment means
+		//the user's tag is always
+		//one step ahead of the replica tag...
+		//maybe they should both be the same...
+		mID++;
 	}
 
 	public UserView getView() {
@@ -56,7 +114,6 @@ public class User {
 
 		return v;
 	}
-
 	public synchronized void increaseCredit(int credit) {
 		setCredit(getCredit() + credit);
 	}

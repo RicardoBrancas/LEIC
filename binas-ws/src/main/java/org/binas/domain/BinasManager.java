@@ -20,6 +20,9 @@ public class BinasManager {
 
 	private final AtomicInteger initialCredit;
 
+	//TODO: This should be an argument passed at compile or runtime
+	private final int nStations = 3;
+
 	private final Map<String, User> users = new ConcurrentHashMap<>();
 
 	private BinasEndpointManager endpointManager;
@@ -80,6 +83,14 @@ public class BinasManager {
 		return new ArrayList<StationClient>(); //should never happen
 	}
 
+	/*
+	 * returns the number for the quorum consensus.
+	 */
+	public int getQC(){
+		//TODO: Verify this is integer division
+		return nStations/2+1;
+	}
+
 	public synchronized StationClient getStation(String stationId) throws InvalidStationException {
 		try {
 			UDDIRecord record = endpointManager.getUddiNaming().lookupRecord("A60_Station" + stationId);
@@ -121,7 +132,8 @@ public class BinasManager {
 
 		StationClient s = getStation(stationId);
 		try {
-			u.increaseCredit(s.returnBina());
+			int credit = s.returnBina();
+			u.increaseCredit(credit);
 			u.setHasBina(false);
 		} catch (NoSlotAvail_Exception e) {
 			throw new FullStationException("Station " + s.getInfo().getId() + " has no free docks.");
@@ -145,7 +157,7 @@ public class BinasManager {
 		if (users.containsKey(email))
 			throw new EmailExistsException(email + " is already registered.");
 
-		User u = new User(email, this.initialCredit.get());
+		User u = new User(email, this.initialCredit.get(), this);
 
 		users.put(email, u);
 

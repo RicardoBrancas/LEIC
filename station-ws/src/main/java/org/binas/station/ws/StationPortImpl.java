@@ -71,13 +71,14 @@ public class StationPortImpl implements StationPortType {
 	}
 
 	@Override
-	public void getBalance(String email, Holder<Integer> getBalance, Holder<XMLGregorianCalendar> tag) {
+	public void getBalance(String email, Holder<Integer> balance, Holder<Integer> tag) {
 		//NOTE: holders are like C references. Used by jax-ws since we can't return multiple values
+		Station.getInstance().getBalance(email, balance, tag);
 	}
 
 	@Override
-	public void setBalance(String email, Integer balance, XMLGregorianCalendar tag) {
-
+	public synchronized void setBalance(String email, Integer balance, Integer tag) {
+		Station.getInstance().setBalance(email, balance,tag);
 	}
 
 	/**

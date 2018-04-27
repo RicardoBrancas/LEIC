@@ -25,6 +25,7 @@ public class BinasClientApp {
         if (wsURL != null) {
             System.out.printf("Creating client for server at %s%n", wsURL);
             new BinasClient(wsURL);
+
         } else if (uddiURL != null) {
             System.out.printf("Creating client using UDDI at %s for server with name %s%n",
                     uddiURL, wsName);
