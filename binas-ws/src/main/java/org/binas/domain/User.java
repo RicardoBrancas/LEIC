@@ -55,7 +55,7 @@ public class User {
 
 	//TODO: confirm this is synchronized at every call
 	public int getCredit() {
-		if(credit!=null)
+		if (credit != null)
 			return credit;
 
 		//number of votes necessary
@@ -65,9 +65,9 @@ public class User {
 
 		Holder<Integer> newBalance = new Holder<Integer>();
 		Holder<Integer> newMID = new Holder<Integer>();
-		QuorumConsensus qc = new QuorumConsensusGetBalance(scs, nQC, getEmail(),newBalance,newMID);
+		QuorumConsensus qc = new QuorumConsensusGetBalance(scs, nQC, getEmail(), newBalance, newMID);
 
-		while(!qc.isFinished()){
+		while (!qc.isFinished()) {
 			try {
 				Thread.sleep(100);
 			} catch (InterruptedException e) {
@@ -77,7 +77,7 @@ public class User {
 		}
 		int newMIDVal = newMID.value;
 		int newBalanceVal = newBalance.value;
-		if(mID<newMIDVal){
+		if (mID < newMIDVal) {
 			mID = newMIDVal;
 			credit = newBalanceVal;
 		}
@@ -88,9 +88,9 @@ public class User {
 		List<StationClient> scs = binasInstance.listStations();
 		//number of votes necessary
 		int nQC = binasInstance.getQC();
-		QuorumConsensus qc = new QuorumConsensusSetBalance(scs, nQC, getEmail(),credit,mID);
+		QuorumConsensus qc = new QuorumConsensusSetBalance(scs, nQC, getEmail(), credit, mID);
 
-		while(!qc.isFinished()){
+		while (!qc.isFinished()) {
 			try {
 				Thread.sleep(100);
 			} catch (InterruptedException e) {
@@ -104,6 +104,8 @@ public class User {
 		//one step ahead of the replica tag...
 		//maybe they should both be the same...
 		mID++;
+
+		this.credit = credit;
 	}
 
 	public UserView getView() {
@@ -114,6 +116,7 @@ public class User {
 
 		return v;
 	}
+
 	public synchronized void increaseCredit(int credit) {
 		setCredit(getCredit() + credit);
 	}

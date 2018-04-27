@@ -19,7 +19,7 @@ public class ListStationsIT extends BaseIT {
 		Assert.assertNotNull(stations);
 		Assert.assertEquals(1, stations.size());
 		Assert.assertEquals(22, (int) stations.get(0).getCoordinate().getX());
-		Assert.assertEquals(7,  (int) stations.get(0).getCoordinate().getY());
+		Assert.assertEquals(7, (int) stations.get(0).getCoordinate().getY());
 	}
 
 	@Test

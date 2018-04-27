@@ -7,7 +7,6 @@ import org.binas.station.domain.exception.NoBinaAvailException;
 import org.binas.station.domain.exception.NoSlotAvailException;
 
 import javax.jws.WebService;
-import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.ws.Holder;
 
 /**
@@ -78,7 +77,7 @@ public class StationPortImpl implements StationPortType {
 
 	@Override
 	public synchronized void setBalance(String email, Integer balance, Integer tag) {
-		Station.getInstance().setBalance(email, balance,tag);
+		Station.getInstance().setBalance(email, balance, tag);
 	}
 
 	/**

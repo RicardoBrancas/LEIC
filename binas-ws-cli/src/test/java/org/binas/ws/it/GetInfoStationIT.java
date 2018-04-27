@@ -1,6 +1,7 @@
 package org.binas.ws.it;
 
-import org.binas.ws.*;
+import org.binas.ws.InvalidStation_Exception;
+import org.binas.ws.StationView;
 import org.junit.Assert;
 import org.junit.Test;
 

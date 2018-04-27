@@ -122,7 +122,7 @@ public class BinasClient implements BinasPortType {
 
 	@Override
 	public List<StationView> listStations(Integer numberOfStations,
-										  CoordinatesView coordinates) {
+	                                      CoordinatesView coordinates) {
 		return port.listStations(numberOfStations, coordinates);
 	}
 

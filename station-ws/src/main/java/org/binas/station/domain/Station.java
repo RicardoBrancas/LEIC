@@ -5,6 +5,7 @@ import org.binas.station.domain.exception.NoBinaAvailException;
 import org.binas.station.domain.exception.NoSlotAvailException;
 
 import javax.xml.ws.Holder;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -19,10 +20,12 @@ public class Station {
 	private static final Coordinates DEFAULT_COORDINATES = new Coordinates(5, 5);
 	private static final int DEFAULT_MAX_CAPACITY = 20;
 	private static final int DEFAULT_BONUS = 0;
-	private static class User{
+
+	private static class User {
 		private int balance;
 		private int tag;
-		public User(int balance, int tag){
+
+		public User(int balance, int tag) {
 			this.balance = balance;
 			this.tag = tag;
 		}
@@ -30,17 +33,21 @@ public class Station {
 		public void setBalance(Integer balance) {
 			this.balance = balance;
 		}
-		public Integer getBalance(){
+
+		public Integer getBalance() {
 			return this.balance;
 		}
-		public void setTag(Integer tag){
+
+		public void setTag(Integer tag) {
 			this.tag = tag;
 		}
-		public Integer getTag(){
+
+		public Integer getTag() {
 			return this.tag;
 		}
 	}
-	private static Map<String,User> users;
+
+	private static Map<String, User> users = new HashMap<>();
 
 	/**
 	 * Station identifier.
@@ -159,21 +166,27 @@ public class Station {
 
 
 	public synchronized void getBalance(String email, Holder<Integer> balance, Holder<Integer> tag) {
-		User u  = users.get(email);
-		if(u==null){
+		User user = users.get(email);
+		if (user == null) {
 			balance.value = 0;
 			tag.value = -1;
 		}
-		balance.value = u.getBalance();
-		tag.value = u.getTag();
+		balance.value = user.getBalance();
+		tag.value = user.getTag();
 	}
-	public synchronized void setBalance(String email, Integer balance,Integer tag){
-		User u  = users.get(email);
-		if(u==null){
-			users.put(email, new User(balance,tag));
-		} else if(u.getTag()<tag){
-			u.setTag(tag);
-			u.setBalance(balance);
+
+	public synchronized void setBalance(String email, Integer balance, Integer tag) {
+		//if (email == null)
+		//	throw new RuntimeException("Funny Exception");
+
+		//TODO: Figure out why email is null!
+		User user = users.get(email);
+
+		if (user == null) {
+			users.put(email, new User(balance, tag));
+		} else if (user.getTag() < tag) {
+			user.setTag(tag);
+			user.setBalance(balance);
 		}
 	}
 

@@ -1,7 +1,5 @@
 package org.binas.domain.exception;
 
-import org.binas.ws.EmailExists;
-import org.binas.ws.EmailExists_Exception;
 import org.binas.ws.UserNotExists;
 import org.binas.ws.UserNotExists_Exception;
 

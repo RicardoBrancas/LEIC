@@ -6,12 +6,14 @@ import org.binas.station.ws.cli.StationClient;
 import org.binas.station.ws.cli.StationClientException;
 import org.binas.ws.BinasEndpointManager;
 import org.binas.ws.CoordinatesView;
-import org.binas.ws.InvalidEmail;
 import org.binas.ws.StationView;
 import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINamingException;
 import pt.ulisboa.tecnico.sdis.ws.uddi.UDDIRecord;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -86,9 +88,9 @@ public class BinasManager {
 	/*
 	 * returns the number for the quorum consensus.
 	 */
-	public int getQC(){
+	public int getQC() {
 		//TODO: Verify this is integer division
-		return nStations/2+1;
+		return nStations / 2 + 1;
 	}
 
 	public synchronized StationClient getStation(String stationId) throws InvalidStationException {

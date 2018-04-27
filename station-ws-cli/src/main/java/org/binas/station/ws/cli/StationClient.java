@@ -1,18 +1,9 @@
 package org.binas.station.ws.cli;
 
 import org.binas.station.ws.*;
-import org.binas.station.ws.BadInit_Exception;
-import org.binas.station.ws.GetBalanceResponse;
-import org.binas.station.ws.NoBinaAvail_Exception;
-import org.binas.station.ws.NoSlotAvail_Exception;
-import org.binas.station.ws.SetBalanceResponse;
-import org.binas.station.ws.StationPortType;
-import org.binas.station.ws.StationService;
-import org.binas.station.ws.StationView;
 import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINaming;
 import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINamingException;
 
-import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.ws.AsyncHandler;
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.Holder;
@@ -154,12 +145,12 @@ public class StationClient implements StationPortType {
 
 	@Override
 	public Response<SetBalanceResponse> setBalanceAsync(String email, Integer balance, Integer tag) {
-		return port.setBalanceAsync(email,balance,tag);
+		return port.setBalanceAsync(email, balance, tag);
 	}
 
 	@Override
 	public Future<?> setBalanceAsync(String email, Integer balance, Integer tag, AsyncHandler<SetBalanceResponse> asyncHandler) {
-		return port.setBalanceAsync(email,balance,tag,asyncHandler);
+		return port.setBalanceAsync(email, balance, tag, asyncHandler);
 	}
 
 	@Override
@@ -183,7 +174,7 @@ public class StationClient implements StationPortType {
 	//
 	@Override
 	public void testInit(int x, int y, int capacity, int returnPrize) throws
-            BadInit_Exception {
+			BadInit_Exception {
 		port.testInit(x, y, capacity, returnPrize);
 	}
 

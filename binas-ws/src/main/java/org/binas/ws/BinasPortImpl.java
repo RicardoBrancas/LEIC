@@ -39,9 +39,9 @@ public class BinasPortImpl implements BinasPortType {
 
 	@Override
 	public List<StationView> listStations(Integer numberOfStations, CoordinatesView coordinates) {
-		if(numberOfStations < 0 || coordinates == null)
+		if (numberOfStations < 0 || coordinates == null)
 			return new ArrayList<>();
-		
+
 		return BinasManager.getInstance().listStations().stream()
 				.map(u -> BinasManager.convertStationView(u.getInfo()))
 				.sorted(Comparator.comparingInt(v ->

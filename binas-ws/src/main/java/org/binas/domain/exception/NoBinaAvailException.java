@@ -1,7 +1,6 @@
 package org.binas.domain.exception;
 
 import org.binas.ws.NoBinaAvail;
-import org.binas.ws.NoBinaAvail;
 import org.binas.ws.NoBinaAvail_Exception;
 
 public class NoBinaAvailException extends Exception {
