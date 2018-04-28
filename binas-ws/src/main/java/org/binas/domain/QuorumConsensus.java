@@ -5,9 +5,9 @@ import org.binas.station.ws.cli.StationClient;
 import java.util.Collection;
 import java.util.List;
 
-//TODO should *maybe* implement Runnable in the future
-public abstract class QuorumConsensus {
-	private int nVotes;
+//TODO should *maybe* implement Runnable/RunnableFuture
+public abstract class QuorumConsensus<T> {
+	private final int nVotes;
 	private int currentVotes;
 	private boolean isFinished;
 	private Collection<StationClient> stationClients;
@@ -34,6 +34,9 @@ public abstract class QuorumConsensus {
 			quorumQuery(sc);
 		}
 	}
+
+	//uniform way to get values out of a quorum consensus
+	public abstract T get() throws InterruptedException;
 
 	abstract void quorumQuery(StationClient sc);
 }

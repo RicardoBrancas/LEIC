@@ -8,6 +8,7 @@ import javax.xml.ws.AsyncHandler;
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.Holder;
 import javax.xml.ws.Response;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Future;
 
@@ -139,7 +140,7 @@ public class StationClient implements StationPortType {
 	}
 
 	@Override
-	public void getBalance(String email, Holder<Integer> getBalance, Holder<Integer> tag) {
+	public void getBalance(String email, Holder<Integer> getBalance, Holder<Integer> tag) throws UserNotExists_Exception {
 		port.getBalance(email, getBalance, tag);
 	}
 
@@ -156,6 +157,21 @@ public class StationClient implements StationPortType {
 	@Override
 	public void setBalance(String email, Integer balance, Integer tag) {
 		port.setBalance(email, balance, tag);
+	}
+
+	@Override
+	public Response<GetUsersResponse> getUsersAsync() {
+		return port.getUsersAsync();
+	}
+
+	@Override
+	public Future<?> getUsersAsync(AsyncHandler<GetUsersResponse> asyncHandler) {
+		return port.getUsersAsync(asyncHandler);
+	}
+
+	@Override
+	public List<UserView> getUsers() {
+		return port.getUsers();
 	}
 
 	// test control operations ------------------------------------------------

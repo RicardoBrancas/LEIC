@@ -76,7 +76,9 @@ public class BinasEndpointManager {
 	/**
 	 * Get UDDI Naming instance for contacting UDDI server
 	 */
-	public UDDINaming getUddiNaming() {
+	public UDDINaming getUddiNaming() throws UDDINamingException {
+		if(uddiNaming == null)
+			uddiNaming = new UDDINaming(uddiURL);
 		return uddiNaming;
 	}
 
@@ -144,8 +146,7 @@ public class BinasEndpointManager {
 	/* UDDI */
 
 	void publishToUDDI() throws Exception {
-		uddiNaming = new UDDINaming(uddiURL);
-		uddiNaming.rebind(wsName, wsURL);
+		getUddiNaming().rebind(wsName, wsURL);
 	}
 
 	void unpublishFromUDDI() {

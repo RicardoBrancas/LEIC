@@ -2,12 +2,16 @@ package org.binas.station.ws;
 
 import org.binas.station.domain.Coordinates;
 import org.binas.station.domain.Station;
+import org.binas.station.domain.User;
 import org.binas.station.domain.exception.BadInitException;
 import org.binas.station.domain.exception.NoBinaAvailException;
 import org.binas.station.domain.exception.NoSlotAvailException;
+import org.binas.station.domain.exception.UserNotExistsException;
 
 import javax.jws.WebService;
 import javax.xml.ws.Holder;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * This class implements the Web Service port type (interface). The annotations
@@ -70,14 +74,25 @@ public class StationPortImpl implements StationPortType {
 	}
 
 	@Override
-	public void getBalance(String email, Holder<Integer> balance, Holder<Integer> tag) {
+	public void getBalance(String email, Holder<Integer> balance, Holder<Integer> tag) throws UserNotExists_Exception {
 		//NOTE: holders are like C references. Used by jax-ws since we can't return multiple values
-		Station.getInstance().getBalance(email, balance, tag);
+		try {
+			Station.getInstance().getBalance(email, balance, tag);
+		} catch (UserNotExistsException e) {
+			e.throwWSException();
+		}
 	}
 
 	@Override
 	public synchronized void setBalance(String email, Integer balance, Integer tag) {
 		Station.getInstance().setBalance(email, balance, tag);
+	}
+
+	@Override
+	public List<UserView> getUsers() {
+		return Station.getInstance().getUsers().stream()
+				.map(User::asView)
+				.collect(Collectors.toList());
 	}
 
 	/**

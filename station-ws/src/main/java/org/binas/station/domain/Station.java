@@ -3,8 +3,10 @@ package org.binas.station.domain;
 import org.binas.station.domain.exception.BadInitException;
 import org.binas.station.domain.exception.NoBinaAvailException;
 import org.binas.station.domain.exception.NoSlotAvailException;
+import org.binas.station.domain.exception.UserNotExistsException;
 
 import javax.xml.ws.Holder;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -20,32 +22,6 @@ public class Station {
 	private static final Coordinates DEFAULT_COORDINATES = new Coordinates(5, 5);
 	private static final int DEFAULT_MAX_CAPACITY = 20;
 	private static final int DEFAULT_BONUS = 0;
-
-	private static class User {
-		private int balance;
-		private int tag;
-
-		public User(int balance, int tag) {
-			this.balance = balance;
-			this.tag = tag;
-		}
-
-		public void setBalance(Integer balance) {
-			this.balance = balance;
-		}
-
-		public Integer getBalance() {
-			return this.balance;
-		}
-
-		public void setTag(Integer tag) {
-			this.tag = tag;
-		}
-
-		public Integer getTag() {
-			return this.tag;
-		}
-	}
 
 	private static Map<String, User> users = new HashMap<>();
 
@@ -165,29 +141,28 @@ public class Station {
 	}
 
 
-	public synchronized void getBalance(String email, Holder<Integer> balance, Holder<Integer> tag) {
+	public synchronized void getBalance(String email, Holder<Integer> balance, Holder<Integer> tag) throws UserNotExistsException {
 		User user = users.get(email);
 		if (user == null) {
-			balance.value = 0;
-			tag.value = -1;
+			throw new UserNotExistsException();
 		}
 		balance.value = user.getBalance();
 		tag.value = user.getTag();
 	}
 
 	public synchronized void setBalance(String email, Integer balance, Integer tag) {
-		//if (email == null)
-		//	throw new RuntimeException("Funny Exception");
-
-		//TODO: Figure out why email is null!
 		User user = users.get(email);
 
 		if (user == null) {
-			users.put(email, new User(balance, tag));
+			users.put(email, new User(email, balance, tag));
 		} else if (user.getTag() < tag) {
 			user.setTag(tag);
 			user.setBalance(balance);
 		}
+	}
+
+	public synchronized Collection<User> getUsers() {
+		return users.values();
 	}
 
 	// Getters -------------------------------------------------------------

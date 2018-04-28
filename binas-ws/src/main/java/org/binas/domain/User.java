@@ -85,6 +85,10 @@ public class User {
 		return credit;
 	}
 
+	void _setCredit(int credit) {
+		this.credit = credit;
+	}
+
 	public void setCredit(int credit) {
 		List<StationClient> scs = binasInstance.listStations();
 		//number of votes necessary
@@ -108,6 +112,14 @@ public class User {
 		mID++;
 
 		this.credit = credit;
+	}
+
+	void setTag(int tag) {
+		mID = tag;
+	}
+
+	public int getTag() {
+		return mID;
 	}
 
 	public UserView getView() {

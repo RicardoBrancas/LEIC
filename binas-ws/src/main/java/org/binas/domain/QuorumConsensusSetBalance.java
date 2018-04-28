@@ -4,7 +4,7 @@ import org.binas.station.ws.cli.StationClient;
 
 import java.util.List;
 
-public class QuorumConsensusSetBalance extends QuorumConsensus {
+public class QuorumConsensusSetBalance extends QuorumConsensus<Void> {
 	private String email;
 	private Integer balance;
 	private Integer tag;
@@ -16,6 +16,11 @@ public class QuorumConsensusSetBalance extends QuorumConsensus {
 		this.tag = tag;
 	}
 
+	@Override
+	public Void get() throws InterruptedException {
+		while (!isFinished()) Thread.sleep(100);
+		return null;
+	}
 
 	@Override
 	void quorumQuery(StationClient sc) {

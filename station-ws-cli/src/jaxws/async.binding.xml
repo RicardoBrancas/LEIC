@@ -8,4 +8,7 @@
     <bindings node="wsdl:definitions/wsdl:portType[@name='StationPortType']/wsdl:operation[@name='setBalance']">
         <enableAsyncMapping>true</enableAsyncMapping>
     </bindings>
+    <bindings node="wsdl:definitions/wsdl:portType[@name='StationPortType']/wsdl:operation[@name='getUsers']">
+        <enableAsyncMapping>true</enableAsyncMapping>
+    </bindings>
 </bindings>
