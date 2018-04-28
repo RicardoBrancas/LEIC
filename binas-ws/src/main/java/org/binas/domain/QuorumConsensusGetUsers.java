@@ -10,6 +10,9 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Logger;
 
+/**
+ * Uses Quorum Consensus protocol to retrieve a listing of all users
+ */
 public class QuorumConsensusGetUsers extends QuorumConsensus<ConcurrentMap<String, User>> {
 
 	private ConcurrentMap<String, User> users = new ConcurrentHashMap<>();
@@ -26,25 +29,30 @@ public class QuorumConsensusGetUsers extends QuorumConsensus<ConcurrentMap<Strin
 		return users;
 	}
 
+	/**
+	 * Searches every station for users.
+	 * If a new user is found, it is added to the list of known users.
+	 * If an already known user is found, its credit is updated.
+	 *
+	 * @param stationClient
+	 */
 	@Override
-	void quorumQuery(StationClient sc) {
-		sc.getUsersAsync(res -> {
+	void quorumQuery(StationClient stationClient) {
+		stationClient.getUsersAsync(res -> {
 			try {
-
-				for (UserView userView : res.get().getUsers()) {
-					if(users.containsKey(userView.getEmail())) {
-						User currentUser = users.get(userView.getEmail());
-
-
-						if(userView.getTag() > currentUser.getTag()) {
-							currentUser._setCredit(userView.getBalance());
-							currentUser.setTag(userView.getTag());
+				synchronized (users) {
+					for (UserView userView : res.get().getUsers()) {
+						if (users.containsKey(userView.getEmail())) {
+							User currentUser = users.get(userView.getEmail());
+							if (userView.getTag() > currentUser.getTag()) {
+								currentUser._setCredit(userView.getBalance());
+								currentUser.setTag(userView.getTag());
+							}
+						} else {
+							users.put(userView.getEmail(), new User(userView.getEmail(), userView.getBalance(), binasInstance));
 						}
-					} else {
-						users.put(userView.getEmail(), new User(userView.getEmail(), userView.getBalance(), binasInstance));
 					}
 				}
-
 				addVote();
 			} catch (InterruptedException | ExecutionException | InvalidEmailException e) {
 				e.printStackTrace(); //TODO treat exceptions properly

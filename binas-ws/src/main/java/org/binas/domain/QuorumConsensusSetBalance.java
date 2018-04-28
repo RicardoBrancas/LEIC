@@ -4,6 +4,9 @@ import org.binas.station.ws.cli.StationClient;
 
 import java.util.List;
 
+/**
+ * Uses Quorum Consensus protocol to set the balance for a user
+ */
 public class QuorumConsensusSetBalance extends QuorumConsensus<Void> {
 	private String email;
 	private Integer balance;

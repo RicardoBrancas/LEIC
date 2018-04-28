@@ -6,17 +6,19 @@ import javax.xml.ws.Holder;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
+/**
+ * Uses Quorum Consensus protocol to get the current balance of a user
+ */
 public class QuorumConsensusGetBalance extends QuorumConsensus<Void> {
 	private String email;
 	private Holder<Integer> balance; //Maybe don't use jax-ws holders here?
 	private Holder<Integer> tag;
 
-	public QuorumConsensusGetBalance(List<StationClient> scs, int nVotes, String email, Holder<Integer> balance, Holder<Integer> tag) {
-		super(scs, nVotes);
+	public QuorumConsensusGetBalance(List<StationClient> stationClients, int nVotes, String email, Holder<Integer> balance, Holder<Integer> tag) {
+		super(stationClients, nVotes);
 		this.email = email;
 		this.balance = balance;
 		this.tag = tag;
-		//Im not sure if this works like this
 		//FIXME ricardo: I don't think this is needed
 		this.balance.value = 0;
 		this.tag.value = -1;
@@ -29,9 +31,10 @@ public class QuorumConsensusGetBalance extends QuorumConsensus<Void> {
 		return null;
 	}
 
+
 	@Override
-	void quorumQuery(StationClient sc) {
-		sc.getBalanceAsync(email, res -> {
+	void quorumQuery(StationClient stationClient) {
+		stationClient.getBalanceAsync(email, res -> {
 			try {
 				int newBalance = res.get().getGetBalance();
 				int newTag = res.get().getTag();

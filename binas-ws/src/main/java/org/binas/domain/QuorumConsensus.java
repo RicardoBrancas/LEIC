@@ -7,6 +7,11 @@ import java.util.List;
 import java.util.logging.Logger;
 
 //TODO should *maybe* implement Runnable/RunnableFuture
+
+/**
+ * Abstract class to implement the Quorum Consensus protocol using a Template Method
+ * @param <T> The reply type
+ */
 public abstract class QuorumConsensus<T> {
 	private static final Logger logger = Logger.getLogger(QuorumConsensus.class.getName());
 
@@ -15,10 +20,10 @@ public abstract class QuorumConsensus<T> {
 	private boolean isFinished;
 	private Collection<StationClient> stationClients;
 
-	QuorumConsensus(List<StationClient> scs, int nVotes) {
+	QuorumConsensus(List<StationClient> stationClients, int nVotes) {
 		this.currentVotes = 0;
 		this.nVotes = nVotes;
-		this.stationClients = scs;
+		this.stationClients = stationClients;
 	}
 
 	public synchronized void addVote() {
@@ -35,6 +40,7 @@ public abstract class QuorumConsensus<T> {
 
 	public void run() {
 		logger.info("Starting quorum for " + this.getClass().getSimpleName());
+
 		for (StationClient sc : stationClients) {
 			quorumQuery(sc);
 		}
@@ -44,6 +50,10 @@ public abstract class QuorumConsensus<T> {
 	//uniform way to get values out of a quorum consensus
 	public abstract T get() throws InterruptedException;
 
-	abstract void quorumQuery(StationClient sc);
+	/**
+	 * Implements the query
+	 * @param stationClient
+	 */
+	abstract void quorumQuery(StationClient stationClient);
 }
 

@@ -5,7 +5,7 @@ import org.binas.domain.BinasManager;
 public class BinasApp {
 
 	public static void main(String[] args) throws Exception {
-		System.out.println(BinasApp.class.getSimpleName() + " running");
+
 		// Check arguments
 		if (args.length < 2) {
 			System.err.println("Argument(s) missing!");
