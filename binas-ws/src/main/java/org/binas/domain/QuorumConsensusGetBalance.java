@@ -1,11 +1,8 @@
 package org.binas.domain;
 
-import org.binas.station.ws.GetBalanceResponse;
 import org.binas.station.ws.cli.StationClient;
 
-import javax.xml.ws.AsyncHandler;
 import javax.xml.ws.Holder;
-import javax.xml.ws.Response;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -27,40 +24,24 @@ public class QuorumConsensusGetBalance extends QuorumConsensus {
 
 	@Override
 	void quorumQuery(StationClient sc) {
-
-		class AsyncHandlerWithQC implements AsyncHandler<GetBalanceResponse> {
-			QuorumConsensusGetBalance qc;
-
-			AsyncHandlerWithQC(QuorumConsensusGetBalance qc) {
-				super();
-				this.qc = qc;
-			}
-
-			@Override
-			public void handleResponse(Response<GetBalanceResponse> res) {
-
-				try {
-					int newBalance = res.get().getGetBalance();
-					int newTag = res.get().getTag();
-					if (newTag > this.qc.tag.value) {
-						this.qc.tag.value = newTag;
-						this.qc.balance.value = newBalance;
-					}
-					addVote();
-				} catch (InterruptedException e) {
-					System.out.println("Caught interrupted exception.");
-					System.out.print("Cause: ");
-					System.out.println(e.getCause());
-				} catch (ExecutionException e) {
-					System.out.println("Caught execution exception.");
-					System.out.print("Cause: ");
-					System.out.println(e.getCause());
+		sc.getBalanceAsync(email, res -> {
+			try {
+				int newBalance = res.get().getGetBalance();
+				int newTag = res.get().getTag();
+				if (newTag > tag.value) {
+					tag.value = newTag;
+					balance.value = newBalance;
 				}
+				addVote();
+			} catch (InterruptedException e) {
+				System.out.println("Caught interrupted exception.");
+				System.out.print("Cause: ");
+				System.out.println(e.getCause());
+			} catch (ExecutionException e) {
+				System.out.println("Caught execution exception.");
+				System.out.print("Cause: ");
+				System.out.println(e.getCause());
 			}
-
-		}
-
-		//can this be replaced with a lambda?
-		sc.getBalanceAsync(email, new AsyncHandlerWithQC(this));
+		});
 	}
 }

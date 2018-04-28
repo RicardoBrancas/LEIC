@@ -2,12 +2,21 @@ package org.binas.domain;
 
 import org.binas.station.ws.cli.StationClient;
 
+import java.util.Collection;
 import java.util.List;
 
+//TODO should *maybe* implement Runnable in the future
 public abstract class QuorumConsensus {
 	private int nVotes;
 	private int currentVotes;
 	private boolean isFinished;
+	private Collection<StationClient> stationClients;
+
+	QuorumConsensus(List<StationClient> scs, int nVotes) {
+		this.currentVotes = 0;
+		this.nVotes = nVotes;
+		this.stationClients = scs;
+	}
 
 	public synchronized void addVote() {
 		currentVotes++;
@@ -20,10 +29,8 @@ public abstract class QuorumConsensus {
 		return isFinished;
 	}
 
-	QuorumConsensus(List<StationClient> scs, int nVotes) {
-		this.currentVotes = 0;
-		this.nVotes = nVotes;
-		for (StationClient sc : scs) {
+	public void run() {
+		for (StationClient sc : stationClients) {
 			quorumQuery(sc);
 		}
 	}

@@ -19,10 +19,6 @@ public class QuorumConsensusSetBalance extends QuorumConsensus {
 
 	@Override
 	void quorumQuery(StationClient sc) {
-		//if (email == null)
-		//    throw new RuntimeException("Funny funny exception");
-
-		//TODO: Figure out why email is null
 		sc.setBalanceAsync(email, balance, tag, res -> addVote());
 	}
 }

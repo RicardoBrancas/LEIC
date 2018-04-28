@@ -63,9 +63,10 @@ public class User {
 
 		List<StationClient> scs = binasInstance.listStations();
 
-		Holder<Integer> newBalance = new Holder<Integer>();
-		Holder<Integer> newMID = new Holder<Integer>();
+		Holder<Integer> newBalance = new Holder<>();
+		Holder<Integer> newMID = new Holder<>();
 		QuorumConsensus qc = new QuorumConsensusGetBalance(scs, nQC, getEmail(), newBalance, newMID);
+		qc.run();
 
 		while (!qc.isFinished()) {
 			try {
@@ -89,6 +90,7 @@ public class User {
 		//number of votes necessary
 		int nQC = binasInstance.getQC();
 		QuorumConsensus qc = new QuorumConsensusSetBalance(scs, nQC, getEmail(), credit, mID);
+		qc.run();
 
 		while (!qc.isFinished()) {
 			try {
