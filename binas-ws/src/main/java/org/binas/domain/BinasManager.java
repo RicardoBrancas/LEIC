@@ -37,7 +37,7 @@ public class BinasManager {
 	public synchronized void restoreUsers() {
 		users.clear();
 
-		QuorumConsensus<ConcurrentMap<String, User>> qc = new QuorumConsensusGetUsers(listStations(), nStations, this);
+		QuorumConsensus<ConcurrentMap<String, User>> qc = new QuorumConsensusGetUsers(listStations(), getQC(), this);
 		qc.run();
 
 		try {
@@ -174,6 +174,7 @@ public class BinasManager {
 			throw new EmailExistsException(email + " is already registered.");
 
 		User u = new User(email, this.initialCredit.get(), this);
+		u.setCredit(this.initialCredit.get());
 
 		users.put(email, u);
 

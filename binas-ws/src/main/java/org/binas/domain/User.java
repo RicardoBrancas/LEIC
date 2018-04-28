@@ -22,12 +22,7 @@ public class User {
 
 		this.email = email;
 		this.binasInstance = binasInstance;
-
-		//Only if user is not already in the system.
 		this.credit = credit;
-
-		//update credit (only if user is in system)
-		getCredit();
 	}
 
 	//TODO check all parameters

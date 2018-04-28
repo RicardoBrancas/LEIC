@@ -102,6 +102,12 @@
 					<!-- to prevent deprecation warning: -->
 					<killAfter>-1</killAfter>
 					<mainClass>${mainclass}</mainClass>
+					<systemProperties>
+						<systemProperty>
+							<key>java.util.logging.SimpleFormatter.format</key>
+							<value>[%1$tF %1$tT] [%4$-7s] %5$s %n</value>
+						</systemProperty>
+					</systemProperties>
 					<arguments>
 						<argument>${ws.name}</argument>
 						<argument>${ws.url}</argument>

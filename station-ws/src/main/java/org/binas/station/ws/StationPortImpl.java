@@ -11,6 +11,7 @@ import org.binas.station.domain.exception.UserNotExistsException;
 import javax.jws.WebService;
 import javax.xml.ws.Holder;
 import java.util.List;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 /**
@@ -25,6 +26,7 @@ import java.util.stream.Collectors;
 		serviceName = "StationService"
 )
 public class StationPortImpl implements StationPortType {
+	private static final Logger logger = Logger.getLogger(StationPortImpl.class.getName());
 
 	/**
 	 * The Endpoint manager controls the Web Service instance during its whole
@@ -75,6 +77,7 @@ public class StationPortImpl implements StationPortType {
 
 	@Override
 	public void getBalance(String email, Holder<Integer> balance, Holder<Integer> tag) throws UserNotExists_Exception {
+		logger.info(String.format("getBalance(%s) request received", email));
 		//NOTE: holders are like C references. Used by jax-ws since we can't return multiple values
 		try {
 			Station.getInstance().getBalance(email, balance, tag);
@@ -85,11 +88,13 @@ public class StationPortImpl implements StationPortType {
 
 	@Override
 	public synchronized void setBalance(String email, Integer balance, Integer tag) {
+		logger.info(String.format("setBalance(%s, %d, %d) request received", email, balance, tag));
 		Station.getInstance().setBalance(email, balance, tag);
 	}
 
 	@Override
 	public List<UserView> getUsers() {
+		logger.info("getUsers() request received");
 		return Station.getInstance().getUsers().stream()
 				.map(User::asView)
 				.collect(Collectors.toList());

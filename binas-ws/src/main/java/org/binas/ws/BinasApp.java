@@ -1,5 +1,7 @@
 package org.binas.ws;
 
+import org.binas.domain.BinasManager;
+
 public class BinasApp {
 
 	public static void main(String[] args) throws Exception {
@@ -19,6 +21,7 @@ public class BinasApp {
 		System.out.println(BinasApp.class.getSimpleName() + " running");
 
 		try {
+			BinasManager.getInstance().restoreUsers();
 			endpoint.start();
 			endpoint.awaitConnections();
 		} finally {

@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutionException;
+import java.util.logging.Logger;
 
 public class QuorumConsensusGetUsers extends QuorumConsensus<ConcurrentMap<String, User>> {
 
@@ -34,6 +35,7 @@ public class QuorumConsensusGetUsers extends QuorumConsensus<ConcurrentMap<Strin
 					if(users.containsKey(userView.getEmail())) {
 						User currentUser = users.get(userView.getEmail());
 
+
 						if(userView.getTag() > currentUser.getTag()) {
 							currentUser._setCredit(userView.getBalance());
 							currentUser.setTag(userView.getTag());
@@ -41,9 +43,9 @@ public class QuorumConsensusGetUsers extends QuorumConsensus<ConcurrentMap<Strin
 					} else {
 						users.put(userView.getEmail(), new User(userView.getEmail(), userView.getBalance(), binasInstance));
 					}
-					addVote();
 				}
 
+				addVote();
 			} catch (InterruptedException | ExecutionException | InvalidEmailException e) {
 				e.printStackTrace(); //TODO treat exceptions properly
 			}
