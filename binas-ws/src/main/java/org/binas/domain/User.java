@@ -62,14 +62,12 @@ public class User {
 		Holder<Integer> newMID = new Holder<>();
 		QuorumConsensus qc = new QuorumConsensusGetBalance(scs, nQC, getEmail(), newBalance, newMID);
 		qc.run();
-
-		while (!qc.isFinished()) {
-			try {
-				Thread.sleep(100);
-			} catch (InterruptedException e) {
-				//TODO: Handle exception
-				e.printStackTrace();
-			}
+		try {
+			qc.get(); //TODO catch exceptions properly
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		} catch (QuorumNotReachedException e) {
+			e.printStackTrace();
 		}
 		int newMIDVal = newMID.value;
 		int newBalanceVal = newBalance.value;
@@ -91,13 +89,12 @@ public class User {
 		QuorumConsensus qc = new QuorumConsensusSetBalance(scs, nQC, getEmail(), credit, mID);
 		qc.run();
 
-		while (!qc.isFinished()) {
-			try {
-				Thread.sleep(100);
-			} catch (InterruptedException e) {
-				//TODO handle exception
-				e.printStackTrace();
-			}
+		try {
+			qc.get(); //TODO catch exceptions properly
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		} catch (QuorumNotReachedException e) {
+			e.printStackTrace();
 		}
 
 		//this increment means

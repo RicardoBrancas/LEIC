@@ -3,6 +3,7 @@ package org.binas.domain;
 import org.binas.station.ws.cli.StationClient;
 
 import java.util.List;
+import java.util.concurrent.Future;
 
 /**
  * Uses Quorum Consensus protocol to set the balance for a user
@@ -20,13 +21,7 @@ public class QuorumConsensusSetBalance extends QuorumConsensus<Void> {
 	}
 
 	@Override
-	public Void get() throws InterruptedException {
-		while (!isFinished()) Thread.sleep(100);
-		return null;
-	}
-
-	@Override
-	void quorumQuery(StationClient sc) {
-		sc.setBalanceAsync(email, balance, tag, res -> addVote());
+	Future<?> quorumQuery(StationClient sc) {
+		return sc.setBalanceAsync(email, balance, tag, res -> addVote());
 	}
 }

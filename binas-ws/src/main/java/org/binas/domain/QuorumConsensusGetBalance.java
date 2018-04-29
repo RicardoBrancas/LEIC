@@ -5,6 +5,7 @@ import org.binas.station.ws.cli.StationClient;
 import javax.xml.ws.Holder;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 /**
  * Uses Quorum Consensus protocol to get the current balance of a user
@@ -24,17 +25,9 @@ public class QuorumConsensusGetBalance extends QuorumConsensus<Void> {
 		this.tag.value = -1;
 	}
 
-
 	@Override
-	public Void get() throws InterruptedException {
-		while (!isFinished()) Thread.sleep(100);
-		return null;
-	}
-
-
-	@Override
-	void quorumQuery(StationClient stationClient) {
-		stationClient.getBalanceAsync(email, res -> {
+	Future<?> quorumQuery(StationClient stationClient) {
+		return stationClient.getBalanceAsync(email, res -> {
 			try {
 				int newBalance = res.get().getGetBalance();
 				int newTag = res.get().getTag();

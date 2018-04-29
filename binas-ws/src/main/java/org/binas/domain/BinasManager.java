@@ -44,6 +44,8 @@ public class BinasManager {
 			users.putAll(qc.get());
 		} catch (InterruptedException e) {
 			e.printStackTrace(); //TODO treat exception properly
+		} catch (QuorumNotReachedException e) {
+			System.err.println("Could not restore users from stations. Starting from 0.");
 		}
 	}
 
