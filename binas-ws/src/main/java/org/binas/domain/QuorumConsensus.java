@@ -88,8 +88,8 @@ public abstract class QuorumConsensus<T> {
 	/**
 	 * Implements the query.
 	 *
-	 * It is required that when {@link #isFinished() isFinished} returns true,
-	 * {@link #result result} must contain the result of this request.
+	 * It is required that when {@link #isFinished()} returns true,
+	 * {@link #result} must contain the result of this request.
 	 *
 	 * @param stationClient
 	 */
