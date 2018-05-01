@@ -69,6 +69,7 @@ public abstract class QuorumConsensus<T> {
 		for (Future<?> future : futures) {
 			future.get(); //TODO right now we fail on first exception. Unacceptable
 			//maybe use a quorum of exceptions??
+			//ricardo: update: this does nothing. jax-ws does not respect Java Future<?> semantics
 		}
 
 		if (!isFinished())
