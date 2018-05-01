@@ -11,7 +11,7 @@ import java.util.logging.Logger;
 
 /**
  * Abstract class to implement the Quorum Consensus protocol using a Template Method
- * @param <T> The reply typex
+ * @param <T> The reply type
  */
 public abstract class QuorumConsensus<T> {
 	private static final Logger logger = Logger.getLogger(QuorumConsensus.class.getName());
