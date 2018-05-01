@@ -17,8 +17,8 @@ public class QuorumConsensusGetUsers extends QuorumConsensus<ConcurrentMap<Strin
 
 	private BinasManager binasInstance;
 
-	QuorumConsensusGetUsers(List<StationClient> scs, int nVotes, BinasManager binasInstance) {
-		super(scs, nVotes);
+	QuorumConsensusGetUsers(List<StationClient> stationClients, int nVotes, BinasManager binasInstance) {
+		super(stationClients, nVotes);
 		this.binasInstance = binasInstance;
 		result = new ConcurrentHashMap<>();
 	}

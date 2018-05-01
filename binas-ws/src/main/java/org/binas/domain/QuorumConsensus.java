@@ -11,7 +11,7 @@ import java.util.logging.Logger;
 
 /**
  * Abstract class to implement the Quorum Consensus protocol using a Template Method
- * @param <T> The reply type
+ * @param <T> The reply typex
  */
 public abstract class QuorumConsensus<T> {
 	private static final Logger logger = Logger.getLogger(QuorumConsensus.class.getName());
@@ -88,8 +88,8 @@ public abstract class QuorumConsensus<T> {
 	/**
 	 * Implements the query.
 	 *
-	 * It is required that when {@link #isFinished() isFinished} returns true,
-	 * {@link #result result} must contain the result of this request.
+	 * It is required that when {@link #isFinished()} returns true,
+	 * {@link #result} must contain the result of this request.
 	 *
 	 * @param stationClient
 	 */
