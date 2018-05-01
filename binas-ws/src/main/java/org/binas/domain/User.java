@@ -4,18 +4,17 @@ import org.binas.domain.exception.InvalidEmailException;
 import org.binas.station.ws.cli.StationClient;
 import org.binas.ws.UserView;
 
-import javax.xml.ws.Holder;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 public class User {
 
 	private final static String EMAIL_FORMAT = "\\w+(\\.\\w+)*@\\w+(\\.\\w+)*";
-	private int mID = -1;
+	private int tag = -1;
 	private String email;
 	private boolean hasBina;
-	private Integer credit;
+	private int credit;
 	private BinasManager binasInstance;
-
 
 	public User(String email, int credit, BinasManager binasInstance) throws InvalidEmailException {
 		checkParams(email);
@@ -50,68 +49,62 @@ public class User {
 
 	//TODO: confirm this is synchronized at every call
 	public int getCredit() {
-		if (credit != null)
-			return credit;
+		return credit;
+//		//number of votes necessary
+//		int nQC = binasInstance.getQC();
+//
+//		List<StationClient> scs = binasInstance.listStations();
+//
+//
+//		QuorumConsensus<User.Replica> qc = new QuorumConsensusGetBalance(scs, nQC, getEmail());
+//		qc.run();
+//		try {
+//			User.Replica replica = qc.get(); //TODO catch exceptions properly
+//
+//			if (tag < replica.getTag()) {
+//				tag = replica.getTag();
+//				credit = replica.getBalance();
+//			}
+//
+//		} catch (InterruptedException e) {
+//			e.printStackTrace();
+//		} catch (QuorumNotReachedException e) {
+//			e.printStackTrace();
+//		}
+//
+//		return credit;
+	}
 
+	public void setCredit(int credit) {
+		List<StationClient> stations = binasInstance.listStations();
 		//number of votes necessary
 		int nQC = binasInstance.getQC();
-
-		List<StationClient> scs = binasInstance.listStations();
-
-		Holder<Integer> newBalance = new Holder<>();
-		Holder<Integer> newMID = new Holder<>();
-		QuorumConsensus qc = new QuorumConsensusGetBalance(scs, nQC, getEmail(), newBalance, newMID);
+		QuorumConsensus qc = new QuorumConsensusSetBalance(stations, nQC, getEmail(), credit, ++tag);
 		qc.run();
+
 		try {
 			qc.get(); //TODO catch exceptions properly
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		} catch (QuorumNotReachedException e) {
 			e.printStackTrace();
+		} catch (ExecutionException e) {
+			e.printStackTrace();
 		}
-		int newMIDVal = newMID.value;
-		int newBalanceVal = newBalance.value;
-		if (mID < newMIDVal) {
-			mID = newMIDVal;
-			credit = newBalanceVal;
-		}
-		return credit;
+
+		this.credit = credit;
 	}
 
 	void _setCredit(int credit) {
 		this.credit = credit;
 	}
 
-	public void setCredit(int credit) {
-		List<StationClient> scs = binasInstance.listStations();
-		//number of votes necessary
-		int nQC = binasInstance.getQC();
-		QuorumConsensus qc = new QuorumConsensusSetBalance(scs, nQC, getEmail(), credit, mID);
-		qc.run();
-
-		try {
-			qc.get(); //TODO catch exceptions properly
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		} catch (QuorumNotReachedException e) {
-			e.printStackTrace();
-		}
-
-		//this increment means
-		//the user's tag is always
-		//one step ahead of the replica tag...
-		//maybe they should both be the same...
-		mID++;
-
-		this.credit = credit;
+	public int getTag() {
+		return tag;
 	}
 
 	void setTag(int tag) {
-		mID = tag;
-	}
-
-	public int getTag() {
-		return mID;
+		this.tag = tag;
 	}
 
 	public UserView getView() {
@@ -129,5 +122,36 @@ public class User {
 
 	public synchronized void decreaseCredit(int credit) {
 		setCredit(getCredit() - credit);
+	}
+
+	public static class Replica {
+
+		private String email;
+		private int balance;
+		private int tag = -1;
+
+		public String getEmail() {
+			return email;
+		}
+
+		public void setEmail(String email) {
+			this.email = email;
+		}
+
+		public int getBalance() {
+			return balance;
+		}
+
+		public void setBalance(int balance) {
+			this.balance = balance;
+		}
+
+		public int getTag() {
+			return tag;
+		}
+
+		public void setTag(int tag) {
+			this.tag = tag;
+		}
 	}
 }

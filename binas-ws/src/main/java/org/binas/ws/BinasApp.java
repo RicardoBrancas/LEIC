@@ -21,7 +21,6 @@ public class BinasApp {
 		System.out.println(BinasApp.class.getSimpleName() + " running");
 
 		try {
-			BinasManager.getInstance().restoreUsers();
 			endpoint.start();
 			endpoint.awaitConnections();
 		} finally {

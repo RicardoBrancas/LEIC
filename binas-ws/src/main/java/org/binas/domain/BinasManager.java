@@ -15,38 +15,25 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 public class BinasManager {
+	private static final Logger logger = Logger.getLogger(BinasManager.class.getName());
 
 	private final AtomicInteger initialCredit;
 
 	//TODO: This should be an argument passed at compile or runtime
 	private final int nStations = 3;
 
-	private final Map<String, User> users = new ConcurrentHashMap<>();
+	private final Map<String, User> userCache = new ConcurrentHashMap<>();
 
 	private BinasEndpointManager endpointManager;
 
 	private BinasManager() {
 		initialCredit = new AtomicInteger(10);
-	}
-
-	public synchronized void restoreUsers() {
-		users.clear();
-
-		QuorumConsensus<ConcurrentMap<String, User>> qc = new QuorumConsensusGetUsers(listStations(), getQC(), this);
-		qc.run();
-
-		try {
-			users.putAll(qc.get());
-		} catch (InterruptedException e) {
-			e.printStackTrace(); //TODO treat exception properly
-		} catch (QuorumNotReachedException e) {
-			System.err.println("Could not restore users from stations. Starting from 0.");
-		}
 	}
 
 	public static synchronized BinasManager getInstance() {
@@ -98,7 +85,7 @@ public class BinasManager {
 			System.out.println("Error with UDDI: e.getMessage()");
 			e.printStackTrace();
 		}
-		return new ArrayList<StationClient>(); //should never happen
+		return new ArrayList<>(); //should never happen
 	}
 
 	/*
@@ -161,30 +148,58 @@ public class BinasManager {
 	public synchronized User getUser(String email) throws UserNotExistsException {
 		if (email == null) {
 			throw new UserNotExistsException("Email is null");
-		} else if (!users.containsKey(email)) {
-			throw new UserNotExistsException("No user with email " + email);
+
+		} else if (userCache.containsKey(email)) {
+			logger.info("Using user " + email + " from cache");
+
+			return userCache.get(email);
+
+		} else {
+			QuorumConsensus<User.Replica> qc = new QuorumConsensusGetBalance(listStations(), getQC(), email);
+			qc.run();
+
+			try {
+				User.Replica replica = qc.get();
+
+				logger.info(String.format("Found user in replicas. Adding to cache (%s, %d, %d)", replica.getEmail(), replica.getBalance(), replica.getTag()));
+				User u = new User(replica.getEmail(), replica.getBalance(), this);
+
+				userCache.put(u.getEmail(), u);
+
+				return u;
+
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			} catch (QuorumNotReachedException | ExecutionException e) {
+				throw new UserNotExistsException();
+			} catch (InvalidEmailException e) {
+				//should not happen
+				//TODO treat this properly
+			}
 		}
 
-		return users.get(email);
+		throw new UserNotExistsException();
 	}
 
 	public synchronized User createUser(String email) throws EmailExistsException, InvalidEmailException {
-		if (email == null)
-			throw new InvalidEmailException("Email is null");
+		try {
+			getUser(email);
+			throw new EmailExistsException();
 
-		if (users.containsKey(email))
-			throw new EmailExistsException(email + " is already registered.");
+		} catch (UserNotExistsException e) {
 
-		User u = new User(email, this.initialCredit.get(), this);
-		u.setCredit(this.initialCredit.get());
+			User u = new User(email, initialCredit.get(), this);
+			u.setCredit(initialCredit.get());
 
-		users.put(email, u);
+			userCache.put(email, u);
 
-		return u;
+			return u;
+
+		}
 	}
 
 	public void clear() {
-		users.clear();
+		userCache.clear();
 	}
 
 	public synchronized void setEndpointManager(BinasEndpointManager endpointManager) {

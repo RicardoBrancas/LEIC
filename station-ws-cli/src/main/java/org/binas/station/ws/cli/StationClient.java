@@ -159,21 +159,6 @@ public class StationClient implements StationPortType {
 		port.setBalance(email, balance, tag);
 	}
 
-	@Override
-	public Response<GetUsersResponse> getUsersAsync() {
-		return port.getUsersAsync();
-	}
-
-	@Override
-	public Future<?> getUsersAsync(AsyncHandler<GetUsersResponse> asyncHandler) {
-		return port.getUsersAsync(asyncHandler);
-	}
-
-	@Override
-	public List<UserView> getUsers() {
-		return port.getUsers();
-	}
-
 	// test control operations ------------------------------------------------
 
 	@Override

@@ -113,6 +113,8 @@ public class Station {
 		freeDocks.set(0);
 		totalGets.set(0);
 		totalReturns.set(0);
+
+		users.clear();
 	}
 
 	public void setId(String id) {
@@ -159,10 +161,6 @@ public class Station {
 			user.setTag(tag);
 			user.setBalance(balance);
 		}
-	}
-
-	public synchronized Collection<User> getUsers() {
-		return users.values();
 	}
 
 	// Getters -------------------------------------------------------------

@@ -134,6 +134,7 @@ public class BinasPortImpl implements BinasPortType {
 
 	@Override
 	public void testClear() {
+		BinasManager.getInstance().listStations().forEach(StationClient::testClear);
 		BinasManager.getInstance().clear();
 	}
 

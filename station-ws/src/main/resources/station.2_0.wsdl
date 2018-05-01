@@ -183,18 +183,6 @@
             </xs:complexType>
             <xs:element name="setBalanceResponse" type="tns:setBalanceResponse"/>
 
-            <xs:complexType name="getUsers">
-                <xs:sequence/>
-            </xs:complexType>
-            <xs:element name="getUsers" type="tns:getUsers"/>
-
-            <xs:complexType name="getUsersResponse">
-                <xs:sequence>
-                    <xs:element name="users" type="tns:userView" minOccurs="0" maxOccurs="unbounded"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:element name="getUsersResponse" type="tns:getUsersResponse"/>
-
         </xs:schema>
     </types>
 
@@ -246,13 +234,6 @@
     </message>
     <message name="setBalanceResponse">
         <part name="parameters" element="tns:setBalanceResponse"/>
-    </message>
-
-    <message name="getUsers">
-        <part name="parameters" element="tns:getUsers"/>
-    </message>
-    <message name="getUsersResponse">
-        <part name="parameters" element="tns:getUsersResponse"/>
     </message>
 
     <!-- test control messages -->
@@ -325,11 +306,6 @@
                    message="tns:setBalance" />
             <output wsam:Action="http://ws.station.binas.org/Station/setBalanceResponse"
                     message="tns:setBalanceResponse" />
-        </operation>
-
-        <operation name="getUsers">
-            <input wsam:Action="http://ws.station.binas.org/Station/getUsersRequest" message="tns:getUsers"/>
-            <output wsam:Action="http://ws.station.binas.org/Station/getUsersResponse" message="tns:getUsersResponse"/>
         </operation>
 
         <!-- test control operations -->
@@ -414,16 +390,6 @@
         </operation>
 
         <operation name="setBalance">
-            <soap:operation soapAction="" />
-            <input>
-                <soap:body use="literal" />
-            </input>
-            <output>
-                <soap:body use="literal" />
-            </output>
-        </operation>
-
-        <operation name="getUsers">
             <soap:operation soapAction="" />
             <input>
                 <soap:body use="literal" />

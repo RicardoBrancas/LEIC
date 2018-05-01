@@ -92,14 +92,6 @@ public class StationPortImpl implements StationPortType {
 		Station.getInstance().setBalance(email, balance, tag);
 	}
 
-	@Override
-	public List<UserView> getUsers() {
-		logger.info("getUsers() request received");
-		return Station.getInstance().getUsers().stream()
-				.map(User::asView)
-				.collect(Collectors.toList());
-	}
-
 	/**
 	 * Diagnostic operation to check if service is running.
 	 */
