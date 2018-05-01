@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -25,8 +24,7 @@ public class BinasManager {
 
 	private final AtomicInteger initialCredit;
 
-	//TODO: This should be an argument passed at compile or runtime
-	private final int nStations = 3;
+	private int numberOfStations = 3;
 
 	private final Map<String, User> userCache = new ConcurrentHashMap<>();
 
@@ -42,6 +40,10 @@ public class BinasManager {
 
 	public void setInitialCredit(int initialCredit) {
 		this.initialCredit.set(initialCredit);
+	}
+
+	public void setNumberOfStations(int numberOfStations) {
+		this.numberOfStations = numberOfStations;
 	}
 
 	public static CoordinatesView convertCoordinatesView(org.binas.station.ws.CoordinatesView cv) {
@@ -93,7 +95,7 @@ public class BinasManager {
 	 */
 	public int getQC() {
 		//TODO: Verify this is integer division
-		return nStations / 2 + 1;
+		return numberOfStations / 2 + 1;
 	}
 
 	public synchronized StationClient getStation(String stationId) throws InvalidStationException {
@@ -125,8 +127,15 @@ public class BinasManager {
 			u.decreaseCredit(1);
 		} catch (org.binas.station.ws.NoBinaAvail_Exception e) {
 			throw new NoBinaAvailException("No Binas available at station " + s.getInfo().getId());
+		} catch (QuorumNotReachedException e) {
+			System.out.println("Quorum not reached. Operation failed.");
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			System.out.println("Caught interrupted exception.");
+			System.out.print("Cause: ");
+			System.out.println(e.getCause());
+			e.printStackTrace();
 		}
-
 	}
 
 	public synchronized void returnBina(String stationId, String email) throws FullStationException, InvalidStationException, NoBinaRentedException, UserNotExistsException {
@@ -142,6 +151,14 @@ public class BinasManager {
 			u.setHasBina(false);
 		} catch (NoSlotAvail_Exception e) {
 			throw new FullStationException("Station " + s.getInfo().getId() + " has no free docks.");
+		} catch (QuorumNotReachedException e) {
+			System.out.println("Quorum not reached. Operation failed.");
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			System.out.println("Caught interrupted exception.");
+			System.out.print("Cause: ");
+			System.out.println(e.getCause());
+			e.printStackTrace();
 		}
 	}
 
@@ -162,15 +179,16 @@ public class BinasManager {
 				User.Replica replica = qc.get();
 
 				logger.info(String.format("Found user in replicas. Adding to cache (%s, %d, %d)", replica.getEmail(), replica.getBalance(), replica.getTag()));
-				User u = new User(replica.getEmail(), replica.getBalance(), this);
+				User user = new User(replica.getEmail(), replica.getBalance(), this);
 
-				userCache.put(u.getEmail(), u);
+				user.setTag(replica.getTag());
+				userCache.put(user.getEmail(), user);
 
-				return u;
+				return user;
 
 			} catch (InterruptedException e) {
 				e.printStackTrace();
-			} catch (QuorumNotReachedException | ExecutionException e) {
+			} catch (QuorumNotReachedException e) {
 				throw new UserNotExistsException();
 			} catch (InvalidEmailException e) {
 				//should not happen
@@ -181,21 +199,38 @@ public class BinasManager {
 		throw new UserNotExistsException();
 	}
 
+	/**
+	 * Checks if the user already exists. If not, a new user is created.
+	 *
+	 * @param email
+	 * @return
+	 * @throws EmailExistsException  if the email has already been registered
+	 * @throws InvalidEmailException if the email does not have a valid format
+	 */
 	public synchronized User createUser(String email) throws EmailExistsException, InvalidEmailException {
+
+
 		try {
 			getUser(email);
 			throw new EmailExistsException();
 
 		} catch (UserNotExistsException e) {
-
 			User u = new User(email, initialCredit.get(), this);
-			u.setCredit(initialCredit.get());
-
-			userCache.put(email, u);
-
-			return u;
-
+			try {
+				u.setCredit(initialCredit.get());
+				userCache.put(email, u);
+				return u;
+			} catch (QuorumNotReachedException e1) {
+				System.out.println("Quorum not reached. Operation failed.");
+				e1.printStackTrace();
+			} catch (InterruptedException e1) {
+				System.out.println("Caught interrupted exception.");
+				System.out.print("Cause: ");
+				System.out.println(e1.getCause());
+				e1.printStackTrace();
+			}
 		}
+		return null;
 	}
 
 	public void clear() {

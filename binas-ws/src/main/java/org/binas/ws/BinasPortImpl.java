@@ -43,7 +43,7 @@ public class BinasPortImpl implements BinasPortType {
 			return new ArrayList<>();
 
 		return BinasManager.getInstance().listStations().stream()
-				.map(u -> BinasManager.convertStationView(u.getInfo()))
+				.map(user -> BinasManager.convertStationView(user.getInfo()))
 				.sorted(Comparator.comparingInt(v ->
 						BinasManager.distanceBetween(coordinates, v.getCoordinate()))
 				)
@@ -76,6 +76,9 @@ public class BinasPortImpl implements BinasPortType {
 	public UserView activateUser(String email) throws EmailExists_Exception, InvalidEmail_Exception {
 		try {
 			User u = BinasManager.getInstance().createUser(email);
+			if (u == null) {
+				return null;
+			}
 			return u.getView();
 		} catch (EmailExistsException e) {
 			e.throwWSException();

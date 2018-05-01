@@ -15,10 +15,13 @@ public class BinasApp {
 		String wsName = args[0];
 		String wsURL = args[1];
 		String uddiURL = args[2];
+		int numberOfStations = Integer.parseInt(args[3]);
 
 		BinasEndpointManager endpoint = new BinasEndpointManager(uddiURL, wsName, wsURL);
 
 		System.out.println(BinasApp.class.getSimpleName() + " running");
+
+		BinasManager.getInstance().setNumberOfStations(numberOfStations);
 
 		try {
 			endpoint.start();

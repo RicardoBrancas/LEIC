@@ -6,7 +6,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.logging.Logger;
 
@@ -62,19 +61,33 @@ public abstract class QuorumConsensus<T> {
 	 * @return the computed result
 	 * @throws QuorumNotReachedException if it has become impossible to reach quorum for this request
 	 * @throws InterruptedException      if the current thread was interrupted while waiting
-	 * @throws ExecutionException        if an exception occurred when calling one of the stations
 	 */
-	public T get() throws InterruptedException, QuorumNotReachedException, ExecutionException {
+
+	public T get() throws InterruptedException, QuorumNotReachedException {
+		boolean stillWaiting = false;
 
 		for (Future<?> future : futures) {
-			future.get(); //TODO right now we fail on first exception. Unacceptable
-			//maybe use a quorum of exceptions??
-			//ricardo: update: this does nothing. jax-ws does not respect Java Future<?> semantics
+			if (!future.isDone()) {
+				stillWaiting = true;
+				break;
+			}
+		}
+
+		while (!isFinished() && stillWaiting) {
+			stillWaiting = false;
+
+			for (Future<?> future : futures) {
+				if (!future.isDone()) {
+					stillWaiting = true;
+					break;
+				}
+			}
+
+			Thread.sleep(100);
 		}
 
 		if (!isFinished())
 			throw new QuorumNotReachedException();
-
 
 		return result;
 	}

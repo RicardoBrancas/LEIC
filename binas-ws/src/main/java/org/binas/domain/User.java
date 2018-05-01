@@ -5,7 +5,6 @@ import org.binas.station.ws.cli.StationClient;
 import org.binas.ws.UserView;
 
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 public class User {
 
@@ -50,48 +49,16 @@ public class User {
 	//TODO: confirm this is synchronized at every call
 	public int getCredit() {
 		return credit;
-//		//number of votes necessary
-//		int nQC = binasInstance.getQC();
-//
-//		List<StationClient> scs = binasInstance.listStations();
-//
-//
-//		QuorumConsensus<User.Replica> qc = new QuorumConsensusGetBalance(scs, nQC, getEmail());
-//		qc.run();
-//		try {
-//			User.Replica replica = qc.get(); //TODO catch exceptions properly
-//
-//			if (tag < replica.getTag()) {
-//				tag = replica.getTag();
-//				credit = replica.getBalance();
-//			}
-//
-//		} catch (InterruptedException e) {
-//			e.printStackTrace();
-//		} catch (QuorumNotReachedException e) {
-//			e.printStackTrace();
-//		}
-//
-//		return credit;
 	}
 
-	public void setCredit(int credit) {
+	public void setCredit(int credit) throws QuorumNotReachedException, InterruptedException {
 		List<StationClient> stations = binasInstance.listStations();
 		//number of votes necessary
 		int nQC = binasInstance.getQC();
 		QuorumConsensus qc = new QuorumConsensusSetBalance(stations, nQC, getEmail(), credit, ++tag);
 		qc.run();
 
-		try {
-			qc.get(); //TODO catch exceptions properly
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		} catch (QuorumNotReachedException e) {
-			e.printStackTrace();
-		} catch (ExecutionException e) {
-			e.printStackTrace();
-		}
-
+		qc.get();
 		this.credit = credit;
 	}
 
@@ -116,11 +83,11 @@ public class User {
 		return v;
 	}
 
-	public synchronized void increaseCredit(int credit) {
+	public synchronized void increaseCredit(int credit) throws QuorumNotReachedException, InterruptedException {
 		setCredit(getCredit() + credit);
 	}
 
-	public synchronized void decreaseCredit(int credit) {
+	public synchronized void decreaseCredit(int credit) throws QuorumNotReachedException, InterruptedException {
 		setCredit(getCredit() - credit);
 	}
 
