@@ -48,6 +48,19 @@ public class User {
 		return credit;
 	}
 
+	public int getTag() {
+		return tag;
+	}
+
+	void setTag(int tag) {
+		this.tag = tag;
+	}
+
+	/**
+	 * Uses the Quorum Consensus protocol to set the credit for the user.
+	 * @param credit
+	 * @throws QuorumNotReachedException
+	 */
 	public synchronized void setCredit(int credit) throws QuorumNotReachedException{
 		List<StationClient> stations = BinasManager.getInstance().listStations();
 		//number of votes necessary
@@ -59,25 +72,13 @@ public class User {
 		this.credit = credit;
 	}
 
-	void _setCredit(int credit) {
-		this.credit = credit;
-	}
-
-	public int getTag() {
-		return tag;
-	}
-
-	void setTag(int tag) {
-		this.tag = tag;
-	}
-
 	public UserView getView() {
-		UserView v = new UserView();
-		v.setEmail(email);
-		v.setHasBina(hasBina);
-		v.setCredit(credit);
+		UserView userView = new UserView();
+		userView.setEmail(email);
+		userView.setHasBina(hasBina);
+		userView.setCredit(credit);
 
-		return v;
+		return userView;
 	}
 
 	public synchronized void increaseCredit(int credit) throws QuorumNotReachedException {
@@ -88,6 +89,9 @@ public class User {
 		setCredit(getCredit() - credit);
 	}
 
+	/**
+	 * Auxiliary class to export information about a user
+	 */
 	public static class Replica {
 
 		private String email;
