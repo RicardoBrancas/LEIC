@@ -2,7 +2,6 @@ package org.binas.domain;
 
 import org.binas.station.ws.cli.StationClient;
 
-import javax.xml.ws.Holder;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -23,6 +22,12 @@ public class QuorumConsensusGetBalance extends QuorumConsensus<User.Replica> {
 		result.setEmail(email);
 	}
 
+	/**
+	 * Implements the query to get the balance for the user
+	 *
+	 * @param stationClient
+	 * @return
+	 */
 	@Override
 	Future<?> quorumQuery(StationClient stationClient) {
 		return stationClient.getBalanceAsync(email, res -> {

@@ -24,17 +24,23 @@ public class QuorumConsensusSetBalance extends QuorumConsensus<Void> {
 		this.tag = tag;
 	}
 
+	/**
+	 * Implements the query to set the balance for the user
+	 *
+	 * @param sc
+	 * @return
+	 */
 	@Override
 	Future<?> quorumQuery(StationClient sc) {
 		return sc.setBalanceAsync(email, balance, tag, res -> {
-				try {
-					res.get();
-					addVote();
-				} catch (InterruptedException e) {
-					logger.warning("Caught interrupted exception: " + e.getCause());
-				} catch (ExecutionException e) {
-					logger.warning("Caught execution exception: " + e.getCause());
-				}
+			try {
+				res.get();
+				addVote();
+			} catch (InterruptedException e) {
+				logger.warning("Caught interrupted exception: " + e.getCause());
+			} catch (ExecutionException e) {
+				logger.warning("Caught execution exception: " + e.getCause());
+			}
 		});
 	}
 }

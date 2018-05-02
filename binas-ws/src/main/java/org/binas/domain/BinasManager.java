@@ -87,8 +87,8 @@ public class BinasManager {
 		return new ArrayList<>(); //should never happen
 	}
 
-	/*
-	 * returns the number for the quorum consensus.
+	/**
+	 * @return number of replies required to obtain quorum consensus
 	 */
 	public int getQC() {
 		return numberOfStations / 2 + 1;
@@ -160,10 +160,20 @@ public class BinasManager {
 		}
 	}
 
+	/**
+	 * Attempts find a user by its email.
+	 * First, checks BinasManager's local cache. If the user is there, it's returned.
+	 * If the user isn't there, all the stations are queried about it.
+	 * If a quorum is reached, the user is returned,
+	 * Otherwise, it is assumed the user doesn't exist, and an exception is thrown.
+	 *
+	 * @param email
+	 * @return the user
+	 * @throws UserNotExistsException
+	 */
 	public synchronized User getUser(String email) throws UserNotExistsException {
 		if (email == null) {
 			throw new UserNotExistsException("Email is null");
-
 		} else if (userCache.containsKey(email)) {
 			logger.info("Using user " + email + " from cache");
 
@@ -173,24 +183,23 @@ public class BinasManager {
 			QuorumConsensus<User.Replica> qc = new QuorumConsensusGetBalance(listStations(), getQC(), email);
 			qc.run();
 
-			while (true) {
-				try {
-					User.Replica replica = qc.get();
 
-					logger.info(String.format("Found user in replicas. Adding to cache (%s, %d, %d)", replica.getEmail(), replica.getBalance(), replica.getTag()));
-					User user = new User(replica.getEmail(), replica.getBalance());
+			try {
+				User.Replica replica = qc.get();
 
-					user.setTag(replica.getTag());
-					userCache.put(user.getEmail(), user);
+				logger.info(String.format("Found user in replicas. Adding to cache (%s, %d, %d)", replica.getEmail(), replica.getBalance(), replica.getTag()));
+				User user = new User(replica.getEmail(), replica.getBalance());
 
-					return user;
+				user.setTag(replica.getTag());
+				userCache.put(user.getEmail(), user);
 
-				} catch (QuorumNotReachedException e) {
-					throw new UserNotExistsException("User not found in stations. Assuming it doesn't exist.");
+				return user;
 
-				} catch (InvalidEmailException e) {
-					throw new UserNotExistsException();
-				}
+			} catch (QuorumNotReachedException e) {
+				throw new UserNotExistsException("User not found in stations. Assuming it doesn't exist.");
+
+			} catch (InvalidEmailException e) {
+				throw new UserNotExistsException();
 			}
 		}
 	}
