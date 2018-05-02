@@ -72,7 +72,12 @@ public class BinasClientApp {
 							continue;
 						}
 
-						binasClient.activateUser(command[1]);
+						UserView userView = binasClient.activateUser(command[1]);
+						if(userView != null)
+							System.out.printf("(%s, %d, %b)\n", userView.getEmail(), userView.getCredit(), userView.isHasBina());
+						else
+							System.out.println("null");
+
 						break;
 
 					case "read":

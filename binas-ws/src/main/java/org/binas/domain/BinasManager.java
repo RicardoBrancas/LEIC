@@ -23,11 +23,8 @@ public class BinasManager {
 	private static final Logger logger = Logger.getLogger(BinasManager.class.getName());
 
 	private final AtomicInteger initialCredit;
-
-	private int numberOfStations = 3;
-
 	private final Map<String, User> userCache = new ConcurrentHashMap<>();
-
+	private int numberOfStations = 3;
 	private BinasEndpointManager endpointManager;
 
 	private BinasManager() {
@@ -36,14 +33,6 @@ public class BinasManager {
 
 	public static synchronized BinasManager getInstance() {
 		return SingletonHolder.INSTANCE;
-	}
-
-	public void setInitialCredit(int initialCredit) {
-		this.initialCredit.set(initialCredit);
-	}
-
-	public void setNumberOfStations(int numberOfStations) {
-		this.numberOfStations = numberOfStations;
 	}
 
 	public static CoordinatesView convertCoordinatesView(org.binas.station.ws.CoordinatesView cv) {
@@ -67,6 +56,14 @@ public class BinasManager {
 
 	public static int distanceBetween(CoordinatesView c1, CoordinatesView c2) {
 		return Math.abs(c1.getX() - c2.getX() + c1.getY() - c2.getY());
+	}
+
+	public void setInitialCredit(int initialCredit) {
+		this.initialCredit.set(initialCredit);
+	}
+
+	public void setNumberOfStations(int numberOfStations) {
+		this.numberOfStations = numberOfStations;
 	}
 
 	public synchronized List<StationClient> listStations() {
@@ -121,20 +118,23 @@ public class BinasManager {
 			throw new NoCreditException("User " + u.getEmail() + " is out of credit");
 
 		StationClient s = getStation(stationId);
-		try {
-			s.getBina();
-			u.setHasBina(true);
-			u.decreaseCredit(1);
-		} catch (org.binas.station.ws.NoBinaAvail_Exception e) {
-			throw new NoBinaAvailException("No Binas available at station " + s.getInfo().getId());
-		} catch (QuorumNotReachedException e) {
-			System.out.println("Quorum not reached. Operation failed.");
-			e.printStackTrace();
-		} catch (InterruptedException e) {
-			System.out.println("Caught interrupted exception.");
-			System.out.print("Cause: ");
-			System.out.println(e.getCause());
-			e.printStackTrace();
+
+		while (true) {
+			try {
+				s.getBina();
+				u.setHasBina(true);
+				u.decreaseCredit(1);
+				return;
+
+			} catch (org.binas.station.ws.NoBinaAvail_Exception e) {
+				throw new NoBinaAvailException("No Binas available at station " + s.getInfo().getId());
+
+			} catch (QuorumNotReachedException e) {
+				System.out.println("Quorum not reached. Trying again...");
+
+			} catch (InterruptedException e) {
+				System.out.println("A thread was interrupted while waiting for a response. Undefined behavior...");
+			}
 		}
 	}
 
@@ -145,20 +145,23 @@ public class BinasManager {
 			throw new NoBinaRentedException("User " + u.getEmail() + " has no Bina to return.");
 
 		StationClient s = getStation(stationId);
-		try {
-			int credit = s.returnBina();
-			u.increaseCredit(credit);
-			u.setHasBina(false);
-		} catch (NoSlotAvail_Exception e) {
-			throw new FullStationException("Station " + s.getInfo().getId() + " has no free docks.");
-		} catch (QuorumNotReachedException e) {
-			System.out.println("Quorum not reached. Operation failed.");
-			e.printStackTrace();
-		} catch (InterruptedException e) {
-			System.out.println("Caught interrupted exception.");
-			System.out.print("Cause: ");
-			System.out.println(e.getCause());
-			e.printStackTrace();
+
+		while (true) {
+			try {
+				int credit = s.returnBina();
+				u.increaseCredit(credit);
+				u.setHasBina(false);
+				return;
+
+			} catch (NoSlotAvail_Exception e) {
+				throw new FullStationException("Station " + s.getInfo().getId() + " has no free docks.");
+
+			} catch (QuorumNotReachedException e) {
+				System.out.println("Quorum not reached. Trying again...");
+
+			} catch (InterruptedException e) {
+				System.out.println("A thread was interrupted while waiting for a response. Undefined behavior...");
+			}
 		}
 	}
 
@@ -175,28 +178,29 @@ public class BinasManager {
 			QuorumConsensus<User.Replica> qc = new QuorumConsensusGetBalance(listStations(), getQC(), email);
 			qc.run();
 
-			try {
-				User.Replica replica = qc.get();
+			while (true) {
+				try {
+					User.Replica replica = qc.get();
 
-				logger.info(String.format("Found user in replicas. Adding to cache (%s, %d, %d)", replica.getEmail(), replica.getBalance(), replica.getTag()));
-				User user = new User(replica.getEmail(), replica.getBalance(), this);
+					logger.info(String.format("Found user in replicas. Adding to cache (%s, %d, %d)", replica.getEmail(), replica.getBalance(), replica.getTag()));
+					User user = new User(replica.getEmail(), replica.getBalance(), this);
 
-				user.setTag(replica.getTag());
-				userCache.put(user.getEmail(), user);
+					user.setTag(replica.getTag());
+					userCache.put(user.getEmail(), user);
 
-				return user;
+					return user;
 
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			} catch (QuorumNotReachedException e) {
-				throw new UserNotExistsException();
-			} catch (InvalidEmailException e) {
-				//should not happen
-				//TODO treat this properly
+				} catch (QuorumNotReachedException e) {
+					throw new UserNotExistsException("User not found in stations. Assuming it doesn't exist.");
+
+				} catch (InterruptedException e) {
+					System.out.println("A thread was interrupted while waiting for a response. Undefined behavior...");
+
+				} catch (InvalidEmailException e) {
+					throw new UserNotExistsException();
+				}
 			}
 		}
-
-		throw new UserNotExistsException();
 	}
 
 	/**
@@ -209,28 +213,27 @@ public class BinasManager {
 	 */
 	public synchronized User createUser(String email) throws EmailExistsException, InvalidEmailException {
 
-
 		try {
 			getUser(email);
 			throw new EmailExistsException();
 
 		} catch (UserNotExistsException e) {
 			User u = new User(email, initialCredit.get(), this);
-			try {
-				u.setCredit(initialCredit.get());
-				userCache.put(email, u);
-				return u;
-			} catch (QuorumNotReachedException e1) {
-				System.out.println("Quorum not reached. Operation failed.");
-				e1.printStackTrace();
-			} catch (InterruptedException e1) {
-				System.out.println("Caught interrupted exception.");
-				System.out.print("Cause: ");
-				System.out.println(e1.getCause());
-				e1.printStackTrace();
+
+			while (true) {
+				try {
+					u.setCredit(initialCredit.get());
+					userCache.put(email, u);
+					return u;
+
+				} catch (QuorumNotReachedException ex) {
+					System.out.println("Quorum not reached. Trying again...");
+
+				} catch (InterruptedException ex) {
+					System.out.println("A thread was interrupted while waiting for a response. Undefined behavior...");
+				}
 			}
 		}
-		return null;
 	}
 
 	public void clear() {
