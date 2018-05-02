@@ -1,5 +1,6 @@
 package org.binas.station.ws.it;
 
+import org.binas.station.ws.InvalidEmail_Exception;
 import org.binas.station.ws.UserNotExists_Exception;
 import org.junit.Assert;
 import org.junit.Before;
@@ -14,7 +15,7 @@ public class SetBalanceIT extends BaseIT {
 	private Holder<Integer> balance;
 
 	@Before
-	public void setup() {
+	public void setup() throws InvalidEmail_Exception {
 		client.setBalance(email, 10, 0);
 		balance = new Holder<>(-1);
 		tag = new Holder<>(-1);
@@ -22,7 +23,7 @@ public class SetBalanceIT extends BaseIT {
 
 
 	@Test
-	public void success() throws UserNotExists_Exception {
+	public void success() throws UserNotExists_Exception, InvalidEmail_Exception {
 
 		client.getBalance(email, balance, tag);
 
@@ -37,7 +38,7 @@ public class SetBalanceIT extends BaseIT {
 	}
 
 	@Test
-	public void lowerTag() throws UserNotExists_Exception {
+	public void lowerTag() throws UserNotExists_Exception, InvalidEmail_Exception {
 		client.setBalance(email, 15, 3);
 		client.setBalance(email, 20, 2);
 		client.getBalance(email, balance, tag);
@@ -47,7 +48,7 @@ public class SetBalanceIT extends BaseIT {
 	}
 
 	@Test
-	public void repeatTag() throws UserNotExists_Exception {
+	public void repeatTag() throws UserNotExists_Exception, InvalidEmail_Exception {
 		client.setBalance(email, 15, 0);
 		client.getBalance(email, balance, tag);
 

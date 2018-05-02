@@ -6,11 +6,13 @@ import javax.xml.ws.Holder;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.logging.Logger;
 
 /**
  * Uses Quorum Consensus protocol to get the current balance of a user
  */
 public class QuorumConsensusGetBalance extends QuorumConsensus<User.Replica> {
+	private static final Logger logger = Logger.getLogger(QuorumConsensusGetBalance.class.getName());
 
 	private final String email;
 
@@ -35,13 +37,9 @@ public class QuorumConsensusGetBalance extends QuorumConsensus<User.Replica> {
 				}
 				addVote();
 			} catch (InterruptedException e) {
-				System.out.println("Caught interrupted exception.");
-				System.out.print("Cause: ");
-				System.out.println(e.getCause());
+				logger.warning("Caught interrupted exception: " + e.getCause());
 			} catch (ExecutionException e) {
-				System.out.println("Caught execution exception.");
-				System.out.print("Cause: ");
-				System.out.println(e.getCause());
+				logger.warning("Caught execution exception: " + e.getCause());
 			}
 		});
 	}

@@ -1,5 +1,6 @@
 package org.binas.station.ws.it;
 
+import org.binas.station.ws.InvalidEmail_Exception;
 import org.binas.station.ws.UserNotExists_Exception;
 import org.junit.Assert;
 import org.junit.Before;
@@ -14,7 +15,7 @@ public class GetBalanceIT extends BaseIT {
 	private Holder<Integer> tag;
 
 	@Before
-	public void setup() {
+	public void setup() throws InvalidEmail_Exception {
 		client.setBalance(email, 10, 0);
 		balance = new Holder<>(-1);
 		tag = new Holder<>(-1);
