@@ -1,9 +1,6 @@
 package org.binas.station.domain;
 
-import org.binas.station.domain.exception.BadInitException;
-import org.binas.station.domain.exception.NoBinaAvailException;
-import org.binas.station.domain.exception.NoSlotAvailException;
-import org.binas.station.domain.exception.UserNotExistsException;
+import org.binas.station.domain.exception.*;
 
 import javax.xml.ws.Holder;
 import java.util.Collection;
@@ -22,6 +19,7 @@ public class Station {
 	private static final Coordinates DEFAULT_COORDINATES = new Coordinates(5, 5);
 	private static final int DEFAULT_MAX_CAPACITY = 20;
 	private static final int DEFAULT_BONUS = 0;
+	private final static String EMAIL_FORMAT = "\\w+(\\.\\w+)*@\\w+(\\.\\w+)*";
 
 	private static Map<String, User> users = new HashMap<>();
 
@@ -145,6 +143,7 @@ public class Station {
 
 	public synchronized void getBalance(String email, Holder<Integer> balance, Holder<Integer> tag) throws UserNotExistsException {
 		User user = users.get(email);
+
 		if (user == null) {
 			throw new UserNotExistsException();
 		}
@@ -152,7 +151,9 @@ public class Station {
 		tag.value = user.getTag();
 	}
 
-	public synchronized void setBalance(String email, Integer balance, Integer tag) {
+	public synchronized void setBalance(String email, Integer balance, Integer tag) throws InvalidEmailException {
+		checkEmail(email);
+
 		User user = users.get(email);
 
 		if (user == null) {
@@ -160,6 +161,16 @@ public class Station {
 		} else if (user.getTag() < tag) {
 			user.setTag(tag);
 			user.setBalance(balance);
+		}
+	}
+
+	private void checkEmail(String email) throws InvalidEmailException {
+		if (email == null) {
+			throw new InvalidEmailException("Email is null");
+		} else if (email.isEmpty()) {
+			throw new InvalidEmailException("Email is empty");
+		} else if (!email.matches(EMAIL_FORMAT)) {
+			throw new InvalidEmailException("Email doesn't match the format");
 		}
 	}
 

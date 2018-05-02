@@ -3,10 +3,7 @@ package org.binas.station.ws;
 import org.binas.station.domain.Coordinates;
 import org.binas.station.domain.Station;
 import org.binas.station.domain.User;
-import org.binas.station.domain.exception.BadInitException;
-import org.binas.station.domain.exception.NoBinaAvailException;
-import org.binas.station.domain.exception.NoSlotAvailException;
-import org.binas.station.domain.exception.UserNotExistsException;
+import org.binas.station.domain.exception.*;
 
 import javax.jws.WebService;
 import javax.xml.ws.Holder;
@@ -87,9 +84,13 @@ public class StationPortImpl implements StationPortType {
 	}
 
 	@Override
-	public synchronized void setBalance(String email, Integer balance, Integer tag) {
+	public synchronized void setBalance(String email, Integer balance, Integer tag) throws InvalidEmail_Exception {
 		logger.info(String.format("setBalance(%s, %d, %d) request received", email, balance, tag));
-		Station.getInstance().setBalance(email, balance, tag);
+		try {
+			Station.getInstance().setBalance(email, balance, tag);
+		} catch (InvalidEmailException e) {
+			e.throwWSException();
+		}
 	}
 
 	/**

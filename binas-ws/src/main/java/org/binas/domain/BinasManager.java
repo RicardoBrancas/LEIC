@@ -91,7 +91,6 @@ public class BinasManager {
 	 * returns the number for the quorum consensus.
 	 */
 	public int getQC() {
-		//TODO: Verify this is integer division
 		return numberOfStations / 2 + 1;
 	}
 
@@ -132,8 +131,6 @@ public class BinasManager {
 			} catch (QuorumNotReachedException e) {
 				System.out.println("Quorum not reached. Trying again...");
 
-			} catch (InterruptedException e) {
-				System.out.println("A thread was interrupted while waiting for a response. Undefined behavior...");
 			}
 		}
 	}
@@ -159,8 +156,6 @@ public class BinasManager {
 			} catch (QuorumNotReachedException e) {
 				System.out.println("Quorum not reached. Trying again...");
 
-			} catch (InterruptedException e) {
-				System.out.println("A thread was interrupted while waiting for a response. Undefined behavior...");
 			}
 		}
 	}
@@ -183,7 +178,7 @@ public class BinasManager {
 					User.Replica replica = qc.get();
 
 					logger.info(String.format("Found user in replicas. Adding to cache (%s, %d, %d)", replica.getEmail(), replica.getBalance(), replica.getTag()));
-					User user = new User(replica.getEmail(), replica.getBalance(), this);
+					User user = new User(replica.getEmail(), replica.getBalance());
 
 					user.setTag(replica.getTag());
 					userCache.put(user.getEmail(), user);
@@ -192,9 +187,6 @@ public class BinasManager {
 
 				} catch (QuorumNotReachedException e) {
 					throw new UserNotExistsException("User not found in stations. Assuming it doesn't exist.");
-
-				} catch (InterruptedException e) {
-					System.out.println("A thread was interrupted while waiting for a response. Undefined behavior...");
 
 				} catch (InvalidEmailException e) {
 					throw new UserNotExistsException();
@@ -218,7 +210,7 @@ public class BinasManager {
 			throw new EmailExistsException();
 
 		} catch (UserNotExistsException e) {
-			User u = new User(email, initialCredit.get(), this);
+			User u = new User(email, initialCredit.get());
 
 			while (true) {
 				try {
@@ -228,9 +220,6 @@ public class BinasManager {
 
 				} catch (QuorumNotReachedException ex) {
 					System.out.println("Quorum not reached. Trying again...");
-
-				} catch (InterruptedException ex) {
-					System.out.println("A thread was interrupted while waiting for a response. Undefined behavior...");
 				}
 			}
 		}

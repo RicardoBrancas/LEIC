@@ -155,7 +155,7 @@ public class StationClient implements StationPortType {
 	}
 
 	@Override
-	public void setBalance(String email, Integer balance, Integer tag) {
+	public void setBalance(String email, Integer balance, Integer tag) throws InvalidEmail_Exception {
 		port.setBalance(email, balance, tag);
 	}
 

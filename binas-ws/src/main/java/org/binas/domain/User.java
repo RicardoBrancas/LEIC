@@ -1,6 +1,7 @@
 package org.binas.domain;
 
 import org.binas.domain.exception.InvalidEmailException;
+import org.binas.domain.exception.QuorumNotReachedException;
 import org.binas.station.ws.cli.StationClient;
 import org.binas.ws.UserView;
 
@@ -13,17 +14,14 @@ public class User {
 	private String email;
 	private boolean hasBina;
 	private int credit;
-	private BinasManager binasInstance;
 
-	public User(String email, int credit, BinasManager binasInstance) throws InvalidEmailException {
+	public User(String email, int credit) throws InvalidEmailException {
 		checkParams(email);
 
 		this.email = email;
-		this.binasInstance = binasInstance;
 		this.credit = credit;
 	}
 
-	//TODO check all parameters
 	private void checkParams(String email) throws InvalidEmailException {
 		if (email == null) {
 			throw new InvalidEmailException("Email is null");
@@ -46,15 +44,14 @@ public class User {
 		this.hasBina = hasBina;
 	}
 
-	//TODO: confirm this is synchronized at every call
 	public int getCredit() {
 		return credit;
 	}
 
-	public void setCredit(int credit) throws QuorumNotReachedException, InterruptedException {
-		List<StationClient> stations = binasInstance.listStations();
+	public synchronized void setCredit(int credit) throws QuorumNotReachedException{
+		List<StationClient> stations = BinasManager.getInstance().listStations();
 		//number of votes necessary
-		int nQC = binasInstance.getQC();
+		int nQC = BinasManager.getInstance().getQC();
 		QuorumConsensus qc = new QuorumConsensusSetBalance(stations, nQC, getEmail(), credit, ++tag);
 		qc.run();
 
@@ -83,11 +80,11 @@ public class User {
 		return v;
 	}
 
-	public synchronized void increaseCredit(int credit) throws QuorumNotReachedException, InterruptedException {
+	public synchronized void increaseCredit(int credit) throws QuorumNotReachedException {
 		setCredit(getCredit() + credit);
 	}
 
-	public synchronized void decreaseCredit(int credit) throws QuorumNotReachedException, InterruptedException {
+	public synchronized void decreaseCredit(int credit) throws QuorumNotReachedException {
 		setCredit(getCredit() - credit);
 	}
 

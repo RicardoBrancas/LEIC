@@ -1,5 +1,6 @@
 package org.binas.domain;
 
+import org.binas.domain.exception.QuorumNotReachedException;
 import org.binas.station.ws.cli.StationClient;
 
 import java.util.Collection;
@@ -63,7 +64,7 @@ public abstract class QuorumConsensus<T> {
 	 * @throws InterruptedException      if the current thread was interrupted while waiting
 	 */
 
-	public T get() throws InterruptedException, QuorumNotReachedException {
+	public T get() throws QuorumNotReachedException {
 		boolean stillWaiting = false;
 
 		for (Future<?> future : futures) {
@@ -83,7 +84,12 @@ public abstract class QuorumConsensus<T> {
 				}
 			}
 
-			Thread.sleep(100);
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+				System.out.println("A thread was interrupted while waiting for a response.");
+				break;
+			}
 		}
 
 		if (!isFinished())

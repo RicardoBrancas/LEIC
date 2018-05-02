@@ -34,7 +34,7 @@ public class QuorumConsensusGetBalance extends QuorumConsensus<User.Replica> {
 					}
 				}
 				addVote();
-			} catch (InterruptedException e) { //TODO ricardo: eu sei que isto é o que está nos labs, mas isto é fazer printStackTrace à mão xD
+			} catch (InterruptedException e) {
 				System.out.println("Caught interrupted exception.");
 				System.out.print("Cause: ");
 				System.out.println(e.getCause());
