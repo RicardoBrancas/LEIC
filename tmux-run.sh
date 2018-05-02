@@ -1,13 +1,17 @@
 #!/bin/sh
 cd station-ws
-mvn compile
+mvn -q  compile
 cd ..
 
-tmux new-session -c station-ws -d "mvn exec:java -Dws.i=1"
-tmux split-window -c station-ws -h "mvn exec:java -Dws.i=2"
-tmux split-window -c station-ws-cli -v "sleep 1; mvn compile install; cd ../binas-ws; mvn compile; mvn exec:java"
+tmux new-session -c station-ws -d "bash"
+tmux send-keys mvn Space -q  Space exec:java Space -Dws.i=1 Enter
+tmux split-window -c station-ws -h "bash"
+tmux send-keys mvn Space -q  Space exec:java Space -Dws.i=2 Enter
+tmux split-window -c binas-ws -v "bash"
+tmux send-keys mvn Space -q  Space compile Enter mvn Space -q  Space exec:java Enter
 tmux select-pane -L
-tmux split-window -c station-ws -v "mvn exec:java -Dws.i=3"
+tmux split-window -c station-ws -v "bash"
+tmux send-keys mvn Space -q  Space exec:java Space -Dws.i=3 Enter
 tmux select-pane -R;
 tmux new-window 'mutt'
 tmux -2 attach-session -d
