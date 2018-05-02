@@ -27,11 +27,8 @@ public class GetBinaIT extends BaseIT  {
         client.getBina();
         client.getBina();
         client.getBina();
-        //System.out.println("AVAILABLE  " + client.getInfo().getAvailableBinas());
     }
 
-
-    // NA AULA:
     @Test
     public void successGetBinasTest2() throws NoBinaAvail_Exception, BadInit_Exception {
         client.testInit(0, 0, 100, 0);
