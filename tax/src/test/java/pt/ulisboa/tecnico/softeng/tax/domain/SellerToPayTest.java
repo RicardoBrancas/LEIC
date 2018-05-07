@@ -3,10 +3,13 @@ package pt.ulisboa.tecnico.softeng.tax.domain;
 import static org.junit.Assert.assertEquals;
 
 import org.joda.time.LocalDate;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
+import pt.ulisboa.tecnico.softeng.tax.domain.Buyer;
+import pt.ulisboa.tecnico.softeng.tax.domain.IRS;
+import pt.ulisboa.tecnico.softeng.tax.domain.Invoice;
+import pt.ulisboa.tecnico.softeng.tax.domain.ItemType;
+import pt.ulisboa.tecnico.softeng.tax.domain.Seller;
 import pt.ulisboa.tecnico.softeng.tax.exception.TaxException;
 
 public class SellerToPayTest extends RollbackTestAbstractClass {

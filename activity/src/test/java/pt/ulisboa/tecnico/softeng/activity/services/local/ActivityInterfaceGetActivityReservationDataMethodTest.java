@@ -13,7 +13,7 @@ import pt.ulisboa.tecnico.softeng.activity.domain.ActivityProvider;
 import pt.ulisboa.tecnico.softeng.activity.domain.Booking;
 import pt.ulisboa.tecnico.softeng.activity.domain.RollbackTestAbstractClass;
 import pt.ulisboa.tecnico.softeng.activity.exception.ActivityException;
-import pt.ulisboa.tecnico.softeng.activity.services.local.dataobjects.ActivityReservationData;
+import pt.ulisboa.tecnico.softeng.activity.services.remote.dataobjects.RestActivityBookingData;
 
 public class ActivityInterfaceGetActivityReservationDataMethodTest extends RollbackTestAbstractClass {
 	private static final String NAME = "ExtremeAdventure";
@@ -36,7 +36,7 @@ public class ActivityInterfaceGetActivityReservationDataMethodTest extends Rollb
 	public void success() {
 		this.booking = new Booking(this.provider, this.offer, "123456789", "IBAN");
 
-		ActivityReservationData data = ActivityProvider.getActivityReservationData(this.booking.getReference());
+		RestActivityBookingData data = ActivityInterface.getActivityReservationData(this.booking.getReference());
 
 		assertEquals(this.booking.getReference(), data.getReference());
 		assertNull(data.getCancellation());
@@ -52,7 +52,7 @@ public class ActivityInterfaceGetActivityReservationDataMethodTest extends Rollb
 		this.booking = new Booking(this.provider, this.offer, "123456789", "IBAN");
 		this.provider.getProcessor().submitBooking(this.booking);
 		this.booking.cancel();
-		ActivityReservationData data = ActivityInterface.getActivityReservationData(this.booking.getCancel());
+		RestActivityBookingData data = ActivityInterface.getActivityReservationData(this.booking.getCancel());
 
 		assertEquals(this.booking.getReference(), data.getReference());
 		assertEquals(this.booking.getCancel(), data.getCancellation());

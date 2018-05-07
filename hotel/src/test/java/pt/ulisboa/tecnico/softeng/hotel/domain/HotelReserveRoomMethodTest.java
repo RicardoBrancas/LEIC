@@ -13,7 +13,8 @@ import pt.ist.fenixframework.FenixFramework;
 import pt.ulisboa.tecnico.softeng.hotel.exception.HotelException;
 import pt.ulisboa.tecnico.softeng.hotel.services.remote.BankInterface;
 import pt.ulisboa.tecnico.softeng.hotel.services.remote.TaxInterface;
-import pt.ulisboa.tecnico.softeng.hotel.services.remote.dataobjects.InvoiceData;
+import pt.ulisboa.tecnico.softeng.hotel.services.remote.dataobjects.RestBankOperationData;
+import pt.ulisboa.tecnico.softeng.hotel.services.remote.dataobjects.RestInvoiceData;
 
 @RunWith(JMockit.class)
 public class HotelReserveRoomMethodTest extends RollbackTestAbstractClass {
@@ -41,9 +42,9 @@ public class HotelReserveRoomMethodTest extends RollbackTestAbstractClass {
 	public void success() {
 		new Expectations() {
 			{
-				BankInterface.processPayment(this.anyString, this.anyDouble);
+				BankInterface.processPayment((RestBankOperationData) this.any);
 
-				TaxInterface.submitInvoice((InvoiceData) this.any);
+				TaxInterface.submitInvoice((RestInvoiceData) this.any);
 			}
 		};
 

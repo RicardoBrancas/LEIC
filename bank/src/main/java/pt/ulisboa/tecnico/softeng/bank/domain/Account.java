@@ -36,25 +36,24 @@ public class Account extends Account_Base {
 
 	}
 
-	public String deposit(double amount) {
+	public Operation deposit(double amount) {
 		if (amount <= 0) {
 			throw new BankException();
 		}
 
 		setBalance(getBalance() + amount);
 
-		Operation operation = new Operation(Operation.Type.DEPOSIT, this, amount);
-		return operation.getReference();
+		return new Operation(Operation.Type.DEPOSIT, this, amount);
 	}
 
-	public String withdraw(double amount) {
+	public Operation withdraw(double amount) {
 		if (amount <= 0 || amount > getBalance()) {
 			throw new BankException();
 		}
 
 		setBalance(getBalance() - amount);
 
-		return new Operation(Operation.Type.WITHDRAW, this, amount).getReference();
+		return new Operation(Operation.Type.WITHDRAW, this, amount);
 	}
 
 }

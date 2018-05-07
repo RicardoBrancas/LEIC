@@ -18,6 +18,7 @@ import pt.ulisboa.tecnico.softeng.hotel.exception.HotelException;
 import pt.ulisboa.tecnico.softeng.hotel.services.local.dataobjects.HotelData;
 import pt.ulisboa.tecnico.softeng.hotel.services.local.dataobjects.RoomBookingData;
 import pt.ulisboa.tecnico.softeng.hotel.services.local.dataobjects.RoomData;
+import pt.ulisboa.tecnico.softeng.hotel.services.remote.dataobjects.RestRoomBookingData;
 
 public class HotelInterface {
 
@@ -70,12 +71,21 @@ public class HotelInterface {
 	}
 
 	@Atomic(mode = TxMode.WRITE)
-	public static String reserveRoom(Room.Type type, LocalDate arrival, LocalDate departure, String buyerNif,
-			String buyerIban) {
+	public static String reserveRoom(RestRoomBookingData roomBookingData) {
+		Booking booking = getBooking4AdventureId(roomBookingData.getAdventureId());
+		if (booking != null) {
+			return booking.getReference();
+		}
+
+		Room.Type type = roomBookingData.getRoomType().equals("SINGLE") ? Room.Type.SINGLE : Room.Type.DOUBLE;
+
 		for (Hotel hotel : FenixFramework.getDomainRoot().getHotelSet()) {
-			Room room = hotel.hasVacancy(type, arrival, departure);
+			Room room = hotel.hasVacancy(type, roomBookingData.getArrival(), roomBookingData.getDeparture());
 			if (room != null) {
-				return room.reserve(type, arrival, departure, buyerNif, buyerIban).getReference();
+				Booking newBooking = room.reserve(type, roomBookingData.getArrival(), roomBookingData.getDeparture(),
+						roomBookingData.getBuyerNif(), roomBookingData.getBuyerIban());
+				newBooking.setAdventureId(roomBookingData.getAdventureId());
+				return newBooking.getReference();
 			}
 		}
 		throw new HotelException();
@@ -85,7 +95,7 @@ public class HotelInterface {
 	public static String cancelBooking(String reference) {
 		for (Hotel hotel : FenixFramework.getDomainRoot().getHotelSet()) {
 			Booking booking = hotel.getBooking(reference);
-			if (booking != null) {
+			if (booking != null && booking.getCancellation() == null) {
 				return booking.cancel();
 			}
 		}
@@ -93,12 +103,12 @@ public class HotelInterface {
 	}
 
 	@Atomic(mode = TxMode.READ)
-	public static RoomBookingData getRoomBookingData(String reference) {
+	public static RestRoomBookingData getRoomBookingData(String reference) {
 		for (Hotel hotel : FenixFramework.getDomainRoot().getHotelSet()) {
 			for (Room room : hotel.getRoomSet()) {
 				Booking booking = room.getBooking(reference);
 				if (booking != null) {
-					return new RoomBookingData(booking);
+					return new RestRoomBookingData(booking);
 				}
 			}
 		}
@@ -107,7 +117,12 @@ public class HotelInterface {
 
 	@Atomic(mode = TxMode.WRITE)
 	public static Set<String> bulkBooking(int number, LocalDate arrival, LocalDate departure, String buyerNif,
-			String buyerIban) {
+			String buyerIban, String bulkId) {
+		Set<Booking> bookings = getBookings4BulkId(bulkId);
+		if (!bookings.isEmpty()) {
+			return bookings.stream().map(b -> b.getReference()).collect(Collectors.toSet());
+		}
+
 		if (number < 1) {
 			throw new HotelException();
 		}
@@ -119,11 +134,17 @@ public class HotelInterface {
 
 		Set<String> references = new HashSet<>();
 		for (int i = 0; i < number; i++) {
-			references.add(rooms.get(i).reserve(rooms.get(i).getType(), arrival, departure, buyerNif, buyerIban)
-					.getReference());
+			Booking booking = rooms.get(i).reserve(rooms.get(i).getType(), arrival, departure, buyerNif, buyerIban);
+			booking.setBulkId(bulkId);
+			references.add(booking.getReference());
 		}
 
 		return references;
+	}
+
+	@Atomic(mode = TxMode.WRITE)
+	public static void deleteHotels() {
+		FenixFramework.getDomainRoot().getHotelSet().stream().forEach(h -> h.delete());
 	}
 
 	static List<Room> getAvailableRooms(int number, LocalDate arrival, LocalDate departure) {
@@ -153,6 +174,24 @@ public class HotelInterface {
 			return null;
 		}
 		return room;
+	}
+
+	private static Booking getBooking4AdventureId(String adventureId) {
+		for (Hotel hotel : FenixFramework.getDomainRoot().getHotelSet()) {
+			Booking booking = hotel.getBooking4AdventureId(adventureId);
+			if (booking != null) {
+				return booking;
+			}
+		}
+		return null;
+	}
+
+	private static Set<Booking> getBookings4BulkId(String bulkId) {
+		Set<Booking> bookings = new HashSet<Booking>();
+		for (Hotel hotel : FenixFramework.getDomainRoot().getHotelSet()) {
+			bookings.addAll(hotel.getBookings4BulkId(bulkId));
+		}
+		return bookings;
 	}
 
 }

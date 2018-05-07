@@ -18,7 +18,7 @@ public class AccountDepositMethodTest extends RollbackTestAbstractClass {
 
 	@Test
 	public void success() {
-		String reference = this.account.deposit(50);
+		String reference = this.account.deposit(50).getReference();
 
 		Assert.assertEquals(50, this.account.getBalance(), 0);
 		Operation operation = this.bank.getOperation(reference);

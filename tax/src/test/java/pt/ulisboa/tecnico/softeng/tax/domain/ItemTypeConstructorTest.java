@@ -8,6 +8,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import pt.ulisboa.tecnico.softeng.tax.domain.IRS;
+import pt.ulisboa.tecnico.softeng.tax.domain.ItemType;
 import pt.ulisboa.tecnico.softeng.tax.exception.TaxException;
 
 public class ItemTypeConstructorTest extends RollbackTestAbstractClass {

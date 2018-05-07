@@ -47,11 +47,13 @@ relation IRSHasItemTypes {
 }
 
 class Invoice {
+    String id;
 	String reference;
 	double value;
 	double iva;
 	LocalDate date;
 	boolean cancelled;
+	DateTime time;
 }
 
 relation IRSHasInvoices {
@@ -77,7 +79,7 @@ relation SellerHasInvoices {
 		multiplicity 1..1;
 	}
     Invoice playsRole invoice {
-        multiplicity 1..*;
+        multiplicity 0..*;
     }
 }
 
@@ -86,7 +88,7 @@ relation BuyerHasInvoices {
 		multiplicity 1..1;
 	}
     Invoice playsRole invoice {
-        multiplicity 1..*;
+        multiplicity 0..*;
     }
 }
 

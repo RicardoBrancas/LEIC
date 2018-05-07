@@ -13,14 +13,15 @@
 		<h2>
 			Offers of Activity <span th:text="${activity.name}">Tracking</span> of <span th:text="${activity.nameProvider}">eXtreme</span>
 		</h2>
-		<a class="btn btn-default pull-right" th:href="@{/providers/{codeProvider}/activities(codeProvider=${activity.codeProvider})}">Activities</a>
+		<a class="btn btn-default pull-right" th:href="@{/providers/{codeProvider}/activities(codeProvider=${activity.codeProvider})}">Activity</a>
 		<br/>
 		<h3>Create Offer</h3>
 		<p class="text-danger" th:text="${error}">Error</p>
 		<form class="form-inline" th:action="@{/providers/{codeProvider}/activities/{codeActivity}/offers(codeProvider=${activity.codeProvider},codeActivity=${activity.code})}" th:object="${offer}" method="post">
-	 		<label>Begin: </label> <input class="form-control" type="date" th:field="*{begin}" /> 
-	 		<label>End: </label> <input class="form-control" type="date" th:field="*{end}" /> 
-			<input class="btn btn-primary" type="submit" value="Submit" />
+	 		<label>Begin: </label> <input class="form-control input-sm" type="date" th:field="*{begin}" /> 
+	 		<label>End: </label> <input class="form-control input-sm" type="date" th:field="*{end}" /> 
+			<label>Amount: </label> <input class="form-control input-sm" type="number" step="0.01" min="0.01" max="1000" th:field="*{amount}" /> 
+			<input class="btn btn-primary btn-sm" type="submit" value="Submit" />
 		</form>
 		<br/>
 		<h3>Clients</h3>
@@ -29,16 +30,19 @@
 				<tr>
 					<th>Begin</th>
  					<th>End</th>
+ 					<th>Amount</th>
  					<th>Capacity</th>
- 					<th>Reservations</th>
+ 					<th>Bookings</th>
 				</tr>
 			</thead>
 			<tbody>
 				<tr th:each="offer: ${activity.offers}">
 					<td th:text="${offer.begin}">12/12/2017</td>
- 					<td th:text="${offer.end}">12/12/2107</td>
+ 					<td th:text="${offer.end}">15/12/2107</td>
+ 					<td th:text="${offer.amount}">34.67</td>
  					<td th:text="${offer.capacity}">20</td>
-				 	<td><p th:each="reservation: ${offer.reservations}"><strong>Reference:</strong><span th:text="${reservation.reference}"></span>, <strong>Cancellation:</strong><span th:text="${reservation.cancellation}"></span>, <strong>Cancellation Date:</strong><span th:text="${reservation.cancellationDate}"></span></p></td>
+				 	<td><a
+						th:href="@{/providers/{codeProvider}/activities/{codeActivity}/offers/{externalId}/bookings(codeProvider=${offer.codeProvider},codeActivity=${offer.codeActivity}, externalId=${offer.externalId})}">Bookings</a></td>
 				</tr>
 			</tbody>
 		</table>

@@ -27,7 +27,9 @@ public class HotelController {
 
 	@RequestMapping(method = RequestMethod.POST)
 	public String hotelSubmit(Model model, @ModelAttribute HotelData hotelData) {
-		logger.info("hotelSubmit name:{}, code:{}", hotelData.getName(), hotelData.getCode());
+		logger.info("hotelSubmit name:{}, code:{}, nif:{}, iban:{}, single:{}, double:{}", hotelData.getName(),
+				hotelData.getCode(), hotelData.getNif(), hotelData.getIban(), hotelData.getPriceSingle(),
+				hotelData.getPriceDouble());
 
 		try {
 			HotelInterface.createHotel(hotelData);
@@ -37,6 +39,15 @@ public class HotelController {
 			model.addAttribute("hotels", HotelInterface.getHotels());
 			return "hotels";
 		}
+
+		return "redirect:/hotels";
+	}
+
+	@RequestMapping(method = RequestMethod.DELETE)
+	public String deleteHotels(Model model) {
+		logger.info("deleteHotels");
+
+		HotelInterface.deleteHotels();
 
 		return "redirect:/hotels";
 	}

@@ -80,7 +80,7 @@ public class AccountController {
 			BankInterface.deposit(iban, account.getAmount());
 			model.addAttribute("client", BankInterface.getClientDataById(code, id));
 			model.addAttribute("account", BankInterface.getAccountData(iban));
-			return "account";
+			return "redirect:/banks/" + code + "/clients/" + id + "/accounts/" + iban + "/operations";
 		} catch (BankException be) {
 			model.addAttribute("error", "Error: it was not possible to execute the operation");
 			model.addAttribute("client", BankInterface.getClientDataById(code, id));

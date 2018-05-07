@@ -1,9 +1,11 @@
 package pt.ulisboa.tecnico.softeng.hotel.domain;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.joda.time.LocalDate;
 
@@ -145,7 +147,6 @@ public class Hotel extends Hotel_Base {
 			Room room = hotel.hasVacancy(type, arrival, departure);
 			if (room != null) {
 				Booking booking = room.reserve(type, arrival, departure, buyerNIF, buyerIban);
-				hotel.getProcessor().submitBooking(booking);
 				return booking.getReference();
 			}
 		}
@@ -172,28 +173,6 @@ public class Hotel extends Hotel_Base {
 			}
 		}
 		throw new HotelException();
-	}
-
-	public static Set<String> bulkBooking(int number, LocalDate arrival, LocalDate departure, String buyerNIF,
-			String buyerIban) {
-		if (number < 1) {
-			throw new HotelException();
-		}
-
-		List<Room> rooms = getAvailableRooms(number, arrival, departure);
-		if (rooms.size() < number) {
-			throw new HotelException();
-		}
-
-		Set<String> references = new HashSet<>();
-
-		for (int i = 0; i < number; i++) {
-			Booking booking = rooms.get(i).reserve(rooms.get(i).getType(), arrival, departure, buyerNIF, buyerIban);
-			rooms.get(i).getHotel().getProcessor().submitBooking(booking);
-			references.add(booking.getReference());
-		}
-
-		return references;
 	}
 
 	public static List<Room> getAvailableRooms(int number, LocalDate arrival, LocalDate departure) {
@@ -227,4 +206,16 @@ public class Hotel extends Hotel_Base {
 		setCounter(counter);
 		return counter;
 	}
+
+	public Booking getBooking4AdventureId(String adventureId) {
+		return getRoomSet().stream().flatMap(r -> r.getBookingSet().stream())
+				.filter(b -> b.getAdventureId() != null && b.getAdventureId().equals(adventureId)).findFirst()
+				.orElse(null);
+	}
+
+	public Collection<? extends Booking> getBookings4BulkId(String bulkId) {
+		return getRoomSet().stream().flatMap(r -> r.getBookingSet().stream())
+				.filter(b -> b.getBulkId() != null && b.getBulkId().equals(bulkId)).collect(Collectors.toSet());
+	}
+
 }

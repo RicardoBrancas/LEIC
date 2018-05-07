@@ -18,7 +18,7 @@ public class OperationRevertMethodTest extends RollbackTestAbstractClass {
 
 	@Test
 	public void revertDeposit() {
-		String reference = this.account.deposit(100);
+		String reference = this.account.deposit(100).getReference();
 		Operation operation = this.bank.getOperation(reference);
 
 		String newReference = operation.revert();
@@ -31,7 +31,7 @@ public class OperationRevertMethodTest extends RollbackTestAbstractClass {
 	@Test
 	public void revertWithdraw() {
 		this.account.deposit(1000);
-		String reference = this.account.withdraw(100);
+		String reference = this.account.withdraw(100).getReference();
 		Operation operation = this.bank.getOperation(reference);
 
 		String newReference = operation.revert();

@@ -89,6 +89,17 @@ public class Bank extends Bank_Base {
 		return null;
 	}
 
+	public Operation getOperationBySourceAndReference(String transactionSource, String transactionReference) {
+		for (Operation operation : getOperationSet()) {
+			if (operation.getTransactionSource() != null && operation.getTransactionReference() != null
+					&& operation.getTransactionSource().equals(transactionSource)
+					&& operation.getTransactionReference().equals(transactionReference)) {
+				return operation;
+			}
+		}
+		return null;
+	}
+
 	public static Operation getOperationByReference(String reference) {
 		for (Bank bank : FenixFramework.getDomainRoot().getBankSet()) {
 			Operation operation = bank.getOperation(reference);
@@ -102,7 +113,7 @@ public class Bank extends Bank_Base {
 	public static String processPayment(String IBAN, double amount) {
 		for (Bank bank : FenixFramework.getDomainRoot().getBankSet()) {
 			if (bank.getAccount(IBAN) != null) {
-				return bank.getAccount(IBAN).withdraw(amount);
+				return bank.getAccount(IBAN).withdraw(amount).getReference();
 			}
 		}
 		throw new BankException();

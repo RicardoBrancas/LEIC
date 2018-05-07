@@ -23,6 +23,7 @@ public class RoomBookingData {
 	private String invoiceReference;
 	private String buyerNif;
 	private String buyerIban;
+	private String adventureId;
 
 	public RoomBookingData() {
 	}
@@ -36,10 +37,13 @@ public class RoomBookingData {
 		this.roomType = booking.getRoom().getType().name();
 		this.arrival = booking.getArrival();
 		this.departure = booking.getDeparture();
-		this.cancellationDate = booking.getCancellationDate();
 		this.price = booking.getPrice();
+		this.buyerNif = booking.getBuyerNif();
+		this.buyerIban = booking.getBuyerIban();
+		this.cancellationDate = booking.getCancellationDate();
 		this.paymentReference = booking.getPaymentReference();
 		this.invoiceReference = booking.getInvoiceReference();
+		this.adventureId = booking.getAdventureId();
 	}
 
 	public String getReference() {
@@ -70,8 +74,16 @@ public class RoomBookingData {
 		return this.arrival;
 	}
 
+	public void setArrival(LocalDate arrival) {
+		this.arrival = arrival;
+	}
+
 	public LocalDate getDeparture() {
 		return this.departure;
+	}
+
+	public void setDeparture(LocalDate departure) {
+		this.departure = departure;
 	}
 
 	public LocalDate getCancellationDate() {
@@ -104,6 +116,14 @@ public class RoomBookingData {
 
 	public void setBuyerIban(String buyerIban) {
 		this.buyerIban = buyerIban;
+	}
+
+	public String getAdventureId() {
+		return this.adventureId;
+	}
+
+	public void setAdventureId(String adventureId) {
+		this.adventureId = adventureId;
 	}
 
 }

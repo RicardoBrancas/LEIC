@@ -27,7 +27,8 @@ public class BrokerController {
 
 	@RequestMapping(method = RequestMethod.POST)
 	public String brokerSubmit(Model model, @ModelAttribute BrokerData brokerData) {
-		logger.info("brokerSubmit name:{}, code:{}", brokerData.getName(), brokerData.getCode());
+		logger.info("brokerSubmit name:{}, code:{}, nifAsSeller:{}, nifAsBuyer:{}, iban:{}", brokerData.getName(),
+				brokerData.getCode(), brokerData.getNifAsSeller(), brokerData.getNifAsBuyer(), brokerData.getIban());
 
 		try {
 			BrokerInterface.createBroker(brokerData);
@@ -37,6 +38,15 @@ public class BrokerController {
 			model.addAttribute("brokers", BrokerInterface.getBrokers());
 			return "brokers";
 		}
+
+		return "redirect:/brokers";
+	}
+
+	@RequestMapping(method = RequestMethod.DELETE)
+	public String deleteBrokers(Model model) {
+		logger.info("deleteBrokers");
+
+		BrokerInterface.deleteBrokers();
 
 		return "redirect:/brokers";
 	}

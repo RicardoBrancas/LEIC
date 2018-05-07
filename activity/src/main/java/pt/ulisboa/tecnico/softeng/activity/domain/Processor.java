@@ -5,12 +5,15 @@ import java.util.Set;
 
 import pt.ulisboa.tecnico.softeng.activity.services.remote.BankInterface;
 import pt.ulisboa.tecnico.softeng.activity.services.remote.TaxInterface;
-import pt.ulisboa.tecnico.softeng.activity.services.remote.dataobjects.InvoiceData;
+import pt.ulisboa.tecnico.softeng.activity.services.remote.dataobjects.RestBankOperationData;
+import pt.ulisboa.tecnico.softeng.activity.services.remote.dataobjects.RestInvoiceData;
 import pt.ulisboa.tecnico.softeng.activity.services.remote.exceptions.BankException;
 import pt.ulisboa.tecnico.softeng.activity.services.remote.exceptions.RemoteAccessException;
 import pt.ulisboa.tecnico.softeng.activity.services.remote.exceptions.TaxException;
 
 public class Processor extends Processor_Base {
+	private static final String TRANSACTION_SOURCE = "ACTIVITY";
+
 	public void delete() {
 		setActivityProvider(null);
 
@@ -32,15 +35,15 @@ public class Processor extends Processor_Base {
 			if (!booking.isCancelled()) {
 				if (booking.getPaymentReference() == null) {
 					try {
-						booking.setPaymentReference(
-								BankInterface.processPayment(booking.getIban(), booking.getAmount()));
+						booking.setPaymentReference(BankInterface.processPayment(new RestBankOperationData(
+								booking.getIban(), booking.getAmount(), TRANSACTION_SOURCE, booking.getReference())));
 					} catch (BankException | RemoteAccessException ex) {
 						failedToProcess.add(booking);
 						continue;
 					}
 				}
-				InvoiceData invoiceData = new InvoiceData(booking.getProviderNif(), booking.getBuyerNif(),
-						booking.getType(), booking.getAmount(), booking.getDate());
+				RestInvoiceData invoiceData = new RestInvoiceData(booking.getProviderNif(), booking.getBuyerNif(),
+						booking.getType(), booking.getAmount(), booking.getDate(), booking.getTime());
 				try {
 					booking.setInvoiceReference(TaxInterface.submitInvoice(invoiceData));
 				} catch (TaxException | RemoteAccessException ex) {

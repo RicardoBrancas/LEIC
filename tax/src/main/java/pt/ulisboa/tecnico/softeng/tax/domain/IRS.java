@@ -1,16 +1,22 @@
 package pt.ulisboa.tecnico.softeng.tax.domain;
 
+import pt.ist.fenixframework.Atomic;
+import pt.ist.fenixframework.Atomic.TxMode;
 import pt.ist.fenixframework.FenixFramework;
 import pt.ulisboa.tecnico.softeng.tax.exception.TaxException;
-import pt.ulisboa.tecnico.softeng.tax.services.local.dataobjects.InvoiceData;
 
 public class IRS extends IRS_Base {
 
 	public static IRS getIRSInstance() {
 		if (FenixFramework.getDomainRoot().getIrs() == null) {
-			return new IRS();
+			return createIrs();
 		}
 		return FenixFramework.getDomainRoot().getIrs();
+	}
+
+	@Atomic(mode = TxMode.WRITE)
+	private static IRS createIrs() {
+		return new IRS();
 	}
 
 	private IRS() {
@@ -41,16 +47,6 @@ public class IRS extends IRS_Base {
 			}
 		}
 		return null;
-	}
-
-	public static String submitInvoice(InvoiceData invoiceData) {
-		IRS irs = IRS.getIRSInstance();
-		Seller seller = (Seller) irs.getTaxPayerByNIF(invoiceData.getSellerNIF());
-		Buyer buyer = (Buyer) irs.getTaxPayerByNIF(invoiceData.getBuyerNIF());
-		ItemType itemType = irs.getItemTypeByName(invoiceData.getItemType());
-		Invoice invoice = new Invoice(invoiceData.getValue(), invoiceData.getDate(), itemType, seller, buyer);
-
-		return invoice.getReference();
 	}
 
 	private void clearAll() {

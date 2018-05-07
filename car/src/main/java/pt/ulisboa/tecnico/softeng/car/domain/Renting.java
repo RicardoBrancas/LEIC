@@ -1,15 +1,16 @@
 package pt.ulisboa.tecnico.softeng.car.domain;
 
+import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 
 import pt.ulisboa.tecnico.softeng.car.exception.CarException;
 
 public class Renting extends Renting_Base {
 	private static String drivingLicenseFormat = "^[a-zA-Z]+\\d+$";
-	private static final String type = "RENTAL";
+	private static final String TYPE = "RENTAL";
 
-	public Renting(String drivingLicense, LocalDate begin, LocalDate end, Vehicle vehicle, String buyerNIF,
-			String buyerIBAN) {
+	public Renting(String drivingLicense, LocalDate begin, LocalDate end, Vehicle vehicle, String buyerNif,
+			String buyerIban) {
 		checkArguments(drivingLicense, begin, end, vehicle);
 
 		setKilometers(-1);
@@ -19,9 +20,10 @@ public class Renting extends Renting_Base {
 		setDrivingLicense(drivingLicense);
 		setBegin(begin);
 		setEnd(end);
-		setClientNif(buyerNIF);
-		setClientIban(buyerIBAN);
+		setClientNif(buyerNif);
+		setClientIban(buyerIban);
 		setPrice(vehicle.getPrice() * (end.getDayOfYear() - begin.getDayOfYear()));
+		setTime(DateTime.now());
 
 		setVehicle(vehicle);
 	}
@@ -70,12 +72,20 @@ public class Renting extends Renting_Base {
 	 * 
 	 * @param kilometers
 	 */
-	public void checkout(int kilometers) {
+	public void checkout(Integer kilometers) {
+		if (isCancelled()) {
+			throw new CarException();
+		}
+
 		setKilometers(kilometers);
 		getVehicle().addKilometers(kilometers);
 	}
 
 	public String cancel() {
+		if (getKilometers() != -1) {
+			throw new CarException();
+		}
+
 		setCancellationReference(getReference() + "CANCEL");
 		setCancellationDate(LocalDate.now());
 
@@ -85,7 +95,7 @@ public class Renting extends Renting_Base {
 	}
 
 	public String getType() {
-		return this.type;
+		return TYPE;
 	}
 
 	public boolean isCancelledInvoice() {

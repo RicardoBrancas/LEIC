@@ -1,19 +1,33 @@
 package pt.ulisboa.tecnico.softeng.car.services.local.dataobjects;
 
 import org.joda.time.LocalDate;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import pt.ulisboa.tecnico.softeng.car.domain.Renting;
+import pt.ulisboa.tecnico.softeng.car.domain.Vehicle;
 
 public class RentingData {
-	private final String reference;
-	private final String plate;
-	private final String drivingLicense;
-	private final String rentACarCode;
-	private final LocalDate begin;
-	private final LocalDate end;
-	private final String paymentReference;
-	private final String invoiceReference;
-	private final double price;
+	private String reference;
+	private String plate;
+	private String drivingLicense;
+	private String rentACarCode;
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+	private LocalDate begin;
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+	private LocalDate end;
+	private String paymentReference;
+	private String invoiceReference;
+	private String cancellationReference;
+	private Double price;
+	private String buyerNIF;
+	private String buyerIBAN;
+	private Vehicle.Type type;
+	private String typeValue;
+	private Integer kilometers;
+	private String adventureId;
+
+	public RentingData() {
+	}
 
 	public RentingData(Renting renting) {
 		this.reference = renting.getReference();
@@ -24,7 +38,9 @@ public class RentingData {
 		this.end = renting.getEnd();
 		this.paymentReference = renting.getPaymentReference();
 		this.invoiceReference = renting.getInvoiceReference();
+		this.cancellationReference = renting.getCancellationReference();
 		this.price = renting.getPrice();
+		this.adventureId = renting.getAdventureId();
 	}
 
 	/**
@@ -77,8 +93,75 @@ public class RentingData {
 		return this.invoiceReference;
 	}
 
-	public double getPrice() {
-		return price;
+	public Double getPrice() {
+		return this.price;
 	}
 
+	public String getBuyerNIF() {
+		return this.buyerNIF;
+	}
+
+	public void setBuyerNIF(String buyerNIF) {
+		this.buyerNIF = buyerNIF;
+	}
+
+	public String getBuyerIBAN() {
+		return this.buyerIBAN;
+	}
+
+	public void setBuyerIBAN(String buyerIBAN) {
+		this.buyerIBAN = buyerIBAN;
+	}
+
+	public Vehicle.Type getType() {
+		return this.type;
+	}
+
+	public void setType(Vehicle.Type type) {
+		this.type = type;
+	}
+
+	public void setDrivingLicense(String drivingLicense) {
+		this.drivingLicense = drivingLicense;
+	}
+
+	public void setBegin(LocalDate begin) {
+		this.begin = begin;
+	}
+
+	public void setEnd(LocalDate end) {
+		this.end = end;
+	}
+
+	public String getCancellationReference() {
+		return this.cancellationReference;
+	}
+
+	public void setCancellationReference(String cancellationReference) {
+		this.cancellationReference = cancellationReference;
+	}
+
+	public Integer getKilometers() {
+		return this.kilometers;
+	}
+
+	public void setKilometers(Integer kilometers) {
+		this.kilometers = kilometers;
+	}
+
+	public String getTypeValue() {
+		return this.typeValue;
+	}
+
+	public void setTypeValue(String typeValue) {
+		this.typeValue = typeValue;
+	}
+
+	public String getAdventureId() {
+		return this.adventureId;
+	}
+
+	public void setAdventureId(String adventureId) {
+		this.adventureId = adventureId;
+	}
 }

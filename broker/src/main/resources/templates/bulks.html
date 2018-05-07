@@ -19,10 +19,12 @@
 		<h3>Create Bulk Booking</h3>
 		<p class="text-danger" th:text="${error}">Error</p>
 		<form class="form-inline" th:action="@{/brokers/{code}/bulks(code=${broker.code})}" th:object="${bulk}" method="post">
-	 		<label>Number: </label> <input class="form-control" type="number" th:field="*{number}" /> 
-			<label>Arrival: </label> <input class="form-control" type="date" th:field="*{arrival}" />  
-			<label>Departure: </label> <input class="form-control" type="date" th:field="*{departure}" />  
-			<input class="btn btn-primary" type="submit" value="Submit" />
+	 		<label>Number: </label> <input class="form-control input-sm" type="number" min="1" max="1000" th:field="*{number}" /> 
+			<label>Arrival: </label> <input class="form-control input-sm" type="date" th:field="*{arrival}" />  
+			<label>Departure: </label> <input class="form-control input-sm" type="date" th:field="*{departure}" />  
+			<label>NIF: </label> <input class="form-control input-sm" type="text" size="9" th:field="*{buyerNif}" /> 
+			<label>IBAN: </label> <input class="form-control input-sm" type="text" size="12" th:field="*{buyerIban}" /> 
+			<input class="btn btn-primary input-sm" type="submit" value="Submit" />
 		</form>
 		<br/>
 		<h3>Bulk Bookings</h3>
@@ -32,8 +34,11 @@
 					<th>Number</th>
  					<th>Arrival</th>
 					<th>Departure</th>
+					<th>NIF</th>
+					<th>IBAN</th>
 					<th>Actual Number</th>
 					<th>Cancelled</th>
+					<th>Process</th>
 					<th>References</th>
 				</tr>
 			</thead>
@@ -42,8 +47,13 @@
 					<td th:text="${bulk.number}">number</td>
  					<td th:text="${bulk.arrival}">arrival</td>
 					<td th:text="${bulk.departure}">departure</td>
+ 					<td th:text="${bulk.buyerNif}">123456789</td>
+ 					<td th:text="${bulk.buyerIban}">GGFD7879868768767</td>
 					<td th:text="${bulk.actualNumber}">actual number</td>
 					<td th:text="${bulk.cancelled}">cancelled</td>
+					<td> <form class="form-inline" th:action="@{/brokers/{code}/bulks/{id}/process(code=${broker.code},id=${bulk.id})}" method="post">
+						 <input class="btn btn-primary" type="submit" value="Submit" />
+					</form></td>					
 					<td><p th:each="reference: ${bulk.references}"><span th:text="${reference}">reference</span></p></td>
 				</tr>
 			</tbody>

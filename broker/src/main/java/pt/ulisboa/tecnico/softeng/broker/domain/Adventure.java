@@ -1,5 +1,6 @@
 package pt.ulisboa.tecnico.softeng.broker.domain;
 
+import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,6 +32,8 @@ public class Adventure extends Adventure_Base {
 		setBroker(broker);
 
 		setCurrentAmount(0.0);
+		setTime(DateTime.now());
+
 		setState(State.RESERVE_ACTIVITY);
 	}
 

@@ -36,11 +36,12 @@ public class Operation extends Operation_Base {
 	}
 
 	public String revert() {
+		setCancellation(getReference() + "_CANCEL");
 		switch (getType()) {
 		case DEPOSIT:
-			return getAccount().withdraw(getValue());
+			return getAccount().withdraw(getValue()).getReference();
 		case WITHDRAW:
-			return getAccount().deposit(getValue());
+			return getAccount().deposit(getValue()).getReference();
 		default:
 			throw new BankException();
 

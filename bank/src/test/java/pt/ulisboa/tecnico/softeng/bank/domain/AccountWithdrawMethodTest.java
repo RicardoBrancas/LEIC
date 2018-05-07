@@ -19,7 +19,7 @@ public class AccountWithdrawMethodTest extends RollbackTestAbstractClass {
 
 	@Test
 	public void success() {
-		String reference = this.account.withdraw(40);
+		String reference = this.account.withdraw(40).getReference();
 
 		Assert.assertEquals(60, this.account.getBalance(), 0);
 		Operation operation = this.bank.getOperation(reference);

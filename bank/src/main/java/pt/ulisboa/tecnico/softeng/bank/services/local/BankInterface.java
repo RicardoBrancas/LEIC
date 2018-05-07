@@ -112,10 +112,20 @@ public class BankInterface {
 	}
 
 	@Atomic(mode = TxMode.WRITE)
-	public static String processPayment(String IBAN, int amount) {
+	public static String processPayment(BankOperationData bankOperationData) {
+		Operation operation = getOperationBySourceAndReference(bankOperationData.getTransactionSource(),
+				bankOperationData.getTransactionReference());
+		if (operation != null) {
+			return operation.getReference();
+		}
+
 		for (Bank bank : FenixFramework.getDomainRoot().getBankSet()) {
-			if (bank.getAccount(IBAN) != null) {
-				return bank.getAccount(IBAN).withdraw(amount);
+			Account account = bank.getAccount(bankOperationData.getIban());
+			if (account != null) {
+				Operation newOperation = account.withdraw(bankOperationData.getValue());
+				newOperation.setTransactionSource(bankOperationData.getTransactionSource());
+				newOperation.setTransactionReference(bankOperationData.getTransactionReference());
+				return newOperation.getReference();
 			}
 		}
 		throw new BankException();
@@ -124,7 +134,7 @@ public class BankInterface {
 	@Atomic(mode = TxMode.WRITE)
 	public static String cancelPayment(String paymentConfirmation) {
 		Operation operation = getOperationByReference(paymentConfirmation);
-		if (operation != null) {
+		if (operation != null && operation.getCancellation() == null) {
 			return operation.revert();
 		}
 		throw new BankException();
@@ -139,9 +149,24 @@ public class BankInterface {
 		throw new BankException();
 	}
 
+	@Atomic(mode = TxMode.WRITE)
+	public static void deleteBanks() {
+		FenixFramework.getDomainRoot().getBankSet().stream().forEach(b -> b.delete());
+	}
+
 	private static Operation getOperationByReference(String reference) {
 		for (Bank bank : FenixFramework.getDomainRoot().getBankSet()) {
 			Operation operation = bank.getOperation(reference);
+			if (operation != null) {
+				return operation;
+			}
+		}
+		return null;
+	}
+
+	private static Operation getOperationBySourceAndReference(String transactionSource, String transactionReference) {
+		for (Bank bank : FenixFramework.getDomainRoot().getBankSet()) {
+			Operation operation = bank.getOperationBySourceAndReference(transactionSource, transactionReference);
 			if (operation != null) {
 				return operation;
 			}

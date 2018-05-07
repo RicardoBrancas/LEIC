@@ -4,7 +4,6 @@ import org.joda.time.LocalDate;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import pt.ulisboa.tecnico.softeng.broker.domain.Adventure;
-import pt.ulisboa.tecnico.softeng.broker.domain.Client;
 
 public class AdventureData {
 	private String id;
@@ -14,8 +13,9 @@ public class AdventureData {
 	private LocalDate end;
 	private Integer age;
 	private String iban;
+	private Double margin;
+	private Boolean vehicle;
 	private Double amount;
-	private ClientData clientData;
 	private Adventure.State state;
 
 	private String paymentConfirmation;
@@ -34,7 +34,8 @@ public class AdventureData {
 		this.end = adventure.getEnd();
 		this.age = adventure.getAge();
 		this.iban = adventure.getIban();
-		this.amount = adventure.getAmount();
+		this.margin = adventure.getMargin();
+		this.vehicle = adventure.getRentVehicle();
 		this.state = adventure.getState().getValue();
 
 		this.paymentConfirmation = adventure.getPaymentConfirmation();
@@ -43,10 +44,6 @@ public class AdventureData {
 		this.roomCancellation = adventure.getRoomCancellation();
 		this.activityConfirmation = adventure.getActivityConfirmation();
 		this.activityCancellation = adventure.getActivityCancellation();
-
-		Client client = adventure.getClient();
-		this.clientData = new ClientData(client.getIban(), client.getNif(), client.getDrivingLicense(),
-				client.getAge());
 	}
 
 	public String getId() {
@@ -151,6 +148,22 @@ public class AdventureData {
 
 	public void setActivityCancellation(String activityCancellation) {
 		this.activityCancellation = activityCancellation;
+	}
+
+	public Double getMargin() {
+		return this.margin;
+	}
+
+	public void setMargin(Double margin) {
+		this.margin = margin;
+	}
+
+	public Boolean getVehicle() {
+		return this.vehicle;
+	}
+
+	public void setVehicle(Boolean vehicle) {
+		this.vehicle = vehicle;
 	}
 
 }

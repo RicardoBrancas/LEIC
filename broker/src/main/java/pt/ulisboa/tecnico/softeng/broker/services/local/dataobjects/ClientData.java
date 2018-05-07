@@ -1,19 +1,38 @@
 package pt.ulisboa.tecnico.softeng.broker.services.local.dataobjects;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import pt.ulisboa.tecnico.softeng.broker.domain.Client;
+
 public class ClientData {
+	private String brokerCode;
 	private String iban;
 	private String nif;
 	private String drivingLicense;
-	private int age;
+	private Integer age;
+	private List<AdventureData> adventures;
 
 	public ClientData() {
 	}
 
-	public ClientData(String iban, String nif, String drivingLicense, int age) {
-		this.iban = iban;
-		this.nif = nif;
-		this.drivingLicense = drivingLicense;
-		this.age = age;
+	public ClientData(Client client) {
+		this.setBrokerCode(client.getBroker().getCode());
+		this.iban = client.getIban();
+		this.nif = client.getNif();
+		this.drivingLicense = client.getDrivingLicense();
+		this.age = client.getAge();
+
+		this.setAdventures(client.getAdventureSet().stream().map(a -> new AdventureData(a))
+				.sorted((a1, a2) -> a1.getId().compareTo(a2.getId())).collect(Collectors.toList()));
+	}
+
+	public String getBrokerCode() {
+		return this.brokerCode;
+	}
+
+	public void setBrokerCode(String brokerCode) {
+		this.brokerCode = brokerCode;
 	}
 
 	public String getIban() {
@@ -40,11 +59,20 @@ public class ClientData {
 		this.drivingLicense = drivingLicense;
 	}
 
-	public int getAge() {
+	public Integer getAge() {
 		return this.age;
 	}
 
-	public void setAge(int age) {
+	public void setAge(Integer age) {
 		this.age = age;
 	}
+
+	public List<AdventureData> getAdventures() {
+		return this.adventures;
+	}
+
+	public void setAdventures(List<AdventureData> adventures) {
+		this.adventures = adventures;
+	}
+
 }

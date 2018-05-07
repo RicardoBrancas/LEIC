@@ -1,5 +1,6 @@
 package pt.ulisboa.tecnico.softeng.activity.domain;
 
+import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 
 import pt.ulisboa.tecnico.softeng.activity.exception.ActivityException;
@@ -7,25 +8,32 @@ import pt.ulisboa.tecnico.softeng.activity.exception.ActivityException;
 public class Booking extends Booking_Base {
 	private static final String SPORT_TYPE = "SPORT";
 
-	public Booking(ActivityProvider provider, ActivityOffer offer, String buyerNif, String buyerIban) {
-		checkArguments(provider, offer, buyerNif, buyerIban);
+	public Booking(ActivityProvider provider, ActivityOffer offer, int age, String buyerNif, String buyerIban) {
+		checkArguments(provider, offer, age, buyerNif, buyerIban);
 
 		setReference(offer.getActivity().getActivityProvider().getCode() + Integer.toString(provider.getCounter()));
 		setActivityOffer(offer);
 		setProviderNif(provider.getNif());
 		setBuyerNif(buyerNif);
 		setIban(buyerIban);
+		setAge(age);
 		setAmount(offer.getPrice());
 		setDate(offer.getBegin());
 		setType(SPORT_TYPE);
 		setCancelledInvoice(false);
+		setTime(DateTime.now());
 
 		offer.addBooking(this);
 	}
 
-	private void checkArguments(ActivityProvider provider, ActivityOffer offer, String buyerNIF, String buyerIban) {
-		if (provider == null || offer == null || buyerNIF == null || buyerNIF.trim().length() == 0 || buyerIban == null
-				|| buyerIban.trim().length() == 0) {
+	public Booking(ActivityProvider provider, ActivityOffer offer, String buyerNif, String buyerIban) {
+		this(provider, offer, 0, buyerNif, buyerIban);
+	}
+
+	private void checkArguments(ActivityProvider provider, ActivityOffer offer, int age, String buyerNIF,
+			String buyerIban) {
+		if (provider == null || offer == null || age < 0 || buyerNIF == null || buyerNIF.trim().length() == 0
+				|| buyerIban == null || buyerIban.trim().length() == 0) {
 			throw new ActivityException();
 		}
 

@@ -10,7 +10,8 @@ import mockit.Mocked;
 import mockit.integration.junit4.JMockit;
 import pt.ulisboa.tecnico.softeng.activity.services.remote.BankInterface;
 import pt.ulisboa.tecnico.softeng.activity.services.remote.TaxInterface;
-import pt.ulisboa.tecnico.softeng.activity.services.remote.dataobjects.InvoiceData;
+import pt.ulisboa.tecnico.softeng.activity.services.remote.dataobjects.RestBankOperationData;
+import pt.ulisboa.tecnico.softeng.activity.services.remote.dataobjects.RestInvoiceData;
 
 @RunWith(JMockit.class)
 public class ActivityOfferHasVacancyMethodTest extends RollbackTestAbstractClass {
@@ -59,9 +60,9 @@ public class ActivityOfferHasVacancyMethodTest extends RollbackTestAbstractClass
 			@Mocked final BankInterface bankInterface) {
 		new Expectations() {
 			{
-				BankInterface.processPayment(this.anyString, this.anyDouble);
+				BankInterface.processPayment((RestBankOperationData) this.any);
 
-				TaxInterface.submitInvoice((InvoiceData) this.any);
+				TaxInterface.submitInvoice((RestInvoiceData) this.any);
 			}
 		};
 		this.provider.getProcessor().submitBooking(new Booking(this.provider, this.offer, NIF, IBAN));
@@ -78,9 +79,9 @@ public class ActivityOfferHasVacancyMethodTest extends RollbackTestAbstractClass
 			@Mocked final BankInterface bankInterface) {
 		new Expectations() {
 			{
-				BankInterface.processPayment(this.anyString, this.anyDouble);
+				BankInterface.processPayment((RestBankOperationData) this.any);
 
-				TaxInterface.submitInvoice((InvoiceData) this.any);
+				TaxInterface.submitInvoice((RestInvoiceData) this.any);
 			}
 		};
 		this.provider.getProcessor().submitBooking(new Booking(this.provider, this.offer, NIF, IBAN));

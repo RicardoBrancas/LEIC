@@ -13,48 +13,59 @@ import pt.ulisboa.tecnico.softeng.broker.exception.BrokerException;
 import pt.ulisboa.tecnico.softeng.broker.services.local.BrokerInterface;
 import pt.ulisboa.tecnico.softeng.broker.services.local.dataobjects.AdventureData;
 import pt.ulisboa.tecnico.softeng.broker.services.local.dataobjects.BrokerData;
-import pt.ulisboa.tecnico.softeng.broker.services.local.dataobjects.BrokerData.CopyDepth;
+import pt.ulisboa.tecnico.softeng.broker.services.local.dataobjects.ClientData;
 
 @Controller
-@RequestMapping(value = "/brokers/{brokerCode}/adventures")
+@RequestMapping(value = "/brokers/{brokerCode}/clients/{clientNif}/adventures")
 public class AdventureController {
 	private static Logger logger = LoggerFactory.getLogger(AdventureController.class);
 
 	@RequestMapping(method = RequestMethod.GET)
-	public String showAdventures(Model model, @PathVariable String brokerCode) {
-		logger.info("showAdventures code:{}", brokerCode);
+	public String showAdventures(Model model, @PathVariable String brokerCode, @PathVariable String clientNif) {
+		logger.info("showAdventures brokerCode:{}, clientNif:{}", brokerCode, clientNif);
 
-		BrokerData brokerData = BrokerInterface.getBrokerDataByCode(brokerCode, CopyDepth.ADVENTURES);
+		ClientData clientData = BrokerInterface.getClientDataByBrokerCodeAndNif(brokerCode, clientNif);
 
-		if (brokerData == null) {
-			model.addAttribute("error", "Error: it does not exist a broker with the code " + brokerCode);
+		if (clientData == null) {
+			model.addAttribute("error", "Error: it does not exist a client with the nif " + clientNif
+					+ " in the broker with the code " + brokerCode);
 			model.addAttribute("broker", new BrokerData());
 			model.addAttribute("brokers", BrokerInterface.getBrokers());
 			return "brokers";
-		} else {
-			model.addAttribute("adventure", new AdventureData());
-			model.addAttribute("broker", brokerData);
-			return "adventures";
 		}
+
+		model.addAttribute("adventure", new AdventureData());
+		model.addAttribute("client", clientData);
+		return "adventures";
+
 	}
 
 	@RequestMapping(method = RequestMethod.POST)
-	public String submitAdventure(Model model, @PathVariable String brokerCode,
+	public String submitAdventure(Model model, @PathVariable String brokerCode, @PathVariable String clientNif,
 			@ModelAttribute AdventureData adventureData) {
-		logger.info("adventureSubmit brokerCode:{}, begin:{}, end:{}, age:{}, iban:{}, amount:{}", brokerCode,
-				adventureData.getBegin(), adventureData.getEnd(), adventureData.getAge(), adventureData.getIban(),
-				adventureData.getAmount());
+		logger.info("adventureSubmit brokerCode:{}, clientNif:{}, begin:{}, end:{},margin:{}, age:{}, vehicle:{}",
+				brokerCode, clientNif, adventureData.getBegin(), adventureData.getEnd(), adventureData.getMargin(),
+				adventureData.getAge(), adventureData.getVehicle());
 
 		try {
-			BrokerInterface.createAdventure(brokerCode, adventureData);
+			BrokerInterface.createAdventure(brokerCode, clientNif, adventureData);
 		} catch (BrokerException be) {
 			model.addAttribute("error", "Error: it was not possible to create the adventure");
 			model.addAttribute("adventure", adventureData);
-			model.addAttribute("broker", BrokerInterface.getBrokerDataByCode(brokerCode, CopyDepth.ADVENTURES));
+			model.addAttribute("client", BrokerInterface.getClientDataByBrokerCodeAndNif(brokerCode, clientNif));
 			return "adventures";
 		}
 
-		return "redirect:/brokers/" + brokerCode + "/adventures";
+		return "redirect:/brokers/" + brokerCode + "/clients/" + clientNif + "/adventures";
+	}
+
+	@RequestMapping(value = "/{id}/process", method = RequestMethod.POST)
+	public String processAdventure(Model model, @PathVariable String brokerCode, @PathVariable String clientNif,
+			@PathVariable String id) {
+		logger.info("processAdventure brokerCode:{}, adventureId:{}", brokerCode, id);
+
+		BrokerInterface.processAdventure(brokerCode, id);
+		return "redirect:/brokers/" + brokerCode + "/clients/" + clientNif + "/adventures";
 	}
 
 }

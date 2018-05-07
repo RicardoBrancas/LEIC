@@ -56,9 +56,12 @@ relation ClientHasAccounts {
 
 class Operation {
 	String reference;
+	String cancellation;
 	OperationType type;
 	double value;
 	DateTime time;
+	String transactionSource;
+	String transactionReference;
 }
 
 relation BankHasOperation {

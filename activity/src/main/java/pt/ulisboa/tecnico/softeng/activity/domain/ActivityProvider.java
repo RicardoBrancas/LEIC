@@ -7,7 +7,6 @@ import org.joda.time.LocalDate;
 
 import pt.ist.fenixframework.FenixFramework;
 import pt.ulisboa.tecnico.softeng.activity.exception.ActivityException;
-import pt.ulisboa.tecnico.softeng.activity.services.local.dataobjects.ActivityReservationData;
 
 public class ActivityProvider extends ActivityProvider_Base {
 	static final int CODE_SIZE = 6;
@@ -88,46 +87,18 @@ public class ActivityProvider extends ActivityProvider_Base {
 		return null;
 	}
 
-	public static String reserveActivity(LocalDate begin, LocalDate end, int age, String nif, String iban) {
-		List<ActivityOffer> offers;
-		for (ActivityProvider provider : FenixFramework.getDomainRoot().getActivityProviderSet()) {
-			offers = provider.findOffer(begin, end, age);
-			if (!offers.isEmpty()) {
-				Booking booking = new Booking(provider, offers.get(0), nif, iban);
-				provider.getProcessor().submitBooking(booking);
-				return booking.getReference();
-			}
-		}
-		throw new ActivityException();
-	}
-
-	public static String cancelReservation(String reference) {
-		Booking booking = getBookingByReference(reference);
-		if (booking != null) {
-			return booking.cancel();
-		}
-		throw new ActivityException();
-	}
-
-	public static ActivityReservationData getActivityReservationData(String reference) {
-		for (ActivityProvider provider : FenixFramework.getDomainRoot().getActivityProviderSet()) {
-			for (Activity activity : provider.getActivitySet()) {
-				for (ActivityOffer offer : activity.getActivityOfferSet()) {
-					Booking booking = offer.getBooking(reference);
-					if (booking != null) {
-						return new ActivityReservationData(provider, offer, booking);
-					}
-				}
-			}
-		}
-		throw new ActivityException();
-	}
-
 	@Override
 	public int getCounter() {
 		int counter = super.getCounter() + 1;
 		setCounter(counter);
 		return counter;
+	}
+
+	public Booking getBookingByAdventureId(String adventureId) {
+		return getActivitySet().stream().flatMap(a -> a.getActivityOfferSet().stream())
+				.flatMap(o -> o.getBookingSet().stream())
+				.filter(b -> b.getAdventureId() != null && b.getAdventureId().equals(adventureId)).findFirst()
+				.orElse(null);
 	}
 
 }

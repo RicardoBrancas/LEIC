@@ -8,6 +8,11 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import pt.ulisboa.tecnico.softeng.tax.domain.Buyer;
+import pt.ulisboa.tecnico.softeng.tax.domain.IRS;
+import pt.ulisboa.tecnico.softeng.tax.domain.Seller;
+import pt.ulisboa.tecnico.softeng.tax.domain.TaxPayer;
+
 public class IRSGetTaxPayerByNIFTest extends RollbackTestAbstractClass {
 	private static final String SELLER_NIF = "123456789";
 	private static final String BUYER_NIF = "987654321";

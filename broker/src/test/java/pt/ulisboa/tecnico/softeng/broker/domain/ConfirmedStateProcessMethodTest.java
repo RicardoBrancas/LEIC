@@ -13,9 +13,9 @@ import pt.ulisboa.tecnico.softeng.broker.services.remote.BankInterface;
 import pt.ulisboa.tecnico.softeng.broker.services.remote.CarInterface;
 import pt.ulisboa.tecnico.softeng.broker.services.remote.HotelInterface;
 import pt.ulisboa.tecnico.softeng.broker.services.remote.TaxInterface;
-import pt.ulisboa.tecnico.softeng.broker.services.remote.dataobjects.ActivityReservationData;
-import pt.ulisboa.tecnico.softeng.broker.services.remote.dataobjects.RentingData;
-import pt.ulisboa.tecnico.softeng.broker.services.remote.dataobjects.RoomBookingData;
+import pt.ulisboa.tecnico.softeng.broker.services.remote.dataobjects.RestActivityBookingData;
+import pt.ulisboa.tecnico.softeng.broker.services.remote.dataobjects.RestRentingData;
+import pt.ulisboa.tecnico.softeng.broker.services.remote.dataobjects.RestRoomBookingData;
 import pt.ulisboa.tecnico.softeng.broker.services.remote.exception.ActivityException;
 import pt.ulisboa.tecnico.softeng.broker.services.remote.exception.BankException;
 import pt.ulisboa.tecnico.softeng.broker.services.remote.exception.CarException;
@@ -25,11 +25,11 @@ import pt.ulisboa.tecnico.softeng.broker.services.remote.exception.RemoteAccessE
 @RunWith(JMockit.class)
 public class ConfirmedStateProcessMethodTest extends RollbackTestAbstractClass {
 	@Mocked
-	private ActivityReservationData activityReservationData;
+	private RestActivityBookingData activityReservationData;
 	@Mocked
-	private RentingData rentingData;
+	private RestRentingData rentingData;
 	@Mocked
-	private RoomBookingData roomBookingData;
+	private RestRoomBookingData roomBookingData;
 	@Mocked
 	private BankInterface bankInterface;
 	@Mocked

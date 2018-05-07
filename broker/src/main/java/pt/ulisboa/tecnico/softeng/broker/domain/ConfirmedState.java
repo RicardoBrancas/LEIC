@@ -5,9 +5,9 @@ import pt.ulisboa.tecnico.softeng.broker.services.remote.ActivityInterface;
 import pt.ulisboa.tecnico.softeng.broker.services.remote.BankInterface;
 import pt.ulisboa.tecnico.softeng.broker.services.remote.CarInterface;
 import pt.ulisboa.tecnico.softeng.broker.services.remote.HotelInterface;
-import pt.ulisboa.tecnico.softeng.broker.services.remote.dataobjects.ActivityReservationData;
-import pt.ulisboa.tecnico.softeng.broker.services.remote.dataobjects.RentingData;
-import pt.ulisboa.tecnico.softeng.broker.services.remote.dataobjects.RoomBookingData;
+import pt.ulisboa.tecnico.softeng.broker.services.remote.dataobjects.RestActivityBookingData;
+import pt.ulisboa.tecnico.softeng.broker.services.remote.dataobjects.RestRentingData;
+import pt.ulisboa.tecnico.softeng.broker.services.remote.dataobjects.RestRoomBookingData;
 import pt.ulisboa.tecnico.softeng.broker.services.remote.exception.ActivityException;
 import pt.ulisboa.tecnico.softeng.broker.services.remote.exception.BankException;
 import pt.ulisboa.tecnico.softeng.broker.services.remote.exception.CarException;
@@ -45,7 +45,7 @@ public class ConfirmedState extends ConfirmedState_Base {
 		resetNumOfRemoteErrors();
 		setNumberOfBankExceptions(0);
 
-		ActivityReservationData reservation;
+		RestActivityBookingData reservation;
 		try {
 			reservation = ActivityInterface.getActivityReservationData(getAdventure().getActivityConfirmation());
 		} catch (ActivityException ae) {
@@ -60,7 +60,7 @@ public class ConfirmedState extends ConfirmedState_Base {
 		}
 
 		if (getAdventure().getRentingConfirmation() != null) {
-			RentingData rentingData;
+			RestRentingData rentingData;
 			try {
 				rentingData = CarInterface.getRentingData(getAdventure().getRentingConfirmation());
 			} catch (CarException he) {
@@ -76,7 +76,7 @@ public class ConfirmedState extends ConfirmedState_Base {
 		}
 
 		if (getAdventure().getRoomConfirmation() != null) {
-			RoomBookingData booking;
+			RestRoomBookingData booking;
 			try {
 				booking = HotelInterface.getRoomBookingData(getAdventure().getRoomConfirmation());
 			} catch (final HotelException he) {

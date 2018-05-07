@@ -8,10 +8,9 @@ import org.junit.Test;
 import pt.ulisboa.tecnico.softeng.bank.domain.Account;
 import pt.ulisboa.tecnico.softeng.bank.domain.Bank;
 import pt.ulisboa.tecnico.softeng.bank.domain.Client;
-import pt.ulisboa.tecnico.softeng.bank.domain.RollbackTestAbstractClass;
 import pt.ulisboa.tecnico.softeng.bank.domain.Operation.Type;
+import pt.ulisboa.tecnico.softeng.bank.domain.RollbackTestAbstractClass;
 import pt.ulisboa.tecnico.softeng.bank.exception.BankException;
-import pt.ulisboa.tecnico.softeng.bank.services.local.BankInterface;
 import pt.ulisboa.tecnico.softeng.bank.services.local.dataobjects.BankOperationData;
 
 public class BankInterfaceGetOperationDataMethodTest extends RollbackTestAbstractClass {
@@ -25,7 +24,7 @@ public class BankInterfaceGetOperationDataMethodTest extends RollbackTestAbstrac
 		this.bank = new Bank("Money", "BK01");
 		Client client = new Client(this.bank, "António");
 		this.account = new Account(this.bank, client);
-		this.reference = this.account.deposit(AMOUNT);
+		this.reference = this.account.deposit(AMOUNT).getReference();
 	}
 
 	@Test

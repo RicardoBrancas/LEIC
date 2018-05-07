@@ -43,12 +43,15 @@ class Booking {
 	LocalDate departure;
 	double price;
 	String buyerNif;
+	String buyerIban;
 	String providerNif;
 	String paymentReference;
 	String invoiceReference;
 	boolean cancelledInvoice;
 	String cancelledPaymentReference;
-	String buyerIban;
+	String adventureId;
+	String bulkId;
+	DateTime time;
 }
 
 relation RoomHasBookings {

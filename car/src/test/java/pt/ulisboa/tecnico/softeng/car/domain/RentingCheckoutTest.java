@@ -42,7 +42,7 @@ public class RentingCheckoutTest extends RollbackTestAbstractClass {
 	public void checkout() {
 		Renting renting = car.rent(DRIVING_LICENSE, date1, date2, NIF, IBAN_BUYER);
 		renting.checkout(100);
-		assertEquals(110, car.getKilometers());
+		assertEquals(110, car.getKilometers().intValue());
 	}
 
 	@Test(expected = CarException.class)

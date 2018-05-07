@@ -19,7 +19,7 @@ relation DomainRootHasRentACarApplication {
 
 class Vehicle {
     String plate;
-    int kilometers;
+    Integer kilometers;
     double price;
 }
 
@@ -47,10 +47,11 @@ class Renting {
 	double price;
 	String paymentReference;
 	String invoiceReference;
-    String cancel;
 	LocalDate cancellationDate;
 	boolean cancelledInvoice;
 	String cancelledPaymentReference;
+	String adventureId;
+	DateTime time;
 }
 
 relation VehicleHasRentings{

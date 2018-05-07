@@ -8,6 +8,9 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import pt.ulisboa.tecnico.softeng.tax.domain.IRS;
+import pt.ulisboa.tecnico.softeng.tax.domain.ItemType;
+
 public class IRSGetItemTypeByNameTest extends RollbackTestAbstractClass {
 	private static final String FOOD = "FOOD";
 	private static final int VALUE = 16;

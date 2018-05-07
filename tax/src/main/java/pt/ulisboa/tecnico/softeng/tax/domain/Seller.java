@@ -1,5 +1,8 @@
 package pt.ulisboa.tecnico.softeng.tax.domain;
 
+import java.util.Map;
+import java.util.stream.Collectors;
+
 import pt.ulisboa.tecnico.softeng.tax.exception.TaxException;
 
 public class Seller extends Seller_Base {
@@ -14,6 +17,7 @@ public class Seller extends Seller_Base {
 		irs.addTaxPayer(this);
 	}
 
+	@Override
 	public void delete() {
 		for (Invoice invoice : getInvoiceSet()) {
 			invoice.delete();
@@ -36,6 +40,7 @@ public class Seller extends Seller_Base {
 		return result;
 	}
 
+	@Override
 	public Invoice getInvoiceByReference(String invoiceReference) {
 		if (invoiceReference == null || invoiceReference.isEmpty()) {
 			throw new TaxException();
@@ -48,4 +53,10 @@ public class Seller extends Seller_Base {
 		}
 		return null;
 	}
+
+	public Map<Integer, Double> getToPayPerYear() {
+		return getInvoiceSet().stream().map(i -> i.getDate().getYear()).distinct()
+				.collect(Collectors.toMap(y -> y, y -> toPay(y)));
+	}
+
 }

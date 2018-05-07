@@ -2,13 +2,13 @@ package pt.ulisboa.tecnico.softeng.hotel.domain;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.joda.time.LocalDate;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,6 +31,14 @@ public class HotelPersistenceTest {
 
 	private final LocalDate arrival = new LocalDate(2017, 12, 15);
 	private final LocalDate departure = new LocalDate(2017, 12, 19);
+
+	@Before
+	@Atomic(mode = TxMode.WRITE)
+	public void setUp() {
+		for (Hotel hotel : FenixFramework.getDomainRoot().getHotelSet()) {
+			hotel.delete();
+		}
+	}
 
 	@Test
 	public void success() {
@@ -63,7 +71,7 @@ public class HotelPersistenceTest {
 		assertEquals(1, hotel.getRoomSet().size());
 		Processor processor = hotel.getProcessor();
 		assertNotNull(processor);
-		assertEquals(0, processor.getBookingSet().size());
+		assertEquals(1, processor.getBookingSet().size());
 
 		List<Room> rooms = new ArrayList<>(hotel.getRoomSet());
 		Room room = rooms.get(0);
@@ -83,7 +91,8 @@ public class HotelPersistenceTest {
 		assertEquals(HOTEL_NIF, booking.getProviderNif());
 		assertEquals(80.0, booking.getPrice(), 0.0d);
 		assertEquals(room, booking.getRoom());
-		assertNull(booking.getProcessor());
+		assertNotNull(booking.getTime());
+		assertNotNull(booking.getProcessor());
 	}
 
 	@After

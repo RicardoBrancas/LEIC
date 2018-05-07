@@ -14,7 +14,7 @@ import pt.ulisboa.tecnico.softeng.broker.services.remote.BankInterface;
 import pt.ulisboa.tecnico.softeng.broker.services.remote.CarInterface;
 import pt.ulisboa.tecnico.softeng.broker.services.remote.HotelInterface;
 import pt.ulisboa.tecnico.softeng.broker.services.remote.TaxInterface;
-import pt.ulisboa.tecnico.softeng.broker.services.remote.dataobjects.BankOperationData;
+import pt.ulisboa.tecnico.softeng.broker.services.remote.dataobjects.RestBankOperationData;
 import pt.ulisboa.tecnico.softeng.broker.services.remote.exception.BankException;
 import pt.ulisboa.tecnico.softeng.broker.services.remote.exception.RemoteAccessException;
 
@@ -96,7 +96,7 @@ public class CancelledStateProcessMethodTest extends RollbackTestAbstractClass {
 		new Expectations() {
 			{
 				BankInterface.getOperationData(PAYMENT_CONFIRMATION);
-				this.result = new BankOperationData();
+				this.result = new RestBankOperationData();
 				this.result = new BankException();
 			}
 		};
@@ -114,7 +114,7 @@ public class CancelledStateProcessMethodTest extends RollbackTestAbstractClass {
 		new Expectations() {
 			{
 				BankInterface.getOperationData(PAYMENT_CONFIRMATION);
-				this.result = new BankOperationData();
+				this.result = new RestBankOperationData();
 				this.result = new RemoteAccessException();
 			}
 		};

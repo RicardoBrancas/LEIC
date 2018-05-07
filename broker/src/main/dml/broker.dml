@@ -35,6 +35,7 @@ class Adventure {
 	boolean rentVehicle;
 	double margin;
     double currentAmount;
+    DateTime time;
 }
 
 relation BrokerHasAdventures {
@@ -96,6 +97,7 @@ relation AdventureHasClient {
 }
 
 class BulkRoomBooking {
+	String id;
 	int number;
 	LocalDate arrival;
 	LocalDate departure;

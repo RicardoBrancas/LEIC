@@ -9,7 +9,6 @@ import pt.ulisboa.tecnico.softeng.bank.domain.Bank;
 import pt.ulisboa.tecnico.softeng.bank.domain.Client;
 import pt.ulisboa.tecnico.softeng.bank.domain.RollbackTestAbstractClass;
 import pt.ulisboa.tecnico.softeng.bank.exception.BankException;
-import pt.ulisboa.tecnico.softeng.bank.services.local.BankInterface;
 
 public class BankInterfaceCancelPaymentTest extends RollbackTestAbstractClass {
 	private Bank bank;
@@ -21,7 +20,7 @@ public class BankInterfaceCancelPaymentTest extends RollbackTestAbstractClass {
 		this.bank = new Bank("Money", "BK01");
 		Client client = new Client(this.bank, "António");
 		this.account = new Account(this.bank, client);
-		this.reference = this.account.deposit(100);
+		this.reference = this.account.deposit(100).getReference();
 	}
 
 	@Test

@@ -65,10 +65,11 @@ public class TaxPersistenceTest {
 		Invoice invoice = new ArrayList<>(irs.getInvoiceSet()).get(0);
 		assertEquals(VALUE, invoice.getValue(), 0);
 		assertNotNull(invoice.getReference());
-		assertEquals(date, invoice.getDate());
+		assertEquals(this.date, invoice.getDate());
 		assertEquals(BUYER_NIF, invoice.getBuyer().getNif());
 		assertEquals(SELLER_NIF, invoice.getSeller().getNif());
 		assertEquals(itemType, invoice.getItemType());
+		assertNotNull(invoice.getTime());
 		assertFalse(invoice.getCancelled());
 	}
 

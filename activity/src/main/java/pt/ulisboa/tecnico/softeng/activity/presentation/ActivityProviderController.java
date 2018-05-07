@@ -27,7 +27,8 @@ public class ActivityProviderController {
 
 	@RequestMapping(method = RequestMethod.POST)
 	public String providerSubmit(Model model, @ModelAttribute ActivityProviderData provider) {
-		logger.info("providerSubmit name:{}, code:{}", provider.getName(), provider.getCode());
+		logger.info("providerSubmit name:{}, code:{}, nif:{}, iban:{}", provider.getName(), provider.getCode(),
+				provider.getNif(), provider.getIban());
 
 		try {
 			ActivityInterface.createProvider(provider);
@@ -39,6 +40,15 @@ public class ActivityProviderController {
 		}
 
 		return "redirect:/providers";
+	}
+
+	@RequestMapping(method = RequestMethod.DELETE)
+	public String deleteProviders(Model model) {
+		logger.info("deleteProviders");
+
+		ActivityInterface.deleteActivityProviders();
+
+		return "redirect:/providers/";
 	}
 
 }
