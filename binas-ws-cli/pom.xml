@@ -25,6 +25,7 @@
 		<group.id>A60</group.id>
 		<uddi.url>http://a60:DY34xbE@uddi.sd.rnl.tecnico.ulisboa.pt:9090</uddi.url>
 		<ws.name>${group.id}_Binas</ws.name>
+		<kerby.url>http://sec.sd.rnl.tecnico.ulisboa.pt:8888/kerby</kerby.url>
 		<supplier.ws.name>${group.id}_Binas</supplier.ws.name>
 		<ws.url>http://localhost:8080/binas-ws/endpoint</ws.url>
 	</properties>
@@ -121,6 +122,7 @@
 					<arguments>
 						<argument>${uddi.url}</argument>
 						<argument>${ws.name}</argument>
+						<argument>${kerby.url}</argument>
 					</arguments>
 				</configuration>
 			</plugin>
