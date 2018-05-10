@@ -5,6 +5,7 @@ import org.binas.domain.User;
 import org.binas.domain.exception.*;
 import org.binas.station.ws.cli.StationClient;
 
+import javax.jws.HandlerChain;
 import javax.jws.WebService;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -12,6 +13,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @SuppressWarnings("Duplicates")
+@HandlerChain(file = "/binas-ws_handler-chain.xml")
 @WebService(
 		name = "BinasWebService",
 		targetNamespace = "http://ws.binas.org/",

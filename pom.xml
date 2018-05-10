@@ -10,6 +10,7 @@
 
 	<modules>
 		<!-- specify modules to include in the build reactor -->
+		<module>ws-handlers</module>
 		<module>station-ws</module>
 		<module>station-ws-cli</module>
 
