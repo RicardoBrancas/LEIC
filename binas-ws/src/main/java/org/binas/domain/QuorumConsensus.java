@@ -1,5 +1,6 @@
 package org.binas.domain;
 
+import org.binas.domain.exception.QuorumNotReachedException;
 import org.binas.station.ws.cli.StationClient;
 
 import java.util.Collection;
@@ -18,6 +19,7 @@ public abstract class QuorumConsensus<T> {
 	private static final Logger logger = Logger.getLogger(QuorumConsensus.class.getName());
 
 	private final int nVotes;
+
 	/**
 	 * The result of this quorum consensus, if finished. Undefined otherwise.
 	 */
@@ -25,15 +27,24 @@ public abstract class QuorumConsensus<T> {
 	private int currentVotes;
 	private boolean isFinished;
 	private Collection<StationClient> stationClients;
+
+	/**
+	 * Stores all the query functions that will eventually be executed.
+	 *
+	 * @see Future
+	 */
 	private Set<Future<?>> futures;
 
 	QuorumConsensus(List<StationClient> stationClients, int nVotes) {
 		this.currentVotes = 0;
 		this.nVotes = nVotes;
 		this.stationClients = stationClients;
-		futures = new HashSet<>();
+		this.futures = new HashSet<>();
 	}
 
+	/**
+	 * Accounts for one more vote. Checks if Quorum is reached.
+	 */
 	public synchronized void addVote() {
 		logger.info("Adding vote...");
 		currentVotes++;
@@ -46,6 +57,9 @@ public abstract class QuorumConsensus<T> {
 		return isFinished;
 	}
 
+	/**
+	 * Asynchronously queries the stations and stores the relevant future task
+	 */
 	public void run() {
 		logger.info("Starting quorum for " + this.getClass().getSimpleName());
 		for (StationClient sc : stationClients) {
@@ -56,14 +70,13 @@ public abstract class QuorumConsensus<T> {
 
 
 	/**
-	 * Waits if necessary for the computation to complete, and then retrieves its result.
+	 * If necessary, waits for the computation to complete, and then retrieves its result.
 	 *
 	 * @return the computed result
 	 * @throws QuorumNotReachedException if it has become impossible to reach quorum for this request
 	 * @throws InterruptedException      if the current thread was interrupted while waiting
 	 */
-
-	public T get() throws InterruptedException, QuorumNotReachedException {
+	public T get() throws QuorumNotReachedException {
 		boolean stillWaiting = false;
 
 		for (Future<?> future : futures) {
@@ -83,7 +96,12 @@ public abstract class QuorumConsensus<T> {
 				}
 			}
 
-			Thread.sleep(100);
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+				System.out.println("A thread was interrupted while waiting for a response.");
+				break;
+			}
 		}
 
 		if (!isFinished())
@@ -95,8 +113,8 @@ public abstract class QuorumConsensus<T> {
 	/**
 	 * Implements the query.
 	 * <p>
-	 * It is required that when {@link #isFinished()} returns true,
-	 * {@link #result} must contain the result of this request.
+	 * When {@link #isFinished()} returns true, {@link #result} must contain
+	 * the result of this request.
 	 *
 	 * @param stationClient
 	 */

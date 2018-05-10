@@ -1,6 +1,7 @@
 package org.binas.domain;
 
 import org.binas.domain.exception.InvalidEmailException;
+import org.binas.domain.exception.QuorumNotReachedException;
 import org.binas.station.ws.cli.StationClient;
 import org.binas.ws.UserView;
 
@@ -13,17 +14,14 @@ public class User {
 	private String email;
 	private boolean hasBina;
 	private int credit;
-	private BinasManager binasInstance;
 
-	public User(String email, int credit, BinasManager binasInstance) throws InvalidEmailException {
+	public User(String email, int credit) throws InvalidEmailException {
 		checkParams(email);
 
 		this.email = email;
-		this.binasInstance = binasInstance;
 		this.credit = credit;
 	}
 
-	//TODO check all parameters
 	private void checkParams(String email) throws InvalidEmailException {
 		if (email == null) {
 			throw new InvalidEmailException("Email is null");
@@ -46,24 +44,8 @@ public class User {
 		this.hasBina = hasBina;
 	}
 
-	//TODO: confirm this is synchronized at every call
 	public int getCredit() {
 		return credit;
-	}
-
-	public void setCredit(int credit) throws QuorumNotReachedException, InterruptedException {
-		List<StationClient> stations = binasInstance.listStations();
-		//number of votes necessary
-		int nQC = binasInstance.getQC();
-		QuorumConsensus qc = new QuorumConsensusSetBalance(stations, nQC, getEmail(), credit, ++tag);
-		qc.run();
-
-		qc.get();
-		this.credit = credit;
-	}
-
-	void _setCredit(int credit) {
-		this.credit = credit;
 	}
 
 	public int getTag() {
@@ -74,23 +56,42 @@ public class User {
 		this.tag = tag;
 	}
 
-	public UserView getView() {
-		UserView v = new UserView();
-		v.setEmail(email);
-		v.setHasBina(hasBina);
-		v.setCredit(credit);
+	/**
+	 * Uses the Quorum Consensus protocol to set the credit for the user.
+	 * @param credit
+	 * @throws QuorumNotReachedException
+	 */
+	public synchronized void setCredit(int credit) throws QuorumNotReachedException{
+		List<StationClient> stations = BinasManager.getInstance().listStations();
+		//number of votes necessary
+		int nQC = BinasManager.getInstance().getQC();
+		QuorumConsensus qc = new QuorumConsensusSetBalance(stations, nQC, getEmail(), credit, ++tag);
+		qc.run();
 
-		return v;
+		qc.get();
+		this.credit = credit;
 	}
 
-	public synchronized void increaseCredit(int credit) throws QuorumNotReachedException, InterruptedException {
+	public UserView getView() {
+		UserView userView = new UserView();
+		userView.setEmail(email);
+		userView.setHasBina(hasBina);
+		userView.setCredit(credit);
+
+		return userView;
+	}
+
+	public synchronized void increaseCredit(int credit) throws QuorumNotReachedException {
 		setCredit(getCredit() + credit);
 	}
 
-	public synchronized void decreaseCredit(int credit) throws QuorumNotReachedException, InterruptedException {
+	public synchronized void decreaseCredit(int credit) throws QuorumNotReachedException {
 		setCredit(getCredit() - credit);
 	}
 
+	/**
+	 * Auxiliary class to export information about a user
+	 */
 	public static class Replica {
 
 		private String email;
