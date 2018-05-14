@@ -4,11 +4,12 @@ import org.binas.ws.*;
 import pt.ulisboa.tecnico.sdis.kerby.*;
 import pt.ulisboa.tecnico.sdis.kerby.cli.KerbyClient;
 
+import javax.xml.ws.BindingProvider;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.security.Key;
 import java.security.SecureRandom;
-import java.security.Timestamp;
+import java.util.Date;
 
 public class BinasClientApp {
 
@@ -37,6 +38,49 @@ public class BinasClientApp {
 
 		System.out.println(BinasClientApp.class.getSimpleName() + " running");
 
+		BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
+
+		// === AUTH ===
+
+		CipheredView cTicket;
+		SessionKey sessionKey;
+		CipheredView cAuth;
+
+		System.out.printf("Creating kerby client for kerby server at %s\n", kerbyURL);
+		KerbyClient kerbyClient = new KerbyClient(kerbyURL);
+		while (true) {
+			try {
+				System.out.print("User: ");
+				System.out.flush();
+				String user = input.readLine();
+
+				System.out.print("Password: ");
+				System.out.flush();
+				String password = input.readLine();
+
+				long nonce = random.nextLong();
+
+				final Key clientKey = SecurityHelper.generateKeyFromPassword(password);
+
+				SessionKeyAndTicketView sessionKeyAndTicket = kerbyClient.requestTicket(user, "binas@A60.binas.org", nonce, 60);
+
+				CipheredView cSessionKey = sessionKeyAndTicket.getSessionKey();
+				cTicket = sessionKeyAndTicket.getTicket();
+
+				sessionKey = new SessionKey(cSessionKey, clientKey);
+
+				Auth auth = new Auth(user, new Date());
+				cAuth = auth.cipher(sessionKey.getKeyXY());
+
+				break;
+			} catch (KerbyException | BadTicketRequest_Exception ex) {
+				System.out.println("Invalid credentials. Please try again...");
+			}
+
+		}
+
+		// === BINAS CONNECTION ===
+
 		BinasClient binasClient = null;
 
 		if (wsURL != null) {
@@ -49,33 +93,10 @@ public class BinasClientApp {
 			binasClient = new BinasClient(uddiURL, wsName);
 		}
 
-		System.out.printf("Creating kerby client for kerby server at %s\n", kerbyURL);
-		KerbyClient kerbyClient = new KerbyClient(kerbyURL);
-
-		BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
-
-		System.out.print("User: ");
-		System.out.flush();
-		String user = input.readLine();
-
-		System.out.print("Password: ");
-		System.out.flush();
-		String password = input.readLine();
-
-		long nonce = random.nextLong();
-
-		final Key clientKey = SecurityHelper.generateKeyFromPassword(password);
-
-		SessionKeyAndTicketView sessionKeyAndTicket = kerbyClient.requestTicket(user, "binas@A60.binas.org", nonce, 60);
-
-		CipheredView cSessionKey = sessionKeyAndTicket.getSessionKey();
-		CipheredView cTicket = sessionKeyAndTicket.getTicket();
-
-		SessionKey sessionKey = new SessionKey(cSessionKey, clientKey);
-
-
-
-
+		BindingProvider bindingProvider = (BindingProvider) binasClient.port;
+		bindingProvider.getRequestContext().put("ticket", cTicket);
+		bindingProvider.getRequestContext().put("key", sessionKey);
+		bindingProvider.getRequestContext().put("auth", cAuth);
 
 		System.out.println("Waiting for commands. Type 'help' if you need it...");
 		while (true) {
@@ -109,7 +130,7 @@ public class BinasClientApp {
 						}
 
 						UserView userView = binasClient.activateUser(command[1]);
-						if(userView != null)
+						if (userView != null)
 							System.out.printf("(%s, %d, %b)\n", userView.getEmail(), userView.getCredit(), userView.isHasBina());
 						else
 							System.out.println("null");
