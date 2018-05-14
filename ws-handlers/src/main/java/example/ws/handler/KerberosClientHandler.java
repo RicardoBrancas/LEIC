@@ -34,12 +34,12 @@ public class KerberosClientHandler implements SOAPHandler<SOAPMessageContext> {
 				if (header == null)
 					header = envelope.addHeader();
 
-				Name ticketName = envelope.createName("ticket");
+				Name ticketName = envelope.createName("ticket", "", "http://ws.binas.org/");
 				SOAPHeaderElement ticketElement = header.addHeaderElement(ticketName);
 				CipheredView cTicket = (CipheredView) context.get("ticket");
 				ticketElement.addTextNode(encoder.encodeToString(cTicket.getData()));
 
-				Name authName = envelope.createName("auth");
+				Name authName = envelope.createName("auth", "", "http://ws.binas.org/");
 				SOAPHeaderElement authElement = header.addHeaderElement(authName);
 				CipheredView cAuth = (CipheredView) context.get("auth");
 				authElement.addTextNode(encoder.encodeToString(cAuth.getData()));
