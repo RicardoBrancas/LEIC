@@ -1,4 +1,4 @@
-package example.ws.handler;
+package binas.ws.handler;
 
 import static javax.xml.ws.BindingProvider.ENDPOINT_ADDRESS_PROPERTY;
 

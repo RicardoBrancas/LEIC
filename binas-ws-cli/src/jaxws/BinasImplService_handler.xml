@@ -14,8 +14,8 @@
     -->
 	<handler-chain>
         <handler>
-            <handler-class>example.ws.handler.KerberosClientHandler</handler-class>
+            <handler-class>binas.ws.handler.KerberosClientHandler</handler-class>
         </handler>
-
+        <!-- TODO add other handlers -->
 	</handler-chain>
 </handler-chains>

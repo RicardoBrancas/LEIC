@@ -1,15 +1,14 @@
 package org.binas.ws.cli;
 
+import binas.ws.handler.KerberosClientHandler;
 import org.binas.ws.*;
 import pt.ulisboa.tecnico.sdis.kerby.*;
 import pt.ulisboa.tecnico.sdis.kerby.cli.KerbyClient;
 
-import javax.xml.ws.BindingProvider;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.security.Key;
 import java.security.SecureRandom;
-import java.util.Date;
 
 public class BinasClientApp {
 
@@ -69,8 +68,9 @@ public class BinasClientApp {
 
 				sessionKey = new SessionKey(cSessionKey, clientKey);
 
-				Auth auth = new Auth(user, new Date());
-				cAuth = auth.cipher(sessionKey.getKeyXY());
+				KerberosClientHandler.setUser(user);
+				KerberosClientHandler.setTicket(cTicket);
+				KerberosClientHandler.setSessionKey(sessionKey.getKeyXY());
 
 				break;
 			} catch (KerbyException | BadTicketRequest_Exception ex) {
@@ -92,11 +92,6 @@ public class BinasClientApp {
 					uddiURL, wsName);
 			binasClient = new BinasClient(uddiURL, wsName);
 		}
-
-		BindingProvider bindingProvider = (BindingProvider) binasClient.port;
-		bindingProvider.getRequestContext().put("ticket", cTicket);
-		bindingProvider.getRequestContext().put("key", sessionKey);
-		bindingProvider.getRequestContext().put("auth", cAuth);
 
 		System.out.println("Waiting for commands. Type 'help' if you need it...");
 		while (true) {

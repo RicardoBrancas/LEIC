@@ -1,19 +1,39 @@
-package example.ws.handler;
+package binas.ws.handler;
 
+import pt.ulisboa.tecnico.sdis.kerby.Auth;
 import pt.ulisboa.tecnico.sdis.kerby.CipheredView;
+import pt.ulisboa.tecnico.sdis.kerby.KerbyException;
 
 import javax.xml.namespace.QName;
 import javax.xml.soap.*;
 import javax.xml.ws.handler.MessageContext;
 import javax.xml.ws.handler.soap.SOAPHandler;
 import javax.xml.ws.handler.soap.SOAPMessageContext;
+import java.security.Key;
 import java.util.Base64;
+import java.util.Date;
 import java.util.Set;
 
 public class KerberosClientHandler implements SOAPHandler<SOAPMessageContext> {
 
+	private static String user;
+	private static CipheredView ticket;
+	private static Key sessionKey;
+
 	private Base64.Encoder encoder = Base64.getEncoder();
 	private Base64.Decoder decoder = Base64.getDecoder();
+
+	public static void setUser(String user) {
+		KerberosClientHandler.user = user;
+	}
+
+	public static void setTicket(CipheredView ticket) {
+		KerberosClientHandler.ticket = ticket;
+	}
+
+	public static void setSessionKey(Key sessionKey) {
+		KerberosClientHandler.sessionKey = sessionKey;
+	}
 
 	@Override
 	public Set<QName> getHeaders() {
@@ -36,20 +56,20 @@ public class KerberosClientHandler implements SOAPHandler<SOAPMessageContext> {
 
 				Name ticketName = envelope.createName("ticket", "", "http://ws.binas.org/");
 				SOAPHeaderElement ticketElement = header.addHeaderElement(ticketName);
-				CipheredView cTicket = (CipheredView) context.get("ticket");
-				ticketElement.addTextNode(encoder.encodeToString(cTicket.getData()));
+				ticketElement.addTextNode(encoder.encodeToString(ticket.getData()));
+
+				Auth auth = new Auth(user, new Date());
+				CipheredView cAuth = auth.cipher(sessionKey);
 
 				Name authName = envelope.createName("auth", "", "http://ws.binas.org/");
 				SOAPHeaderElement authElement = header.addHeaderElement(authName);
-				CipheredView cAuth = (CipheredView) context.get("auth");
 				authElement.addTextNode(encoder.encodeToString(cAuth.getData()));
 
-				//TODO missing MAC
 			} else {
 				//TODO
 			}
-		} catch (SOAPException e) {
-			e.printStackTrace();
+		} catch (SOAPException | KerbyException e) {
+			e.printStackTrace(); //TODO treat exceptions
 		}
 
 		return true;

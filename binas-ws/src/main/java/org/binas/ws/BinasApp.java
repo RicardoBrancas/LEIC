@@ -1,6 +1,10 @@
 package org.binas.ws;
 
+import binas.ws.handler.KerberosServerHandler;
 import org.binas.domain.BinasManager;
+import pt.ulisboa.tecnico.sdis.kerby.SecurityHelper;
+
+import java.security.Key;
 
 public class BinasApp {
 
@@ -17,9 +21,15 @@ public class BinasApp {
 		String uddiURL = args[2];
 		int numberOfStations = Integer.parseInt(args[3]);
 
-		BinasEndpointManager endpoint = new BinasEndpointManager(uddiURL, wsName, wsURL);
-
 		System.out.println(BinasApp.class.getSimpleName() + " running");
+
+		final String user = "binas@A60.binas.org";
+		final String password = "mRuFZfNu";
+		final Key key = SecurityHelper.generateKeyFromPassword(password);
+
+		KerberosServerHandler.setKey(key);
+
+		BinasEndpointManager endpoint = new BinasEndpointManager(uddiURL, wsName, wsURL);
 
 		BinasManager.getInstance().setNumberOfStations(numberOfStations);
 
