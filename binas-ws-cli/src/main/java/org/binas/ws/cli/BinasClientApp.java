@@ -44,6 +44,7 @@ public class BinasClientApp {
 		CipheredView cTicket;
 		SessionKey sessionKey;
 		CipheredView cAuth;
+		String user;
 
 		System.out.printf("Creating kerby client for kerby server at %s\n", kerbyURL);
 		KerbyClient kerbyClient = new KerbyClient(kerbyURL);
@@ -51,7 +52,7 @@ public class BinasClientApp {
 			try {
 				System.out.print("User: ");
 				System.out.flush();
-				String user = input.readLine();
+				user = input.readLine();
 
 				System.out.print("Password: ");
 				System.out.flush();
@@ -112,19 +113,15 @@ public class BinasClientApp {
 					case "help":
 						System.out.println("quit");
 						System.out.println("help");
-						System.out.println("mkuser <email>");
-						System.out.println("read <email>");
-						System.out.println("rent <station> <email>");
-						System.out.println("return <station> <email>");
+						System.out.println("mkuser");
+						System.out.println("read");
+						System.out.println("rent <station>");
+						System.out.println("return <station>");
 						break;
 
 					case "mkuser":
-						if (command.length < 2) {
-							System.out.println("Syntax is mkuser <email>");
-							continue;
-						}
 
-						UserView userView = binasClient.activateUser(command[1]);
+						UserView userView = binasClient.activateUser(user);
 						if (userView != null)
 							System.out.printf("(%s, %d, %b)\n", userView.getEmail(), userView.getCredit(), userView.isHasBina());
 						else
@@ -133,30 +130,25 @@ public class BinasClientApp {
 						break;
 
 					case "read":
-						if (command.length < 2) {
-							System.out.println("Syntax is read <email>");
-							continue;
-						}
-
-						System.out.printf("credit: %d\n", binasClient.getCredit(command[1]));
+						System.out.printf("credit: %d\n", binasClient.getCredit(user));
 						break;
 
 					case "rent":
-						if (command.length < 3) {
-							System.out.println("Syntax is rent <station> <email>");
+						if (command.length < 2) {
+							System.out.println("Syntax is rent <station>");
 							continue;
 						}
 
-						binasClient.rentBina(command[1], command[2]);
+						binasClient.rentBina(command[1], user);
 						break;
 
 					case "return":
-						if (command.length < 3) {
-							System.out.println("Syntax is return <station> <email>");
+						if (command.length < 2) {
+							System.out.println("Syntax is return <station>");
 							continue;
 						}
 
-						binasClient.returnBina(command[1], command[2]);
+						binasClient.returnBina(command[1], user);
 						break;
 
 					default:

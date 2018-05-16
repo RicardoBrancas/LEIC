@@ -18,6 +18,9 @@
         <handler>
             <handler-class>binas.ws.handler.KerberosServerHandler</handler-class>
         </handler>
-        <!-- TODO add other handlers -->
+        <handler>
+            <handler-class>binas.ws.handler.BinasAuthorizationHandler</handler-class>
+        </handler>
+        <!-- TODO MAC handler -->
     </handler-chain>
 </handler-chains>
