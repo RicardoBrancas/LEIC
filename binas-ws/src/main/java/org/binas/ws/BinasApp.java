@@ -2,6 +2,7 @@ package org.binas.ws;
 
 import binas.ws.handler.BinasAuthorizationHandler;
 import binas.ws.handler.KerberosServerHandler;
+import binas.ws.handler.MACHandler;
 import org.binas.domain.BinasManager;
 import pt.ulisboa.tecnico.sdis.kerby.SecurityHelper;
 
@@ -30,6 +31,7 @@ public class BinasApp {
 
 		KerberosServerHandler.setKey(key);
 		BinasAuthorizationHandler.setKey(key);
+		MACHandler.setKey(key);
 
 		BinasEndpointManager endpoint = new BinasEndpointManager(uddiURL, wsName, wsURL);
 

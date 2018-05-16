@@ -21,6 +21,8 @@
         <handler>
             <handler-class>binas.ws.handler.BinasAuthorizationHandler</handler-class>
         </handler>
-        <!-- TODO MAC handler -->
+        <handler>
+            <handler-class>binas.ws.handler.MACHandler</handler-class>
+        </handler>
     </handler-chain>
 </handler-chains>

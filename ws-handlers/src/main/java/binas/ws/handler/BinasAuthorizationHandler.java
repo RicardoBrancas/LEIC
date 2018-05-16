@@ -71,7 +71,7 @@ public class BinasAuthorizationHandler implements SOAPHandler<SOAPMessageContext
 			e.printStackTrace();
 		}
 
-		return false;
+		return true;
 	}
 
 	@Override

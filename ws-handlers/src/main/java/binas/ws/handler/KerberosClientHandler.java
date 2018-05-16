@@ -4,12 +4,15 @@ import pt.ulisboa.tecnico.sdis.kerby.Auth;
 import pt.ulisboa.tecnico.sdis.kerby.CipheredView;
 import pt.ulisboa.tecnico.sdis.kerby.KerbyException;
 
+import javax.crypto.Mac;
 import javax.xml.namespace.QName;
 import javax.xml.soap.*;
 import javax.xml.ws.handler.MessageContext;
 import javax.xml.ws.handler.soap.SOAPHandler;
 import javax.xml.ws.handler.soap.SOAPMessageContext;
+import java.security.InvalidKeyException;
 import java.security.Key;
+import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 import java.util.Date;
 import java.util.Set;
@@ -54,9 +57,13 @@ public class KerberosClientHandler implements SOAPHandler<SOAPMessageContext> {
 				if (header == null)
 					header = envelope.addHeader();
 
+				// === TICKET ===
+
 				Name ticketName = envelope.createName("ticket", "", "http://ws.binas.org/");
 				SOAPHeaderElement ticketElement = header.addHeaderElement(ticketName);
 				ticketElement.addTextNode(encoder.encodeToString(ticket.getData()));
+
+				// === AUTH ===
 
 				Auth auth = new Auth(user, new Date());
 				CipheredView cAuth = auth.cipher(sessionKey);
@@ -65,11 +72,27 @@ public class KerberosClientHandler implements SOAPHandler<SOAPMessageContext> {
 				SOAPHeaderElement authElement = header.addHeaderElement(authName);
 				authElement.addTextNode(encoder.encodeToString(cAuth.getData()));
 
+				// === MAC ===
+
+				Name macName = envelope.createName("mac", "", "http://ws.binas.org/");
+				SOAPHeaderElement macElement = header.addHeaderElement(macName);
+
+				String body = context.getMessage().getSOAPBody().getTextContent();
+
+				Mac macInstance = Mac.getInstance("HmacSHA256");
+				macInstance.init(sessionKey);
+
+				macElement.addTextNode(encoder.encodeToString(macInstance.doFinal(body.getBytes())));
+
 			} else {
 				//TODO
 			}
 		} catch (SOAPException | KerbyException e) {
 			e.printStackTrace(); //TODO treat exceptions
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+		} catch (InvalidKeyException e) {
+			e.printStackTrace();
 		}
 
 		return true;
