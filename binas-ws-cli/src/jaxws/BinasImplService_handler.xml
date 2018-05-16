@@ -16,6 +16,8 @@
         <handler>
             <handler-class>binas.ws.handler.KerberosClientHandler</handler-class>
         </handler>
-        <!-- TODO add other handlers -->
+        <handler>
+            <handler-class>binas.ws.handler.MACHandler</handler-class>
+        </handler>
 	</handler-chain>
 </handler-chains>

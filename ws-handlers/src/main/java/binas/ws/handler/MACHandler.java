@@ -1,15 +1,8 @@
 package binas.ws.handler;
 
-import pt.ulisboa.tecnico.sdis.kerby.Auth;
-import pt.ulisboa.tecnico.sdis.kerby.CipheredView;
-import pt.ulisboa.tecnico.sdis.kerby.KerbyException;
-import pt.ulisboa.tecnico.sdis.kerby.Ticket;
-
 import javax.crypto.Mac;
-import javax.sound.midi.Soundbank;
 import javax.xml.namespace.QName;
 import javax.xml.soap.*;
-import javax.xml.transform.Source;
 import javax.xml.ws.handler.MessageContext;
 import javax.xml.ws.handler.soap.SOAPHandler;
 import javax.xml.ws.handler.soap.SOAPMessageContext;
@@ -17,16 +10,24 @@ import java.security.InvalidKeyException;
 import java.security.Key;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
-import java.util.Date;
 import java.util.Set;
+import java.util.logging.Logger;
 
 public class MACHandler implements SOAPHandler<SOAPMessageContext> {
+	private static final Logger logger = Logger.getLogger(KerberosServerHandler.class.getName());
 
 	private static Key key;
 
 	public static void setKey(Key key) {
 		MACHandler.key = key;
 	}
+
+	private static Key sessionKey;
+
+	public static void setSessionKey(Key sessionKey) {
+		MACHandler.sessionKey = sessionKey;
+	}
+
 
 	private Base64.Encoder encoder = Base64.getEncoder();
 	private Base64.Decoder decoder = Base64.getDecoder();
@@ -38,28 +39,32 @@ public class MACHandler implements SOAPHandler<SOAPMessageContext> {
 
 	@Override
 	public boolean handleMessage(SOAPMessageContext context) {
+
+
 		boolean outbound = (Boolean) context.get(MessageContext.MESSAGE_OUTBOUND_PROPERTY);
 
 		try {
+			SOAPMessage message = context.getMessage();
+			SOAPPart soapPart = message.getSOAPPart();
+			SOAPEnvelope envelope = soapPart.getEnvelope();
+
+			SOAPHeader header = envelope.getHeader();
+			assert header != null; //TODO better handling
 
 			if (outbound) {
-				//TODO
+				Name macName = envelope.createName("mac", "", "http://ws.binas.org/");
+				SOAPHeaderElement macElement = header.addHeaderElement(macName);
+
+				String body = context.getMessage().getSOAPBody().getTextContent();
+
+				Mac macInstance = Mac.getInstance("HmacSHA256");
+				macInstance.init(sessionKey);
+
+				macElement.addTextNode(encoder.encodeToString(macInstance.doFinal(body.getBytes())));
+
 			} else {
-				SOAPMessage message = context.getMessage();
-				SOAPPart soapPart = message.getSOAPPart();
-				SOAPEnvelope envelope = soapPart.getEnvelope();
 
-				SOAPHeader header = envelope.getHeader();
-				assert header != null; //TODO better handling
-
-				Name ticketName = envelope.createName("ticket", "", "http://ws.binas.org/");
-				SOAPElement ticketElement = (SOAPElement) header.getChildElements(ticketName).next();
-
-				CipheredView cTicket = new CipheredView();
-				cTicket.setData(decoder.decode(ticketElement.getValue()));
-				Ticket t = new Ticket(cTicket, key);
-
-				Key sessionKey = t.getKeyXY();
+				Key sessionKey = (Key) context.get("sessionKey");
 
 				// == Generate MAC from body ==
 
@@ -74,14 +79,17 @@ public class MACHandler implements SOAPHandler<SOAPMessageContext> {
 				SOAPElement macElement = (SOAPElement) header.getChildElements(macName).next();
 				String messageMac = macElement.getValue();
 
-				return messageMac.equals(generatedMac); //Is this explicit?
+				if (!messageMac.equals(generatedMac)) {
+					logger.severe("MAC not valid. This message has been tampered!");
+					return false;
+				}
 			}
 
-		} catch (SOAPException | KerbyException e) {
-			e.printStackTrace(); //TODO treat exceptions
 		} catch (InvalidKeyException e) {
 			e.printStackTrace();
 		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+		} catch (SOAPException e) {
 			e.printStackTrace();
 		}
 

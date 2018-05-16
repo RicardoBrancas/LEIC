@@ -1,6 +1,7 @@
 package org.binas.ws.cli;
 
 import binas.ws.handler.KerberosClientHandler;
+import binas.ws.handler.MACHandler;
 import org.binas.ws.*;
 import pt.ulisboa.tecnico.sdis.kerby.*;
 import pt.ulisboa.tecnico.sdis.kerby.cli.KerbyClient;
@@ -72,6 +73,7 @@ public class BinasClientApp {
 				KerberosClientHandler.setUser(user);
 				KerberosClientHandler.setTicket(cTicket);
 				KerberosClientHandler.setSessionKey(sessionKey.getKeyXY());
+				MACHandler.setSessionKey(sessionKey.getKeyXY());
 
 				break;
 			} catch (KerbyException | BadTicketRequest_Exception ex) {

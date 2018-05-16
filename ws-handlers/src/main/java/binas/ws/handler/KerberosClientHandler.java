@@ -4,15 +4,12 @@ import pt.ulisboa.tecnico.sdis.kerby.Auth;
 import pt.ulisboa.tecnico.sdis.kerby.CipheredView;
 import pt.ulisboa.tecnico.sdis.kerby.KerbyException;
 
-import javax.crypto.Mac;
 import javax.xml.namespace.QName;
 import javax.xml.soap.*;
 import javax.xml.ws.handler.MessageContext;
 import javax.xml.ws.handler.soap.SOAPHandler;
 import javax.xml.ws.handler.soap.SOAPMessageContext;
-import java.security.InvalidKeyException;
 import java.security.Key;
-import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 import java.util.Date;
 import java.util.Set;
@@ -72,27 +69,11 @@ public class KerberosClientHandler implements SOAPHandler<SOAPMessageContext> {
 				SOAPHeaderElement authElement = header.addHeaderElement(authName);
 				authElement.addTextNode(encoder.encodeToString(cAuth.getData()));
 
-				// === MAC ===
-
-				Name macName = envelope.createName("mac", "", "http://ws.binas.org/");
-				SOAPHeaderElement macElement = header.addHeaderElement(macName);
-
-				String body = context.getMessage().getSOAPBody().getTextContent();
-
-				Mac macInstance = Mac.getInstance("HmacSHA256");
-				macInstance.init(sessionKey);
-
-				macElement.addTextNode(encoder.encodeToString(macInstance.doFinal(body.getBytes())));
-
 			} else {
 				//TODO
 			}
 		} catch (SOAPException | KerbyException e) {
 			e.printStackTrace(); //TODO treat exceptions
-		} catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();
-		} catch (InvalidKeyException e) {
-			e.printStackTrace();
 		}
 
 		return true;
