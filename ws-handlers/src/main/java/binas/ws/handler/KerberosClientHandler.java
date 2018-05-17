@@ -68,13 +68,13 @@ public class KerberosClientHandler extends BaseHandler {
 
 				Auth auth = new Auth(user, time);
 				CipheredView cAuth = auth.cipher(sessionKey);
-
 				SOAPHeaderElement authElement = header.addHeaderElement(AUTH_NAME);
 				authElement.addTextNode(encoder.encodeToString(cAuth.getData()));
 
 				// == K ==
 
 				context.put(SESSION_KEY, sessionKey);
+				context.put(AUTH, auth);
 
 			} else {
 				SOAPHeader header = envelope.getHeader();

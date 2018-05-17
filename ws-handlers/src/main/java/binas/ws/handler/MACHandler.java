@@ -2,6 +2,9 @@ package binas.ws.handler;
 
 import binas.ws.handler.exception.HandlerException;
 import binas.ws.handler.exception.MissingElementException;
+import pt.ulisboa.tecnico.sdis.kerby.Auth;
+import pt.ulisboa.tecnico.sdis.kerby.CipheredView;
+import pt.ulisboa.tecnico.sdis.kerby.KerbyException;
 
 import javax.crypto.Mac;
 import javax.xml.namespace.QName;
@@ -17,6 +20,7 @@ import java.util.Set;
 public class MACHandler extends BaseHandler {
 
 	private Base64.Encoder encoder = Base64.getEncoder();
+	private Base64.Decoder decoder = Base64.getDecoder();
 
 	@Override
 	public Set<QName> getHeaders() {
@@ -41,30 +45,52 @@ public class MACHandler extends BaseHandler {
 				throw new MissingElementException("header");
 
 			if (outbound) {
-				SOAPHeaderElement macElement = header.addHeaderElement(MAC_NAME);
 
-				String body = message.getSOAPBody().getTextContent();
-
+				// Mac: https://docs.oracle.com/javase/8/docs/api/javax/crypto/Mac.html
 				Mac macInstance = Mac.getInstance("HmacSHA256");
 				Key sessionKey = (Key) context.get(SESSION_KEY);
 				macInstance.init(sessionKey);
 
-				macElement.addTextNode(encoder.encodeToString(macInstance.doFinal(body.getBytes())));
+				// == Add auth to MAC ==
+				Auth auth = (Auth) context.get(AUTH);
+				String authString = auth.authToString();
+				macInstance.update(authString.getBytes());
+
+				// == Add body to MAC ==
+				SOAPBody body = message.getSOAPBody();
+				String bodyString = body.getTextContent();
+				macInstance.update(bodyString.getBytes());
+
+				SOAPHeaderElement macElement = header.addHeaderElement(MAC_NAME);
+				macElement.addTextNode(encoder.encodeToString(macInstance.doFinal()));
 
 			} else {
 				// server: This is the last thing to be executed when a message is received
 
 				Key sessionKey = (Key) context.get(SESSION_KEY);
-
-				// == Generate MAC from body ==
-
-				String body = message.getSOAPBody().getTextContent();
 				Mac macInstance = Mac.getInstance("HmacSHA256");
 				macInstance.init(sessionKey);
-				String generatedMac = encoder.encodeToString(macInstance.doFinal(body.getBytes()));
+
+
+				// == Generate MAC from body and auth in message ==
+
+				// get auth:
+				SOAPElement authElement = getHeaderElement(header, AUTH_NAME);
+				CipheredView cAuth = new CipheredView();
+				cAuth.setData(decoder.decode(authElement.getValue()));
+				Auth auth = new Auth(cAuth, sessionKey);
+				String authString = auth.authToString();
+				macInstance.update(authString.getBytes());
+
+				// get body:
+				SOAPBody body = message.getSOAPBody();
+				String bodyString = body.getTextContent();
+				macInstance.update(bodyString.getBytes());
+
+				String generatedMac = encoder.encodeToString(macInstance.doFinal());
+
 
 				// == Get MAC from message ==
-
 				SOAPElement macElement = getHeaderElement(header, MAC_NAME);
 				String messageMac = macElement.getValue();
 
@@ -74,6 +100,8 @@ public class MACHandler extends BaseHandler {
 
 		} catch (InvalidKeyException | NoSuchAlgorithmException | SOAPException e) {
 			throw new HandlerException(e);
+		} catch (KerbyException e) {
+			e.printStackTrace();
 		}
 
 		return true;

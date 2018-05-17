@@ -28,6 +28,8 @@ public abstract class BaseHandler implements SOAPHandler<SOAPMessageContext> {
 
 	static final String SESSION_KEY = "session_key";
 
+	static final String AUTH = "auth";
+
 	SOAPElement getHeaderElement(SOAPHeader header, Name name) {
 		Iterator ticketElements = header.getChildElements(name);
 		if (!ticketElements.hasNext())

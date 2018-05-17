@@ -50,10 +50,14 @@ public class KerberosServerHandler extends BaseHandler {
 
 				Key sessionKey = (Key) context.get(SESSION_KEY);
 				Date tRequest = (Date) context.get(REQUEST_TIME);
+				Auth auth = (Auth) context.get(AUTH);
+
+				CipheredView cAuth = auth.cipher(sessionKey);
+				SOAPHeaderElement authElement = header.addHeaderElement(AUTH_NAME);
+				authElement.addTextNode(encoder.encodeToString(cAuth.getData()));
 
 				RequestTime requestTime = new RequestTime(tRequest);
 				CipheredView cTime = requestTime.cipher(sessionKey);
-
 				SOAPHeaderElement timeElement = header.addHeaderElement(TIME_NAME);
 				timeElement.addTextNode(encoder.encodeToString(cTime.getData()));
 
@@ -99,6 +103,7 @@ public class KerberosServerHandler extends BaseHandler {
 					throw new HandlerException("Auth is too old!");
 
 				context.put(REQUEST_TIME, auth.getTimeRequest()); //save time for later
+				context.put(AUTH, auth);
 			}
 
 		} catch (SOAPException | KerbyException e) {
