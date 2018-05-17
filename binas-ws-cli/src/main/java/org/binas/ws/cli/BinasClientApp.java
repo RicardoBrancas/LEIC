@@ -1,7 +1,7 @@
 package org.binas.ws.cli;
 
 import binas.ws.handler.KerberosClientHandler;
-import binas.ws.handler.MACHandler;
+import com.sun.xml.ws.fault.ServerSOAPFaultException;
 import org.binas.ws.*;
 import pt.ulisboa.tecnico.sdis.kerby.*;
 import pt.ulisboa.tecnico.sdis.kerby.cli.KerbyClient;
@@ -14,6 +14,23 @@ import java.security.SecureRandom;
 public class BinasClientApp {
 
 	private static SecureRandom random = new SecureRandom();
+	private static Key clientKey;
+	private static KerbyClient kerbyClient;
+
+	private static void getTicket(String user) throws KerbyException, BadTicketRequest_Exception {
+		long nonce = random.nextLong();
+
+		SessionKeyAndTicketView sessionKeyAndTicket = kerbyClient.requestTicket(user, "binas@A60.binas.org", nonce, 25);
+
+		CipheredView cSessionKey = sessionKeyAndTicket.getSessionKey();
+		CipheredView cTicket = sessionKeyAndTicket.getTicket();
+
+		SessionKey sessionKey = new SessionKey(cSessionKey, clientKey);
+
+		KerberosClientHandler.setUser(user);
+		KerberosClientHandler.setTicket(cTicket);
+		KerberosClientHandler.setSessionKey(sessionKey.getKeyXY());
+	}
 
 	public static void main(String[] args) throws Exception {
 
@@ -43,12 +60,11 @@ public class BinasClientApp {
 		// === AUTH ===
 
 		CipheredView cTicket;
-		SessionKey sessionKey;
 		CipheredView cAuth;
 		String user;
 
 		System.out.printf("Creating kerby client for kerby server at %s\n", kerbyURL);
-		KerbyClient kerbyClient = new KerbyClient(kerbyURL);
+		kerbyClient = new KerbyClient(kerbyURL);
 		while (true) {
 			try {
 				System.out.print("User: ");
@@ -59,20 +75,10 @@ public class BinasClientApp {
 				System.out.flush();
 				String password = input.readLine();
 
-				long nonce = random.nextLong();
+				clientKey = SecurityHelper.generateKeyFromPassword(password);
 
-				final Key clientKey = SecurityHelper.generateKeyFromPassword(password);
+				getTicket(user);
 
-				SessionKeyAndTicketView sessionKeyAndTicket = kerbyClient.requestTicket(user, "binas@A60.binas.org", nonce, 60);
-
-				CipheredView cSessionKey = sessionKeyAndTicket.getSessionKey();
-				cTicket = sessionKeyAndTicket.getTicket();
-
-				sessionKey = new SessionKey(cSessionKey, clientKey);
-
-				KerberosClientHandler.setUser(user);
-				KerberosClientHandler.setTicket(cTicket);
-				KerberosClientHandler.setSessionKey(sessionKey.getKeyXY());
 
 				break;
 			} catch (KerbyException | BadTicketRequest_Exception ex) {
@@ -96,10 +102,15 @@ public class BinasClientApp {
 		}
 
 		System.out.println("Waiting for commands. Type 'help' if you need it...");
+		String command[] = new String[0];
+		boolean repeat = false;
 		while (true) {
-			System.out.print("> ");
-			System.out.flush();
-			String command[] = input.readLine().split(" ");
+			if (!repeat) {
+				System.out.print("> ");
+				System.out.flush();
+				command = input.readLine().split(" ");
+			} else
+				repeat = false;
 
 			if (command.length < 1) {
 				System.out.println("Please insert a command.");
@@ -158,6 +169,11 @@ public class BinasClientApp {
 				}
 			} catch (UserNotExists_Exception | EmailExists_Exception | NoCredit_Exception | NoBinaRented_Exception | InvalidStation_Exception | NoBinaAvail_Exception | InvalidEmail_Exception | AlreadyHasBina_Exception | FullStation_Exception e) {
 				System.out.printf("Error (%s): %s\n", e.getClass().getSimpleName(), e.getMessage());
+			} catch (ServerSOAPFaultException e) {
+				if (e.getMessage().contains("ticket is expired")) {
+					getTicket(user);
+					repeat = true;
+				}
 			}
 		}
 	}

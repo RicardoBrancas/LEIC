@@ -82,7 +82,7 @@ public class KerberosServerHandler implements SOAPHandler<SOAPMessageContext> {
 				Date currentDate = new Date();
 				if (!(currentDate.after(t.getTime1()) && currentDate.before(t.getTime2()))) {
 					logger.severe("Received ticket is expired!");
-					return false;
+					throw new RuntimeException("Received ticket is expired!");
 				}
 
 				// = K =
