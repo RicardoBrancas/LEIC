@@ -1,5 +1,7 @@
 package binas.ws.handler;
 
+import pt.ulisboa.tecnico.sdis.kerby.SessionKey;
+
 import javax.crypto.Mac;
 import javax.xml.namespace.QName;
 import javax.xml.soap.*;
@@ -21,13 +23,6 @@ public class MACHandler implements SOAPHandler<SOAPMessageContext> {
 	public static void setKey(Key key) {
 		MACHandler.key = key;
 	}
-
-	private static Key sessionKey;
-
-	public static void setSessionKey(Key sessionKey) {
-		MACHandler.sessionKey = sessionKey;
-	}
-
 
 	private Base64.Encoder encoder = Base64.getEncoder();
 	private Base64.Decoder decoder = Base64.getDecoder();
@@ -58,6 +53,7 @@ public class MACHandler implements SOAPHandler<SOAPMessageContext> {
 				String body = context.getMessage().getSOAPBody().getTextContent();
 
 				Mac macInstance = Mac.getInstance("HmacSHA256");
+				Key sessionKey = (Key) context.get("sessionKey");
 				macInstance.init(sessionKey);
 
 				macElement.addTextNode(encoder.encodeToString(macInstance.doFinal(body.getBytes())));

@@ -73,7 +73,6 @@ public class BinasClientApp {
 				KerberosClientHandler.setUser(user);
 				KerberosClientHandler.setTicket(cTicket);
 				KerberosClientHandler.setSessionKey(sessionKey.getKeyXY());
-				MACHandler.setSessionKey(sessionKey.getKeyXY());
 
 				break;
 			} catch (KerbyException | BadTicketRequest_Exception ex) {

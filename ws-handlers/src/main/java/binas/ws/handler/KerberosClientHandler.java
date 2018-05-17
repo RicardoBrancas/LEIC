@@ -1,8 +1,10 @@
 package binas.ws.handler;
 
+import org.w3c.dom.Node;
 import pt.ulisboa.tecnico.sdis.kerby.Auth;
 import pt.ulisboa.tecnico.sdis.kerby.CipheredView;
 import pt.ulisboa.tecnico.sdis.kerby.KerbyException;
+import pt.ulisboa.tecnico.sdis.kerby.RequestTime;
 
 import javax.xml.namespace.QName;
 import javax.xml.soap.*;
@@ -60,17 +62,39 @@ public class KerberosClientHandler implements SOAPHandler<SOAPMessageContext> {
 				SOAPHeaderElement ticketElement = header.addHeaderElement(ticketName);
 				ticketElement.addTextNode(encoder.encodeToString(ticket.getData()));
 
-				// === AUTH ===
+				Date time = new Date();
+				context.put("time", time);
 
-				Auth auth = new Auth(user, new Date());
+				// == AUTH ==
+
+				Auth auth = new Auth(user, time);
 				CipheredView cAuth = auth.cipher(sessionKey);
 
 				Name authName = envelope.createName("auth", "", "http://ws.binas.org/");
 				SOAPHeaderElement authElement = header.addHeaderElement(authName);
 				authElement.addTextNode(encoder.encodeToString(cAuth.getData()));
 
+				// == K ==
+
+				context.put("sessionKey", sessionKey);
+
 			} else {
-				//TODO
+				SOAPMessage message = context.getMessage();
+				SOAPPart soapPart = message.getSOAPPart();
+				SOAPEnvelope envelope = soapPart.getEnvelope();
+
+				SOAPHeader header = envelope.getHeader();
+				assert header != null; //TODO better handling
+
+				Node timeElement = header.getElementsByTagName("time").item(0);
+				CipheredView cTime = new CipheredView();
+				cTime.setData(decoder.decode(timeElement.getFirstChild().getNodeValue()));
+
+				RequestTime requestTime = new RequestTime(cTime, sessionKey);
+
+				Date time = (Date) context.get("time");
+
+				assert time.equals(requestTime.getTimeRequest()); //TODO better handling
 			}
 		} catch (SOAPException | KerbyException e) {
 			e.printStackTrace(); //TODO treat exceptions
