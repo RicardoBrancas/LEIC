@@ -13,12 +13,12 @@ import java.security.SecureRandom;
 
 public class BinasClientApp {
 
-	private static SecureRandom random = new SecureRandom();
+	private static final SecureRandom random = new SecureRandom();
 	private static Key clientKey;
 	private static KerbyClient kerbyClient;
 
 	private static void getTicket(String user) throws KerbyException, BadTicketRequest_Exception {
-		long nonce = random.nextLong();
+		final long nonce = random.nextLong();
 
 		SessionKeyAndTicketView sessionKeyAndTicket = kerbyClient.requestTicket(user, "binas@A60.binas.org", nonce, 25);
 
@@ -59,8 +59,6 @@ public class BinasClientApp {
 
 		// === AUTH ===
 
-		CipheredView cTicket;
-		CipheredView cAuth;
 		String user;
 
 		System.out.printf("Creating kerby client for kerby server at %s\n", kerbyURL);
@@ -79,12 +77,10 @@ public class BinasClientApp {
 
 				getTicket(user);
 
-
 				break;
 			} catch (KerbyException | BadTicketRequest_Exception ex) {
 				System.out.println("Invalid credentials. Please try again...");
 			}
-
 		}
 
 		// === BINAS CONNECTION ===

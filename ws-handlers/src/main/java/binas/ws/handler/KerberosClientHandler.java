@@ -1,6 +1,7 @@
 package binas.ws.handler;
 
-import org.w3c.dom.Node;
+import binas.ws.handler.exception.HandlerException;
+import binas.ws.handler.exception.MissingElementException;
 import pt.ulisboa.tecnico.sdis.kerby.Auth;
 import pt.ulisboa.tecnico.sdis.kerby.CipheredView;
 import pt.ulisboa.tecnico.sdis.kerby.KerbyException;
@@ -9,14 +10,13 @@ import pt.ulisboa.tecnico.sdis.kerby.RequestTime;
 import javax.xml.namespace.QName;
 import javax.xml.soap.*;
 import javax.xml.ws.handler.MessageContext;
-import javax.xml.ws.handler.soap.SOAPHandler;
 import javax.xml.ws.handler.soap.SOAPMessageContext;
 import java.security.Key;
 import java.util.Base64;
 import java.util.Date;
 import java.util.Set;
 
-public class KerberosClientHandler implements SOAPHandler<SOAPMessageContext> {
+public class KerberosClientHandler extends BaseHandler {
 
 	private static String user;
 	private static CipheredView ticket;
@@ -47,57 +47,53 @@ public class KerberosClientHandler implements SOAPHandler<SOAPMessageContext> {
 		boolean outbound = (Boolean) context.get(MessageContext.MESSAGE_OUTBOUND_PROPERTY);
 
 		try {
-			if (outbound) {
-				SOAPMessage message = context.getMessage();
-				SOAPPart soapPart = message.getSOAPPart();
-				SOAPEnvelope envelope = soapPart.getEnvelope();
+			SOAPMessage message = context.getMessage();
+			SOAPPart soapPart = message.getSOAPPart();
+			SOAPEnvelope envelope = soapPart.getEnvelope();
 
+			if (outbound) {
 				SOAPHeader header = envelope.getHeader();
 				if (header == null)
 					header = envelope.addHeader();
 
 				// === TICKET ===
 
-				Name ticketName = envelope.createName("ticket", "", "http://ws.binas.org/");
-				SOAPHeaderElement ticketElement = header.addHeaderElement(ticketName);
+				SOAPHeaderElement ticketElement = header.addHeaderElement(TICKET_NAME);
 				ticketElement.addTextNode(encoder.encodeToString(ticket.getData()));
 
 				Date time = new Date();
-				context.put("time", time);
+				context.put(REQUEST_TIME, time); //will be used later to validate response
 
 				// == AUTH ==
 
 				Auth auth = new Auth(user, time);
 				CipheredView cAuth = auth.cipher(sessionKey);
 
-				Name authName = envelope.createName("auth", "", "http://ws.binas.org/");
-				SOAPHeaderElement authElement = header.addHeaderElement(authName);
+				SOAPHeaderElement authElement = header.addHeaderElement(AUTH_NAME);
 				authElement.addTextNode(encoder.encodeToString(cAuth.getData()));
 
 				// == K ==
 
-				context.put("sessionKey", sessionKey);
+				context.put(SESSION_KEY, sessionKey);
 
 			} else {
-				SOAPMessage message = context.getMessage();
-				SOAPPart soapPart = message.getSOAPPart();
-				SOAPEnvelope envelope = soapPart.getEnvelope();
-
 				SOAPHeader header = envelope.getHeader();
-				assert header != null; //TODO better handling
+				if (header == null)
+					throw new MissingElementException("header");
 
-				Node timeElement = header.getElementsByTagName("time").item(0);
+				SOAPElement timeElement = getHeaderElement(header, TIME_NAME);
 				CipheredView cTime = new CipheredView();
 				cTime.setData(decoder.decode(timeElement.getFirstChild().getNodeValue()));
 
 				RequestTime requestTime = new RequestTime(cTime, sessionKey);
 
-				Date time = (Date) context.get("time");
+				Date time = (Date) context.get(REQUEST_TIME); //retrieve previously saved time
 
-				assert time.equals(requestTime.getTimeRequest()); //TODO better handling
+				if (!time.equals(requestTime.getTimeRequest()))
+					throw new HandlerException("Time in response is different from request.");
 			}
 		} catch (SOAPException | KerbyException e) {
-			e.printStackTrace(); //TODO treat exceptions
+			throw new HandlerException(e);
 		}
 
 		return true;
