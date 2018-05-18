@@ -1,22 +1,21 @@
 package binas.ws.handler;
 
-import binas.ws.handler.exception.HandlerException;
-import binas.ws.handler.exception.MissingElementException;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import pt.ulisboa.tecnico.sdis.kerby.Auth;
-import pt.ulisboa.tecnico.sdis.kerby.CipheredView;
-import pt.ulisboa.tecnico.sdis.kerby.KerbyException;
-import pt.ulisboa.tecnico.sdis.kerby.RequestTime;
 
 import javax.xml.namespace.QName;
-import javax.xml.soap.*;
+import javax.xml.soap.SOAPEnvelope;
+import javax.xml.soap.SOAPException;
+import javax.xml.soap.SOAPMessage;
+import javax.xml.soap.SOAPPart;
 import javax.xml.ws.handler.MessageContext;
 import javax.xml.ws.handler.soap.SOAPMessageContext;
-import java.util.Date;
-import java.util.Iterator;
 import java.util.Set;
 
+/**
+ * Will change outgoing messages from any user, and change the request's email
+ * to Alice's, in an attempt to perform actions in Alice's name.
+ */
 public class EvilEveHandler extends BaseHandler {
 
 	public static boolean eve = false;
@@ -38,7 +37,7 @@ public class EvilEveHandler extends BaseHandler {
 
 			if (outbound) {
 				NodeList emailElements = envelope.getElementsByTagName(EMAIL);
-				if(emailElements.getLength() < 0)
+				if (emailElements.getLength() < 0)
 					return true;
 
 				Node emailElement = emailElements.item(0);

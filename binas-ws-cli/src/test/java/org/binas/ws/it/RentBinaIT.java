@@ -5,13 +5,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-import pt.ulisboa.tecnico.sdis.kerby.BadTicketRequest_Exception;
-import pt.ulisboa.tecnico.sdis.kerby.KerbyException;
-import pt.ulisboa.tecnico.sdis.kerby.SecurityHelper;
-
-import java.security.Key;
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
 
 import static junit.framework.TestCase.fail;
 

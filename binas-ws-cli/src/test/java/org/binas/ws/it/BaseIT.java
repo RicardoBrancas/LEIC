@@ -1,7 +1,6 @@
 package org.binas.ws.it;
 
 import binas.ws.handler.KerberosClientHandler;
-import com.sun.xml.ws.fault.ServerSOAPFaultException;
 import org.binas.ws.BadInit_Exception;
 import org.binas.ws.cli.BinasClient;
 import org.junit.After;
