@@ -1,6 +1,7 @@
 package org.binas.ws.cli;
 
 import binas.ws.handler.KerberosClientHandler;
+import binas.ws.handler.EvilEveHandler;
 import com.sun.xml.ws.fault.ServerSOAPFaultException;
 import org.binas.ws.*;
 import pt.ulisboa.tecnico.sdis.kerby.*;
@@ -125,6 +126,7 @@ public class BinasClientApp {
 						System.out.println("read");
 						System.out.println("rent <station>");
 						System.out.println("return <station>");
+						System.out.println("evilness <enable|disable>");
 						break;
 
 					case "mkuser":
@@ -158,6 +160,21 @@ public class BinasClientApp {
 
 						binasClient.returnBina(command[1], user);
 						break;
+
+					case "evilness":
+						if (command.length < 2) {
+							System.out.println("Syntax is evilness <enable|disable>");
+							continue;
+						}
+
+						switch (command[1]) {
+							case "enable":
+								EvilEveHandler.eve = true;
+								break;
+							case "disable":
+								EvilEveHandler.eve = false;
+								break;
+						}
 
 					default:
 						System.out.println("Invalid command. Type 'help' if you need it");
