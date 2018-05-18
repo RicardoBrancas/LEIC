@@ -19,5 +19,8 @@
         <handler>
             <handler-class>binas.ws.handler.MACHandler</handler-class>
         </handler>
+        <handler>
+            <handler-class>binas.ws.handler.EvilEveHandler</handler-class>
+        </handler>
 	</handler-chain>
 </handler-chains>

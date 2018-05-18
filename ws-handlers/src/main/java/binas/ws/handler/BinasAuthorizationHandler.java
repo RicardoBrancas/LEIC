@@ -35,7 +35,7 @@ public class BinasAuthorizationHandler extends BaseHandler {
 				Node emailElement = envelope.getElementsByTagName(EMAIL).item(0);
 				String userInMessage = emailElement.getFirstChild().getNodeValue();
 
-				String userInTicket = (String) context.get(USER); // Retrieve previously saved user
+				String userInTicket = (String) context.get(USER_EMAIL); // Retrieve previously saved user
 
 				if (!userInMessage.equals(userInTicket))
 					throw new HandlerException(String.format("Permission denied. User '%s' can't access account '%s'", userInTicket, userInMessage));

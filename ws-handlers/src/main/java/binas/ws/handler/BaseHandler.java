@@ -24,7 +24,7 @@ public abstract class BaseHandler implements SOAPHandler<SOAPMessageContext> {
 
 	static final String REQUEST_TIME = "request_time";
 
-	static final String USER = "user";
+	static final String USER_EMAIL = "user_email";
 
 	static final String SESSION_KEY = "session_key";
 

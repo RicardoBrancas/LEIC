@@ -72,8 +72,8 @@ public class KerberosServerHandler extends BaseHandler {
 				Ticket t = new Ticket(cTicket, key);
 
 				// = X =
-				String user = t.getX();
-				context.put(USER, user); //save user for later
+				String user_email = t.getX();
+				context.put(USER_EMAIL, user_email); //save user email for later
 
 				// = Y =
 				String me = t.getY();
@@ -96,7 +96,7 @@ public class KerberosServerHandler extends BaseHandler {
 				cAuth.setData(decoder.decode(authElement.getValue()));
 				Auth auth = new Auth(cAuth, sessionKey);
 
-				if (!user.equals(auth.getX()))
+				if (!user_email.equals(auth.getX()))
 					throw new HandlerException("Users in ticket and auth are different!");
 
 				if (!((currentDate.getTime() - auth.getTimeRequest().getTime()) < TIME_TOLERANCE))
