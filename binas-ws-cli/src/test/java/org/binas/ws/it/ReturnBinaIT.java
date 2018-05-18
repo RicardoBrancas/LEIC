@@ -19,8 +19,8 @@ public class ReturnBinaIT extends BaseIT {
 	String email1 = "alice@A60.binas.org";
 	String password1 = "LgzpKrs7F";
 	String email2 = "binas@A60.binas.org";
-	String password2 ="mRuFZfNu";
-	String email3 ="charlie@A60.binas.org";
+	String password2 = "mRuFZfNu";
+	String email3 = "charlie@A60.binas.org";
 	String password3 = "Uj2cWtwk7";
 
 	Key clientKey1;
@@ -54,7 +54,7 @@ public class ReturnBinaIT extends BaseIT {
 		} catch (BadInit_Exception | InvalidEmail_Exception | EmailExists_Exception
 				| UserNotExists_Exception | NoCredit_Exception | NoBinaAvail_Exception
 				| AlreadyHasBina_Exception | InvalidStation_Exception |
-				KerbyException|NoSuchAlgorithmException|BadTicketRequest_Exception |
+				KerbyException | NoSuchAlgorithmException | BadTicketRequest_Exception |
 				InvalidKeySpecException e) {
 			throw new RuntimeException(e);
 		}

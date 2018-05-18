@@ -69,7 +69,9 @@ public class KerberosServerHandler extends BaseHandler {
 			}
 			/*
 			 * Verify emails in tickets
-			 * Verify ticket not expired
+			 * Verify ticket has not expired
+			 * Use key from ticket to decipher user authentication,
+			 *  and verify it's user and date.
 			 */
 			else {
 				// server: This is the first thing to be executed when a message is received
@@ -100,7 +102,6 @@ public class KerberosServerHandler extends BaseHandler {
 				context.put(SESSION_KEY, sessionKey); //save sessionKey for later
 
 				// === AUTH ===
-
 				SOAPElement authElement = getHeaderElement(header, AUTH_NAME);
 				CipheredView cAuth = new CipheredView();
 				cAuth.setData(decoder.decode(authElement.getValue()));
