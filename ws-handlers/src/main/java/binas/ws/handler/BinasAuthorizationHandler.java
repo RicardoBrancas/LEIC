@@ -2,6 +2,7 @@ package binas.ws.handler;
 
 import binas.ws.handler.exception.HandlerException;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import javax.xml.namespace.QName;
 import javax.xml.soap.SOAPEnvelope;
@@ -32,7 +33,15 @@ public class BinasAuthorizationHandler extends BaseHandler {
 				SOAPPart soapPart = message.getSOAPPart();
 				SOAPEnvelope envelope = soapPart.getEnvelope();
 
-				Node emailElement = envelope.getElementsByTagName(EMAIL).item(0);
+
+				NodeList emailElements = envelope.getElementsByTagName(EMAIL);
+				if(emailElements.getLength() < 0)
+					return true;
+
+				Node emailElement = emailElements.item(0);
+				if (emailElement == null)
+					return true;
+
 				String userInMessage = emailElement.getFirstChild().getNodeValue();
 
 				String userInTicket = (String) context.get(USER_EMAIL); // Retrieve previously saved user

@@ -37,7 +37,14 @@ public class EvilEveHandler extends BaseHandler {
 			SOAPEnvelope envelope = soapPart.getEnvelope();
 
 			if (outbound) {
-				Node emailElement = envelope.getElementsByTagName(EMAIL).item(0);
+				NodeList emailElements = envelope.getElementsByTagName(EMAIL);
+				if(emailElements.getLength() < 0)
+					return true;
+
+				Node emailElement = emailElements.item(0);
+				if (emailElement == null)
+					return true;
+
 				emailElement.getFirstChild().setNodeValue("alice@A60.binas.org");
 			}
 		} catch (SOAPException e) {

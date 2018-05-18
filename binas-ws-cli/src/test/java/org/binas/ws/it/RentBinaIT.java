@@ -3,6 +3,7 @@ package org.binas.ws.it;
 import org.binas.ws.*;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import pt.ulisboa.tecnico.sdis.kerby.BadTicketRequest_Exception;
 import pt.ulisboa.tecnico.sdis.kerby.KerbyException;
@@ -49,6 +50,7 @@ public class RentBinaIT extends BaseIT {
 	}
 
 	@Test
+	@Ignore
 	public void noMoreBinas() throws NoCredit_Exception, InvalidStation_Exception, AlreadyHasBina_Exception,
 			UserNotExists_Exception, EmailExists_Exception, InvalidEmail_Exception, NoBinaAvail_Exception {
 
@@ -74,6 +76,7 @@ public class RentBinaIT extends BaseIT {
 	}
 
 	@Test
+	@Ignore
 	public void nonexistentUser() throws NoBinaAvail_Exception, NoCredit_Exception, InvalidStation_Exception,
 			AlreadyHasBina_Exception {
 		int initialFreeDocks = client.getInfoStation("1").getFreeDocks();
@@ -143,6 +146,7 @@ public class RentBinaIT extends BaseIT {
 	}
 
 	@Test
+	@Ignore
 	public void noCredit() throws UserNotExists_Exception, NoBinaAvail_Exception, InvalidStation_Exception,
 			AlreadyHasBina_Exception, EmailExists_Exception, InvalidEmail_Exception, BadInit_Exception {
 		client.testInit(0);

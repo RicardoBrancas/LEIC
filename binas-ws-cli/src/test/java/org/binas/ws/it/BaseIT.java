@@ -1,6 +1,7 @@
 package org.binas.ws.it;
 
 import binas.ws.handler.KerberosClientHandler;
+import com.sun.xml.ws.fault.ServerSOAPFaultException;
 import org.binas.ws.BadInit_Exception;
 import org.binas.ws.cli.BinasClient;
 import org.junit.After;
@@ -22,45 +23,26 @@ import java.util.Properties;
  * Loads the properties in the file
  */
 public class BaseIT {
-	String email = "alice@A60.binas.org";
-	String password = "LgzpKrs7F";
-	private final SecureRandom random = new SecureRandom();
-	void getTicket(String user, Key clientKey) throws KerbyException, BadTicketRequest_Exception {
-		final long nonce = random.nextLong();
-
-		SessionKeyAndTicketView sessionKeyAndTicket = kerbyClient.requestTicket(user, "binas@A60.binas.org", nonce, 25);
-
-		CipheredView cSessionKey = sessionKeyAndTicket.getSessionKey();
-		CipheredView cTicket = sessionKeyAndTicket.getTicket();
-
-		SessionKey sessionKey = new SessionKey(cSessionKey, clientKey);
-
-		KerberosClientHandler.setUser(user);
-		KerberosClientHandler.setTicket(cTicket);
-		KerberosClientHandler.setSessionKey(sessionKey.getKeyXY());
-	}
-
 	private static final String TEST_PROP_FILE = "/test.properties";
 	protected static Properties testProps;
-
 	protected static BinasClient client;
 	protected static KerbyClient kerbyClient;
 	protected static String stationName = "A60_Station";
-
 	protected static int station1X = 22;
 	protected static int station1Y = 7;
 	protected static int station1Capacity = 6;
 	protected static int station1Prize = 2;
-
 	protected static int station2X = 80;
 	protected static int station2Y = 20;
 	protected static int station2Capacity = 12;
 	protected static int station2Prize = 1;
-
 	protected static int station3X = 50;
 	protected static int station3Y = 50;
 	protected static int station3Capacity = 20;
 	protected static int station3Prize = 0;
+	private final SecureRandom random = new SecureRandom();
+	String email = "alice@A60.binas.org";
+	String password = "LgzpKrs7F";
 
 	@BeforeClass
 	public static void oneTimeSetup() throws Exception {
@@ -91,6 +73,21 @@ public class BaseIT {
 			client = new BinasClient(wsURL);
 		}
 		client.setVerbose("true".equalsIgnoreCase(verboseEnabled));
+	}
+
+	void getTicket(String user, Key clientKey) throws KerbyException, BadTicketRequest_Exception {
+		final long nonce = random.nextLong();
+
+		SessionKeyAndTicketView sessionKeyAndTicket = kerbyClient.requestTicket(user, "binas@A60.binas.org", nonce, 300);
+
+		CipheredView cSessionKey = sessionKeyAndTicket.getSessionKey();
+		CipheredView cTicket = sessionKeyAndTicket.getTicket();
+
+		SessionKey sessionKey = new SessionKey(cSessionKey, clientKey);
+
+		KerberosClientHandler.setUser(user);
+		KerberosClientHandler.setTicket(cTicket);
+		KerberosClientHandler.setSessionKey(sessionKey.getKeyXY());
 	}
 
 	@Before
