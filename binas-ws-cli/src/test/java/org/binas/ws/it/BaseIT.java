@@ -1,12 +1,19 @@
 package org.binas.ws.it;
 
+import binas.ws.handler.KerberosClientHandler;
 import org.binas.ws.BadInit_Exception;
 import org.binas.ws.cli.BinasClient;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import pt.ulisboa.tecnico.sdis.kerby.*;
+import pt.ulisboa.tecnico.sdis.kerby.cli.KerbyClient;
 
 import java.io.IOException;
+import java.security.Key;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.security.spec.InvalidKeySpecException;
 import java.util.Properties;
 
 
@@ -15,11 +22,29 @@ import java.util.Properties;
  * Loads the properties in the file
  */
 public class BaseIT {
+	String email = "alice@A60.binas.org";
+	String password = "LgzpKrs7F";
+	private final SecureRandom random = new SecureRandom();
+	void getTicket(String user, Key clientKey) throws KerbyException, BadTicketRequest_Exception {
+		final long nonce = random.nextLong();
+
+		SessionKeyAndTicketView sessionKeyAndTicket = kerbyClient.requestTicket(user, "binas@A60.binas.org", nonce, 25);
+
+		CipheredView cSessionKey = sessionKeyAndTicket.getSessionKey();
+		CipheredView cTicket = sessionKeyAndTicket.getTicket();
+
+		SessionKey sessionKey = new SessionKey(cSessionKey, clientKey);
+
+		KerberosClientHandler.setUser(user);
+		KerberosClientHandler.setTicket(cTicket);
+		KerberosClientHandler.setSessionKey(sessionKey.getKeyXY());
+	}
 
 	private static final String TEST_PROP_FILE = "/test.properties";
 	protected static Properties testProps;
 
 	protected static BinasClient client;
+	protected static KerbyClient kerbyClient;
 	protected static String stationName = "A60_Station";
 
 	protected static int station1X = 22;
@@ -57,6 +82,9 @@ public class BaseIT {
 		final String wsName = testProps.getProperty("ws.name");
 		final String wsURL = testProps.getProperty("ws.url");
 
+
+		kerbyClient = new KerbyClient("http://sec.sd.rnl.tecnico.ulisboa.pt:8888/kerby");
+
 		if ("true".equalsIgnoreCase(uddiEnabled)) {
 			client = new BinasClient(uddiURL, wsName);
 		} else {
@@ -68,11 +96,14 @@ public class BaseIT {
 	@Before
 	public void setup() {
 		try {
+			Key clientKey = SecurityHelper.generateKeyFromPassword(password);
+			getTicket(email, clientKey);
 			client.testInitStation("1", station1X, station1Y, station1Capacity, station1Prize);
 			client.testInitStation("2", station2X, station2Y, station2Capacity, station2Prize);
 			client.testInitStation("3", station3X, station3Y, station3Capacity, station3Prize);
 			client.testInit(10);
-		} catch (BadInit_Exception e) {
+		} catch (BadInit_Exception | KerbyException | BadTicketRequest_Exception | InvalidKeySpecException |
+				NoSuchAlgorithmException e) {
 			throw new RuntimeException(e);
 		}
 	}

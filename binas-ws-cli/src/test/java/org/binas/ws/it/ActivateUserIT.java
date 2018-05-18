@@ -1,13 +1,28 @@
 package org.binas.ws.it;
 
+import org.binas.ws.BadInit_Exception;
 import org.binas.ws.EmailExists_Exception;
 import org.binas.ws.InvalidEmail_Exception;
 import org.binas.ws.UserView;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
+import pt.ulisboa.tecnico.sdis.kerby.BadTicketRequest_Exception;
+import pt.ulisboa.tecnico.sdis.kerby.KerbyException;
+import pt.ulisboa.tecnico.sdis.kerby.SecurityHelper;
+
+import java.security.Key;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 
 public class ActivateUserIT extends BaseIT {
-	String email = "a.c@b.d";
+	@Before
+	@Override
+	public void setup() {
+
+		super.setup();
+
+	}
 
 	@Test
 	public void success() throws EmailExists_Exception, InvalidEmail_Exception {

@@ -4,39 +4,44 @@ import org.binas.ws.*;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import pt.ulisboa.tecnico.sdis.kerby.BadTicketRequest_Exception;
+import pt.ulisboa.tecnico.sdis.kerby.KerbyException;
+import pt.ulisboa.tecnico.sdis.kerby.SecurityHelper;
+
+import java.security.Key;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 
 import static junit.framework.TestCase.fail;
 
 public class RentBinaIT extends BaseIT {
-	private String userEmail = "want2rent@bina";
 
 	@Before
 	@Override
 	public void setup() {
 		super.setup();
-
 		try {
-			client.testInit(10);
-			client.activateUser(userEmail);
-
-		} catch (BadInit_Exception | InvalidEmail_Exception | EmailExists_Exception e) {
+			client.activateUser(email);
+		} catch (EmailExists_Exception | InvalidEmail_Exception e) {
 			throw new RuntimeException(e);
 		}
+
+
 	}
 
 	@Test
 	public void success() throws NoBinaAvail_Exception, NoCredit_Exception, InvalidStation_Exception,
 			AlreadyHasBina_Exception, UserNotExists_Exception {
 
-		int initialCredit = client.getCredit(userEmail);
+		int initialCredit = client.getCredit(email);
 		int initialFreeDocks = client.getInfoStation("1").getFreeDocks();
 		int initialAvailableBinas = client.getInfoStation("1").getAvailableBinas();
 		int initialTotalGets = client.getInfoStation("1").getTotalGets();
 		int initialTotalReturns = client.getInfoStation("1").getTotalReturns();
 
-		client.rentBina("1", userEmail);
+		client.rentBina("1", email);
 
-		Assert.assertEquals(initialCredit - 1, client.getCredit(userEmail));
+		Assert.assertEquals(initialCredit - 1, client.getCredit(email));
 		Assert.assertEquals(initialFreeDocks + 1, client.getInfoStation("1").getFreeDocks());
 		Assert.assertEquals(initialAvailableBinas - 1, client.getInfoStation("1").getAvailableBinas());
 		Assert.assertEquals(initialTotalGets + 1, client.getInfoStation("1").getTotalGets());
@@ -54,9 +59,9 @@ public class RentBinaIT extends BaseIT {
 			client.rentBina("1", currentUser.getEmail());
 		}
 
-		int creditBefore = client.getCredit(userEmail);
+		int creditBefore = client.getCredit(email);
 		try {
-			client.rentBina("1", userEmail);
+			client.rentBina("1", email);
 			fail();
 
 		} catch (NoBinaAvail_Exception e) {
@@ -64,7 +69,7 @@ public class RentBinaIT extends BaseIT {
 			Assert.assertEquals(initialBinas, client.getInfoStation("1").getTotalGets());
 			Assert.assertEquals(0, client.getInfoStation("1").getTotalReturns());
 			Assert.assertEquals(initialBinas, client.getInfoStation("1").getFreeDocks());
-			Assert.assertEquals(creditBefore, client.getCredit(userEmail));
+			Assert.assertEquals(creditBefore, client.getCredit(email));
 		}
 	}
 
@@ -91,12 +96,12 @@ public class RentBinaIT extends BaseIT {
 	@Test
 	public void nonexistentStation() throws NoBinaAvail_Exception, NoCredit_Exception,
 			AlreadyHasBina_Exception, UserNotExists_Exception {
-		int initialCredit = client.getCredit(userEmail);
+		int initialCredit = client.getCredit(email);
 		try {
-			client.rentBina("5", userEmail);
+			client.rentBina("5", email);
 			fail();
 		} catch (InvalidStation_Exception e) {
-			Assert.assertEquals(initialCredit, client.getCredit(userEmail));
+			Assert.assertEquals(initialCredit, client.getCredit(email));
 		}
 	}
 
@@ -104,7 +109,7 @@ public class RentBinaIT extends BaseIT {
 	public void alreadyHasBina() throws NoBinaAvail_Exception, NoCredit_Exception, InvalidStation_Exception,
 			UserNotExists_Exception, AlreadyHasBina_Exception {
 
-		int initialCredit = client.getCredit(userEmail);
+		int initialCredit = client.getCredit(email);
 
 		int initialFreeDocks1 = client.getInfoStation("1").getFreeDocks();
 		int initialAvailableBinas1 = client.getInfoStation("1").getAvailableBinas();
@@ -116,13 +121,13 @@ public class RentBinaIT extends BaseIT {
 		int initialTotalGets2 = client.getInfoStation("2").getTotalGets();
 		int initialTotalReturns2 = client.getInfoStation("2").getTotalReturns();
 
-		client.rentBina("1", userEmail);
+		client.rentBina("1", email);
 
 		try {
-			client.rentBina("2", userEmail);
+			client.rentBina("2", email);
 			fail();
 		} catch (AlreadyHasBina_Exception e) {
-			Assert.assertEquals(initialCredit - 1, client.getCredit(userEmail));
+			Assert.assertEquals(initialCredit - 1, client.getCredit(email));
 
 			Assert.assertEquals(initialFreeDocks1 + 1, client.getInfoStation("1").getFreeDocks());
 			Assert.assertEquals(initialAvailableBinas1 - 1, client.getInfoStation("1").getAvailableBinas());
