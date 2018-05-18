@@ -165,6 +165,9 @@ public class BinasClientApp {
 						if (command.length < 2) {
 							System.out.println("Syntax is evilness <enable|disable>");
 							continue;
+						} else if (user.startsWith("alice@")) {
+							System.out.println("Alice can't be evil! She's just too nice.");
+							continue;
 						}
 
 						switch (command[1]) {
@@ -176,6 +179,8 @@ public class BinasClientApp {
 								break;
 						}
 
+						break;
+
 					default:
 						System.out.println("Invalid command. Type 'help' if you need it");
 
@@ -186,6 +191,8 @@ public class BinasClientApp {
 				if (e.getMessage().contains("ticket is expired")) {
 					getTicket(user);
 					repeat = true;
+				} else {
+					System.out.println("Unkown error: " + e.getFault().getFaultString());
 				}
 			}
 		}

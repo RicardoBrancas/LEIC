@@ -14,6 +14,7 @@ import javax.xml.soap.*;
 import javax.xml.ws.handler.MessageContext;
 import javax.xml.ws.handler.soap.SOAPMessageContext;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.Set;
 
 public class EvilEveHandler extends BaseHandler {
@@ -36,11 +37,8 @@ public class EvilEveHandler extends BaseHandler {
 			SOAPEnvelope envelope = soapPart.getEnvelope();
 
 			if (outbound) {
-				NodeList elements = envelope.getElementsByTagName("rentBina");
-				if(elements.getLength() > 0) {
-					Node emailElement = envelope.getElementsByTagName(EMAIL).item(0);
-					emailElement.getFirstChild().setNodeValue("alice@A60.binas.org");
-				}
+				Node emailElement = envelope.getElementsByTagName(EMAIL).item(0);
+				emailElement.getFirstChild().setNodeValue("alice@A60.binas.org");
 			}
 		} catch (SOAPException e) {
 			e.printStackTrace();
