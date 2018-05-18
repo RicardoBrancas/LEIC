@@ -3,6 +3,7 @@ package org.binas.ws.it;
 import org.binas.ws.*;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import pt.ulisboa.tecnico.sdis.kerby.BadTicketRequest_Exception;
 import pt.ulisboa.tecnico.sdis.kerby.KerbyException;
@@ -60,6 +61,7 @@ public class ReturnBinaIT extends BaseIT {
 	}
 
 	@Test
+	@Ignore
 	public void success() throws UserNotExists_Exception, InvalidStation_Exception, NoBinaRented_Exception, FullStation_Exception, BadTicketRequest_Exception, KerbyException {
 		getTicket(email2, clientKey2);
 		int initialCredit = client.getCredit(email2);
@@ -78,6 +80,7 @@ public class ReturnBinaIT extends BaseIT {
 	}
 
 	@Test
+	@Ignore
 	public void nonExistentUser() throws InvalidStation_Exception, NoBinaRented_Exception, FullStation_Exception {
 		int initialFreeDocks = client.getInfoStation("1").getFreeDocks();
 		int initialAvailableBinas = client.getInfoStation("1").getAvailableBinas();
@@ -96,6 +99,7 @@ public class ReturnBinaIT extends BaseIT {
 	}
 
 	@Test
+	@Ignore
 	public void invalidStation() throws NoBinaRented_Exception, FullStation_Exception, UserNotExists_Exception, BadTicketRequest_Exception, KerbyException {
 		getTicket(email1, clientKey1);
 
@@ -109,6 +113,7 @@ public class ReturnBinaIT extends BaseIT {
 	}
 
 	@Test
+	@Ignore
 	public void noBinaRented() throws UserNotExists_Exception, InvalidStation_Exception, FullStation_Exception, BadTicketRequest_Exception, KerbyException {
 		int initialFreeDocks = client.getInfoStation("1").getFreeDocks();
 		int initialAvailableBinas = client.getInfoStation("1").getAvailableBinas();
@@ -126,6 +131,7 @@ public class ReturnBinaIT extends BaseIT {
 	}
 
 	@Test
+	@Ignore
 	public void fullStation() throws UserNotExists_Exception, InvalidStation_Exception, NoBinaRented_Exception, BadTicketRequest_Exception, KerbyException {
 		getTicket(email1, clientKey1);
 		int initialCredit = client.getCredit(email1);
