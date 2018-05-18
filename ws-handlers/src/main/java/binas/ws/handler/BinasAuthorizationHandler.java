@@ -13,6 +13,9 @@ import javax.xml.ws.handler.MessageContext;
 import javax.xml.ws.handler.soap.SOAPMessageContext;
 import java.util.Set;
 
+/**
+ * Verify users authorization to perform requested action.
+ */
 public class BinasAuthorizationHandler extends BaseHandler {
 
 	@Override
@@ -25,6 +28,11 @@ public class BinasAuthorizationHandler extends BaseHandler {
 		boolean outbound = (Boolean) context.get(MessageContext.MESSAGE_OUTBOUND_PROPERTY);
 
 		try {
+			/*
+			 * Validate ticket's user with email in message body.
+			 * If they do not match user doesn't have permission
+			 * This ensures a user can only perform actions in it's own account
+			 */
 			if (!outbound) {
 				// server: This is the second thing to be executed when a message is received
 

@@ -16,6 +16,9 @@ import java.util.Base64;
 import java.util.Date;
 import java.util.Set;
 
+/**
+ * Verify Kerberos protocol elements
+ */
 public class KerberosClientHandler extends BaseHandler {
 
 	private static String user;
@@ -51,6 +54,10 @@ public class KerberosClientHandler extends BaseHandler {
 			SOAPPart soapPart = message.getSOAPPart();
 			SOAPEnvelope envelope = soapPart.getEnvelope();
 
+			/*
+			 * Add ticket and user authentication to message header
+			 * Add session key, authentication and request time to context for later
+			 */
 			if (outbound) {
 				SOAPHeader header = envelope.getHeader();
 				if (header == null)
@@ -76,6 +83,11 @@ public class KerberosClientHandler extends BaseHandler {
 				context.put(SESSION_KEY, sessionKey);
 				context.put(AUTH, auth);
 
+				/*
+				 * Validate if request time received is equal to request time
+				 * sent
+				 * Validates servers identity
+				 */
 			} else {
 				SOAPHeader header = envelope.getHeader();
 				if (header == null)
@@ -101,7 +113,6 @@ public class KerberosClientHandler extends BaseHandler {
 
 	@Override
 	public boolean handleFault(SOAPMessageContext context) {
-		//TODO ?
 		return true;
 	}
 
