@@ -13,6 +13,9 @@ import java.util.Base64;
 import java.util.Date;
 import java.util.Set;
 
+/**
+ * Verify Kerberos protocol elements
+ */
 public class KerberosServerHandler extends BaseHandler {
 
 	private static final long TIME_TOLERANCE = 500;
@@ -36,7 +39,6 @@ public class KerberosServerHandler extends BaseHandler {
 		boolean outbound = (Boolean) context.get(MessageContext.MESSAGE_OUTBOUND_PROPERTY);
 
 		try {
-
 			SOAPMessage message = context.getMessage();
 			SOAPPart soapPart = message.getSOAPPart();
 			SOAPEnvelope envelope = soapPart.getEnvelope();
@@ -45,6 +47,9 @@ public class KerberosServerHandler extends BaseHandler {
 			if (header == null)
 				throw new MissingElementException("header");
 
+			/*
+			 * Add user authentication and request time to message
+			 */
 			if (outbound) {
 				// server: This is the last thing to be executed when a response is sent
 
@@ -61,7 +66,12 @@ public class KerberosServerHandler extends BaseHandler {
 				SOAPHeaderElement timeElement = header.addHeaderElement(TIME_NAME);
 				timeElement.addTextNode(encoder.encodeToString(cTime.getData()));
 
-			} else {
+			}
+			/*
+			 * Verify emails in tickets
+			 * Verify ticket not expired
+			 */
+			else {
 				// server: This is the first thing to be executed when a message is received
 
 				// === TICKET ===

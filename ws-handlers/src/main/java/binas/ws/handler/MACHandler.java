@@ -17,6 +17,9 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 import java.util.Set;
 
+/**
+ * Add MAC to outgoing messages and verifies MAC on incoming messages.
+ */
 public class MACHandler extends BaseHandler {
 
 	private Base64.Encoder encoder = Base64.getEncoder();
@@ -26,6 +29,7 @@ public class MACHandler extends BaseHandler {
 	public Set<QName> getHeaders() {
 		return null;
 	}
+
 
 	@Override
 	public boolean handleMessage(SOAPMessageContext context) {
@@ -44,6 +48,9 @@ public class MACHandler extends BaseHandler {
 			if (header == null)
 				throw new MissingElementException("header");
 
+			/*
+			 * Outbound: Generate MAC from user authentication and message body content
+			 */
 			if (outbound) {
 
 				// Mac: https://docs.oracle.com/javase/8/docs/api/javax/crypto/Mac.html
@@ -64,7 +71,12 @@ public class MACHandler extends BaseHandler {
 				SOAPHeaderElement macElement = header.addHeaderElement(MAC_NAME);
 				macElement.addTextNode(encoder.encodeToString(macInstance.doFinal()));
 
-			} else {
+			}
+			/*
+			 * Inbound: Generate MAC from user authentication and message body content
+			 * and compare it with MAC in message
+			 */
+			else {
 				// server: This is the last thing to be executed when a message is received
 
 				Key sessionKey = (Key) context.get(SESSION_KEY);
