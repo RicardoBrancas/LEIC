@@ -1,0 +1,11 @@
+small function g uses small n
+define small function f on news s as
+  post s
+  return 10
+define small function g on small n as
+  post n
+  return 10
+define public small function covfefe as
+  use "ola" for f
+  return 0
+

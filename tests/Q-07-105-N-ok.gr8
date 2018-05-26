@@ -1,0 +1,11 @@
+define public huge function main on huge fake p as
+  return cell 0 at p
+define public small function covfefe as
+  huge fake p (initially null)
+  assign 3 objects to p
+  assign 3.1   to cell 0 at p
+  assign 2.1   to cell 1 at p
+  assign 6.1E1 to cell 2 at p
+  post use cell 2 at p? for main
+  return 0
+

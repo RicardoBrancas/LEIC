@@ -1,0 +1,11 @@
+define public small function covfefe as
+  small x
+  small y
+  sweeping y from 1 to 3 do
+    sweeping x from 1 to 6 do
+      if y modulus 2 equals 1 then
+        again
+      else
+        tweet x
+  return 0
+

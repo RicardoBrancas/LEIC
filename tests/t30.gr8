@@ -1,0 +1,7 @@
+define public small function covfefe as
+  small fake ptr (initially 5 objects)
+  if ptr plus 2 equals (ptr plus 3) plus minus 1 then
+    post "ok"
+  else
+    post "ko"
+  return 0

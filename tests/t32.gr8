@@ -1,0 +1,4 @@
+define public small function covfefe as
+  small i (initially input)
+  post i
+  return 0

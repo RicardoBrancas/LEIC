@@ -1,0 +1,4 @@
+define public small function covfefe as
+	 tweet "X ~013 Y ~13 Z ~n"
+	 return 0
+

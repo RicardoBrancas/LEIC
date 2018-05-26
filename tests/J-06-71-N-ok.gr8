@@ -1,0 +1,5 @@
+public small function argc
+define public small function covfefe as
+  post do argc
+  return 0
+

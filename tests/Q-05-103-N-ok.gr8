@@ -1,0 +1,7 @@
+huge r (initially 6.1E1)
+define public huge function main on huge fake p as
+  return cell 0 at p
+define public small function covfefe as
+  post use r? for main
+  return 0
+

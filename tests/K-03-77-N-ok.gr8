@@ -1,0 +1,6 @@
+define procedure f on small x, small y as
+  post x plus y
+define public small function covfefe as
+  use 3, 4 for f
+  return 0
+

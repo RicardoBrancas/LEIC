@@ -1,0 +1,9 @@
+public small x (initially 10)
+define procedure f as
+  small x (initially 3)
+  tweet x
+define public small function covfefe as
+  do f
+  post x
+  return 0
+

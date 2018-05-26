@@ -1,0 +1,13 @@
+huge fake f
+huge d (initially 4)
+define public small function covfefe as
+  small i
+  small j
+  assign 7 objects to f
+  sweeping i from 0 to 5 do
+    assign d to cell i at f
+  assign d times d to cell i at f
+  sweeping j from 0 to 6 do
+    tweet cell j at f
+  return 0
+

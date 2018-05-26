@@ -1,0 +1,5 @@
+define public small function covfefe as
+  small i (initially 0)
+  assign input plus 6 to i
+  post i
+  return 0

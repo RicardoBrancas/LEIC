@@ -1,0 +1,4 @@
+define public small function covfefe as
+  small fake a (initially 10 objects)
+  post (a plus 5) minus (a plus 1)
+  return 0

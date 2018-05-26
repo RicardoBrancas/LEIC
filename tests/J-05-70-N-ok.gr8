@@ -1,0 +1,6 @@
+define small function pi as
+  return 314
+define public small function covfefe as
+  post do pi
+  return 0
+

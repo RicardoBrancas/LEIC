@@ -1,0 +1,6 @@
+define public small function covfefe as
+  if 2 equals 2.0 then
+    post "ok"
+  else
+    post "ko"
+  return 0

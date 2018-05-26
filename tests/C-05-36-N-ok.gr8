@@ -1,0 +1,8 @@
+small x
+small y
+define public small function covfefe as 
+	 assign 4 to x 
+	 assign 2 plus x to y 
+	 tweet y 
+	 return 0
+

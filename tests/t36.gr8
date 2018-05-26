@@ -1,0 +1,5 @@
+define public procedure printi on small i as
+  return
+define public small function covfefe as
+  post 12
+  return 0

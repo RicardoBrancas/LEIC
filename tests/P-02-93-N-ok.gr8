@@ -1,0 +1,13 @@
+small fake f
+define public small function covfefe as
+  small fake g (initially null)
+  assign 2 objects to g
+  assign 1 objects to f
+  assign 3 to cell 0 at f
+  assign 7 to cell 0 at g
+  assign 8 to cell 1 at g
+  post cell 0 at f
+  post cell 0 at g
+  post cell 1 at g
+  return 0
+

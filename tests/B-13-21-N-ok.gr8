@@ -1,0 +1,4 @@
+define public small function covfefe as
+	 tweet not 3 equals 3
+	 return 0
+

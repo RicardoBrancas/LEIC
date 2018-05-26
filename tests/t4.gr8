@@ -1,0 +1,5 @@
+define public small function covfefe as
+  news n (initially "hi")
+  assign "hey" to n
+  post n
+  return 0

@@ -1,0 +1,9 @@
+define small function f as
+  tweet "ok"
+  return 0
+define small function g as
+  post "ko"
+  return 0
+define public small function covfefe as
+  do f and do g
+  return 0

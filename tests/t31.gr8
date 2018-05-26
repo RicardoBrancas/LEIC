@@ -1,0 +1,6 @@
+define procedure f on huge fake p as
+  assign 3.14 to cell 0 at p
+  post "ok"
+define public small function covfefe as
+  use 5 objects for f
+  return 0

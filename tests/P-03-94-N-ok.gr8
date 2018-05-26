@@ -1,0 +1,20 @@
+small fake f
+define public small function covfefe as
+  small n (initially 4)
+  small fake f (initially null)
+  small i
+  assign n objects to f
+  tweet " "
+  sweeping i from 0 to n minus 1 do
+    assign 2 to cell i at f
+  tweet " "
+  sweeping i from 0 to n minus 1 do
+    tweet cell i at f
+  tweet "~n"
+  sweeping i from 0 to n minus 1 do
+    assign 6 over cell i at f to cell i at f
+  tweet " "
+  sweeping i from 0 to n minus 1 do
+    tweet cell i at f
+  return 0
+

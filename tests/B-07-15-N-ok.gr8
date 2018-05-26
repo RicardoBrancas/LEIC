@@ -1,0 +1,4 @@
+define public small function covfefe as
+	 tweet 150 modulus 100
+	 return 0
+

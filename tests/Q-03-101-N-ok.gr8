@@ -1,0 +1,7 @@
+huge r (initially 6.1E1)
+define public small function covfefe as
+  huge fake p (initially null)
+  assign r? to p
+  post cell 0 at p
+  return 0
+

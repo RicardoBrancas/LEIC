@@ -1,0 +1,19 @@
+small function g uses small i
+define small function f on small i as
+  small n (initially 9)
+  if i equals 0 then
+    assign 0 to n
+  else
+    assign i plus use i minus 1 for g to n
+  return n
+define small function g on small i as
+  small n (initially 9)
+  if i equals 0 then
+    assign 0 to n
+  else
+    assign i plus use i minus 1 for f to n
+  return n
+define public small function covfefe as
+  post use 3 for f
+  return 0
+

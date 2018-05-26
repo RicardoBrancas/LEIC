@@ -1,0 +1,5 @@
+news x (initially "ola")
+define public small function covfefe as 
+	 tweet x 
+	 return 0
+
