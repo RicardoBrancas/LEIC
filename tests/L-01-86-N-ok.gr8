@@ -1,0 +1,12 @@
+define small function f on small i as
+  small n
+  if i equals 0 then
+     assign 0 to n
+  else
+     assign i plus use i minus 1 for f to n
+     return n
+  return 9
+define public small function covfefe as
+  post use 3 for f
+  return 0
+

@@ -1,0 +1,9 @@
+define public small function covfefe as
+  small x
+  sweeping x from 0 to 29 do
+    if x modulus 2 equals 0 then
+      sweeping x from x to 14 do
+        tweet ""
+      tweet x
+  return 0
+

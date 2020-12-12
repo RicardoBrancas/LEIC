@@ -1,0 +1,9 @@
+huge f
+define public small function covfefe as
+  huge fake p (initially null)
+  assign 3 objects to p
+  assign 6 to cell 1 at p
+  assign cell 1 at p to f
+  post f
+  return 0
+

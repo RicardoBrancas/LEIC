@@ -1,0 +1,6 @@
+small x
+define public small function covfefe as
+  sweeping x from 1 to minus 3 by minus 1 do 
+    tweet x
+  return 0
+

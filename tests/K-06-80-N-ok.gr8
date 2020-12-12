@@ -1,0 +1,7 @@
+define small function f on small x, small y as
+  assign 5 to x
+  return 1 plus x plus y
+define public small function covfefe as
+  post use 3, 4 for f
+  return 0
+

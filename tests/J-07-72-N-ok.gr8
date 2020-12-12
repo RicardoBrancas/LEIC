@@ -1,0 +1,7 @@
+define procedure f as
+  small covfefe (initially 3)
+  post covfefe
+define public small function covfefe as
+  do f
+  return 0
+

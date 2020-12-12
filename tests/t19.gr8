@@ -1,0 +1,5 @@
+define public small function covfefe as
+  huge i
+  sweeping i from 1.0 to 2 by .5 do
+    post i
+  return 0

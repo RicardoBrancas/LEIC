@@ -1,0 +1,7 @@
+define public small function covfefe as
+	 if 2 then 
+		 post "KO" 
+	 else 
+		 post "OK"
+	 return 0
+

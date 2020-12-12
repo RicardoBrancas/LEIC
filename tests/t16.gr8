@@ -1,0 +1,4 @@
+use small errno
+define public small function covfefe as
+  post errno
+  return 0

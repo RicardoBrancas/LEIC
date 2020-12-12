@@ -1,0 +1,11 @@
+small x (initially 10)
+small y (initially 3)
+small z (initially 30)
+define small function f as
+  assign 7 to z
+  return z
+define public small function covfefe as
+  x equals y and do f
+  tweet z
+  return 0
+

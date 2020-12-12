@@ -1,0 +1,5 @@
+define procedure f on huge d as
+  post d
+define public small function covfefe as
+  use input for f
+  return 0

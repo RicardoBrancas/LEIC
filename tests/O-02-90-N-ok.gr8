@@ -1,0 +1,7 @@
+define huge function f on huge y as
+  return y
+define public small function covfefe as
+  post use 10 for f
+  post use  2 for f
+  return 0
+

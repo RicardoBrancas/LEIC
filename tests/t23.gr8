@@ -1,0 +1,12 @@
+define public small function covfefe as
+  small x
+  small y
+  small z
+  sweeping x from 0 to 7 do
+    sweeping y from 0 to 7 do
+      sweeping z from 0 to 7 do
+        post z
+        if z equals 3 then
+          again 3
+  return 0
+

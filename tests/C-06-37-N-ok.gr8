@@ -1,0 +1,6 @@
+small x
+define public small function covfefe as 
+	 assign 2 to x 
+	 tweet 1 plus x times 3 
+	 return 0
+

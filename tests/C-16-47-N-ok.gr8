@@ -1,0 +1,6 @@
+small x (initially 0)
+small y (initially 1)
+define public small function covfefe as 
+	 tweet (not x equals y) equals x 
+	 return 0
+

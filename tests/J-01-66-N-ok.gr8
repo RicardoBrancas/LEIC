@@ -1,0 +1,6 @@
+define procedure f as
+  tweet "ola"
+define public small function covfefe as
+  do f
+  return 0
+

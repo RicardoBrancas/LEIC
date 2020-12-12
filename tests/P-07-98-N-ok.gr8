@@ -1,0 +1,13 @@
+define small fake function f on small fake p as
+  assign 1 to cell 2 at p
+  return p
+define public small function covfefe as
+  small fake p (initially null)
+  assign 3 objects to p
+  assign 100 to cell 0 at p
+  assign  40 to cell 1 at p
+  assign   0 to cell 2 at p
+  use p for f
+  post cell 2 at p
+  return 0
+

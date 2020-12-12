@@ -1,0 +1,5 @@
+define procedure f on small p as
+  post "ok"
+define public small function covfefe as
+  use cell 0 at (5 objects) for f
+  return 0

@@ -1,0 +1,6 @@
+small x (initially 1)
+define public small function covfefe as
+  sweeping x from x to 5 by 2 do
+    tweet x
+  return 0
+
