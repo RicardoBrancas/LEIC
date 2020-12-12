@@ -1,0 +1,42 @@
+*Impossivel adicionar voo RT AFR ZSC
+*Impossivel remover voo ZWC ZSC
+*Impossivel adicionar voo ZSC VEN
+Aeroporto com mais rotas AFR:2:3
+Voo mais popular ZSC:AFR:1
+*Impossivel adicionar voo AFR ZWC
+*Impossivel adicionar voo AFR ZWC
+*Impossivel adicionar voo RT ZSC VEN
+ZSC:1:1:0
+AFR:5:1:2
+CCW:12:2:1
+VEN:7:0:0
+ZWC:10:0:1
+Aeroporto com mais rotas AFR:1:2
+Voos entre cidades CCW:AFR:1:1
+*Impossivel remover voo ZSC CCW
+*Impossivel remover voo ZWC CCW
+*Impossivel remover voo RT ZSC ZWC
+*Impossivel remover voo RT AFR ZWC
+*Impossivel remover voo AFR ZWC
+*Impossivel adicionar voo VEN AFR
+*Impossivel adicionar voo VEN ZWC
+*Impossivel adicionar voo ZWC ZSC
+Aeroporto com mais ligacoes AFR:2
+*Impossivel remover voo RT VEN ZWC
+*Impossivel adicionar voo CCW AFR
+Aeroporto com mais ligacoes AFR:2
+Aeroporto com mais rotas ZWC:3:5
+Voo mais popular VEN:ZWC:4
+ZSC:1:1:0
+AFR:5:2:3
+CCW:12:3:2
+VEN:7:4:3
+ZWC:17:3:5
+Voos entre cidades VEN:ZWC:4:3
+Voos entre cidades ZWC:VEN:3:4
+ZSC:1:1:0
+AFR:5:2:3
+CCW:12:3:2
+VEN:7:0:0
+ZWC:17:0:1
+6:5

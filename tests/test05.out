@@ -1,0 +1,123 @@
+Aeroporto com mais rotas UBO:4:4
+Aeroporto com mais ligacoes UBO:2
+Voo mais popular UBO:ZQU:2
+Aeroporto com mais rotas ZQU:4:7
+Aeroporto com mais ligacoes ZQU:3
+Voo mais popular YCM:ZQU:3
+Aeroporto com mais rotas YCM:8:4
+Voo mais popular YCM:UBO:3
+Aeroporto com mais ligacoes UBO:3
+Voos entre cidades LJU:UBO:1:0
+Voos entre cidades UBO:LJU:0:1
+Voos entre cidades YCM:ZQU:3:0
+Voos entre cidades ZQU:YCM:0:3
+LJU:16:5:4
+UBO:16:4:7
+YCM:20:9:4
+ZQU:16:4:7
+Aeroporto com mais rotas YCM:8:4
+Voo mais popular YCM:UBO:3
+Aeroporto com mais ligacoes ZQU:3
+Aeroporto com mais rotas ZQU:4:7
+Voo mais popular YCM:ZQU:3
+Aeroporto com mais ligacoes ZQU:3
+Aeroporto com mais rotas UBO:4:4
+Voo mais popular UBO:ZQU:2
+Aeroporto com mais ligacoes UBO:2
+LJU:16:4:4
+UBO:16:4:4
+YCM:20:4:4
+ZQU:16:4:4
+*Impossivel remover voo UBO LJU
+Aeroporto com mais ligacoes UBO:2
+*Impossivel remover voo RNQ ZQU
+*Impossivel remover voo RT YCM RNQ
+*Impossivel remover voo RT LJU RFR
+UBO:16:4:4
+ZQU:16:0:0
+LJU:16:0:0
+YCM:20:3:2
+RFR:8:2:2
+RNQ:3:1:2
+*Impossivel remover voo ZQU UBO
+*Impossivel adicionar voo RNQ YCM
+*Impossivel adicionar voo RT RNQ UBO
+*Impossivel adicionar voo EVV LJU
+*Impossivel adicionar voo HGD RNQ
+*Impossivel adicionar voo DXP ZQU
+*Impossivel adicionar voo RT LJU RNQ
+*Impossivel adicionar voo RT ZQU RNQ
+*Impossivel remover voo HGD EVV
+*Impossivel adicionar voo YCM DXP
+*Impossivel remover voo RFR UBO
+*Impossivel adicionar voo ZQU EXU
+*Impossivel remover voo RT ZQU HGD
+Aeroporto com mais rotas UBO:3:3
+Aeroporto com mais rotas UBO:3:3
+*Impossivel adicionar voo ZQU RNQ
+Aeroporto com mais ligacoes UBO:3
+*Impossivel adicionar voo RFR ZQU
+*Capacidade de EVV inalterada
+*Impossivel adicionar voo RT DXP UBO
+UBO:16:4:5
+ZQU:16:0:0
+LJU:16:0:0
+YCM:20:4:3
+RFR:8:4:2
+RNQ:23:2:3
+DXP:1:0:0
+HGD:2:1:1
+EVV:2:0:0
+QMC:11:3:2
+BZU:6:1:2
+EXU:5:1:2
+HPP:5:0:0
+*Impossivel adicionar voo RT DXP RNQ
+*Impossivel adicionar voo RT ZQU EXU
+Aeroporto com mais rotas UBO:4:5
+*Impossivel remover voo ZQU ITK
+*Impossivel adicionar voo EXU HGD
+*Impossivel adicionar voo ZQU DXP
+BZU:6:1:2
+DXP:1:0:0
+EVV:2:0:0
+EXU:5:2:2
+HGD:2:1:1
+HPP:5:1:1
+ITK:15:0:0
+LJU:16:0:0
+PTJ:2:0:0
+QMC:11:3:2
+RFR:8:3:1
+RNQ:23:2:3
+UBO:16:2:3
+YCM:20:0:0
+ZQU:16:0:0
+*Impossivel adicionar voo RT LJU ITK
+Aeroporto com mais ligacoes UBO:3
+*Impossivel adicionar voo YCM RFR
+*Impossivel adicionar voo RT YCM QMC
+*Impossivel adicionar voo DXP ZQU
+*Impossivel adicionar voo RT YCM ITK
+*Impossivel remover voo RT EVV QMC
+*Impossivel remover voo RT BZU PTJ
+*Impossivel remover voo EVV RNQ
+*Impossivel remover voo RT UBO BZU
+*Impossivel adicionar voo YCM RFR
+*Impossivel remover voo ZQU ITK
+*Impossivel remover voo ZQU BZU
+Voos entre cidades LJU:PTJ:0:0
+*Impossivel adicionar voo ZQU QMC
+*Impossivel adicionar voo RT EXU QMC
+*Impossivel remover voo RT PTJ YCM
+*Impossivel remover voo RT LJU DXP
+Aeroporto com mais ligacoes RFR:3
+Voo mais popular UBO:RNQ:1
+*Impossivel adicionar voo EVV QMC
+*Impossivel remover voo RT ITK EXU
+*Impossivel remover voo RT DHP DXP
+*Impossivel adicionar voo RT PTJ YCM
+*Impossivel remover voo RT LJU ZQU
+*Impossivel adicionar voo RT HGD DHP
+Aeroporto com mais ligacoes RFR:3
+8:17
