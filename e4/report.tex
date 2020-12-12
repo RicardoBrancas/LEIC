@@ -1,0 +1,76 @@
+\documentclass[a4paper]{article}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage[portuguese]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{courier}
+\usepackage{listings}
+
+\lstset{language=SQL}
+\lstset{basicstyle=\footnotesize\ttfamily,showstringspaces=false,morekeywords={BEFORE,EACH,ROW,PROCEDURE,NEW,IF,REFERENCES,TYPE,ENUM,REPLACE,FUNCTION,RETURNS,VOID,DECLARE,BEGIN,DEFERRED,FOR,LOOP,LANGUAGE,RAISE,SETOF,WHILE,RETURN,QUERY,HASH,TEMP,BTREE}}
+
+\begin{document}
+
+    \begin{titlepage}
+        \centering
+        \includegraphics[width=0.5\textwidth]{IST_A_CMYK_POS.pdf}\par
+        {\huge\bfseries Projeto de Bases de Dados, Parte 4\par}
+        \vspace{2cm}
+        {
+        \Large
+        \begin{tabular}{llll}
+            83533 & Mihail Brinza & 40\% & 4h \\
+            83557 & Ricardo Brancas & 50\% & 5h \\
+            83883 & David Nunes & 10\% & 1h
+        \end{tabular}
+        }
+        \vfill
+        \large
+        Grupo 37, turno BD2251795L10 \par
+        Professor Miguel Amaral
+
+        \vspace{3cm}
+
+        {\normalsize \today\par}
+    \end{titlepage}
+
+    \section{Restrições de Integridade}
+    \lstinputlisting{ri.sql}
+
+    \section{Índices}
+
+    \subsection{Índice 1}\label{subsec:ind1}
+    Esta \textit{query} contém um \lstinline{JOIN} cuja condição é de igualdade; a forma mais eficiente de o
+    realizar é percorrendo uma das tabelas (ou um dos índices a ela associados) na totalidade e depois verificar
+    (através de um índice de \lstinline{HASH}) se existe um registo correspondente na outra tabela.
+    No entanto uma das tabelas (\lstinline{fornecedor}) já contém um índice sobre a coluna correta
+    (\lstinline{produto}). Apesar de este índice ser do tipo \lstinline{BTREE}, muito provavelmente
+    não compensa criar um novo índice do tipo \lstinline{HASH} (dependendo, no entento, da situação particular).
+
+    Para acelerar a condição \lstinline{WHERE} devemos ainda criar um índice, também de \lstinline{HASH}, sobre
+    a coluna \lstinline{produto.categoria}. Apresentamos os índices em questão:
+
+    \begin{lstlisting}
+-- CREATE INDEX fornecedor_nif_idx        ON fornecedor USING HASH (nif);
+   CREATE INDEX produto_categoria_idx     ON produto    USING HASH  (categoria);
+    \end{lstlisting}
+
+    \subsection{Índice 2}
+    Em relação à optimização do \lstinline{JOIN}, estamos numa situação idêntica à da secção~\ref{subsec:ind1}, não
+    sendo necessário criar nenhum índice adicional (devido à existência da \textit{primary key}).
+
+
+    Para otimizar o \lstinline{GROUP BY} seria últi criar um índice do tipo \lstinline{BTREE} sobre a coluna
+    \lstinline{produto.ean} (ou \lstinline{fornece_sec.ean}) mas, mais uma vez, já existe um índice com essas
+    características associado à \textit{primary key}. Como tal, não é necessário criar nenhum índice adicional
+    para otimizar esta \textit{query}.
+
+    \section{Modelo Multidimensional}
+    \lstinputlisting{multidim.sql}
+
+    \section{\textit{Data Analytics}}
+    \lstinputlisting{dataAnalytic.sql}
+
+\end{document}
