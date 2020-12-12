@@ -1,0 +1,247 @@
+\documentclass[a4paper,twocolumn]{article}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage[portuguese]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{extarrows}
+\usepackage{pgfplots}
+\usepackage{xcolor}
+\usepackage{tikz}
+
+\usetikzlibrary{automata,positioning,calc}
+\usepgfplotslibrary{groupplots}
+
+\setlength{\columnsep}{0.75cm}
+\pgfplotsset{compat=1.13}
+
+\pgfplotsset{every axis/.append style={
+        scale only axis,
+        width=0.4\textwidth,
+        height=0.3\textwidth
+    },every axis legend/.append style={
+        at={(0.5,-.18)},
+        anchor=north
+    }}
+
+\definecolor{lightblue}{RGB}{205, 236, 247}
+
+\pgfplotscreateplotcyclelist{mycolorlist}{%
+brown!60!black\\%
+black\\%
+blue\\%
+red\\%
+green!60!black\\%
+}
+
+\title{\LARGE \textbf{Relatório do Projeto 2 de Inteligência Artificial}}
+\author{Mihail Brinza \\ \scriptsize 83533 \normalsize \and Ricardo Brancas \\ \scriptsize 83557 \normalsize}
+
+\begin{document}
+    \maketitle
+
+    \section{Métodos de Classificação}
+    Para classificar as plavras escolhemos de entre outras, com recurso a \textit{cross validation}, as seguintes \textit{features}:
+    \begin{enumerate}
+        \item Paridade do número de caracteres;
+        \item Paridade do número de caracteres ``z'';
+        \item Paridade do número de vogais;
+        \item Paridade do número de consoantes;
+        \item Número de caracteres ``a''.
+    \end{enumerate}
+    Para escolher o classificador, usámos novamente \textit{cross validation} com os classificadores \textit{k-neighbors},
+    com $ k = \{1,3,5,7,9\}$ e \textit{decision tree}, obtendo os resultados indicados na tabela~\ref{tab:cv1}.
+
+    \begin{table}[ht]
+        \centering
+        \begin{tabular}{ l c c }
+            & Conjunto 1 & Conjunto 2 \\
+         \textit{1-neighbor}    & $1.0$ & $1.0$ \\
+         \textit{3-neighbors}   & $1.0$ & $1.0$ \\
+         \textit{5-neighbors}   & $1.0$ & $1.0$ \\
+         \textit{7-neighbors}   & $1.0$ & $1.0$ \\
+         \textit{9-neighbors}   & $1.0$ & $1.0$ \\
+         \textit{Decision Tree} & $1.0$ & $1.0$
+        \end{tabular}
+        \caption{\textit{$F_1$ scores} da validação cruzada para o problema 1.}
+        \label{tab:cv1}
+    \end{table}
+
+    Concluímos portanto que, para estas \textit{features}, qualquer um dos classificadores testados escolhe sempre bem dentro do
+    conjunto de treino. Mais tarde verificámos que a escolha também é sempre acertada no conjunto de testes.
+
+    Decidimos utilizar o \textit{Decision Tree Classifier} porque escolhe corretamente com maior probabilidade mesmo quando
+    utilizamos \textit{features} piores.
+
+    \section{Métodos de Regressão}
+    Para escolher o método de regressão mais apropriado usamos \textit{cross validation} pontuado pelo erro quadrático
+    médio, obtendo os resultados dispostos na tabela~\ref{tab:cv2}.
+
+    \begin{table}[ht]
+        \centering
+        \begin{tabular}{ l c c }
+            & $g_1()$ & $g_2()$ \\
+         \textit{Linear Regression}                                      & $0.94$ & $816$ \\
+         \textit{KRR\footnotemark[1]} ($\gamma = 0.05$, $\alpha = 0.1$)   & $0.67$ & $1235$ \\
+         \textit{KRR\footnotemark[1]} ($\gamma = 0.05$, $\alpha = 0.01$)  & $0.34$ & \colorbox{lightblue}{$707$} \\
+         \textit{KRR\footnotemark[1]} ($\gamma = 0.05$, $\alpha = 0.001$) & \colorbox{lightblue}{$0.14$} & \colorbox{lightblue}{$428$} \\
+         \textit{KRR\footnotemark[1]} ($\gamma = 0.1$,  $\alpha = 0.1$)   & \colorbox{lightblue}{$0.23$} & $1265$ \\
+         \textit{KRR\footnotemark[1]} ($\gamma = 0.1$,  $\alpha = 0.01$)  & \colorbox{lightblue}{$0.10$} & $811$ \\
+         \textit{KRR\footnotemark[1]} ($\gamma = 0.1$,  $\alpha = 0.001$) & \colorbox{lightblue}{$0.10$} & \colorbox{lightblue}{$548$} \\
+         \textit{KRR\footnotemark[1]} ($\gamma = 0.2$,  $\alpha = 0.1$)   & $0.40$ & $1445$ \\
+         \textit{KRR\footnotemark[1]} ($\gamma = 0.2$,  $\alpha = 0.01$)  & \colorbox{lightblue}{$0.24$} & $1104$ \\
+         \textit{KRR\footnotemark[1]} ($\gamma = 0.2$,  $\alpha = 0.001$) & $0.66$ & \colorbox{lightblue}{$799$} \\
+         \textit{KRR\footnotemark[2]} (degree $= 2$)                      & $2.27$ & $3589$ \\
+         \textit{KRR\footnotemark[2]} (degree $= 3$)                      & $7.75$ & \colorbox{lightblue}{$0.38$} \\
+         \textit{KRR\footnotemark[2]} (degree $= 4$)                      & $0.93$ & \colorbox{lightblue}{$1.25$} \\
+         \textit{KRR\footnotemark[2]} (degree $= 5$)                      & $21.72$ & \colorbox{lightblue}{$4.39$} \\
+         \textit{Decision Tree}                                          & $0.73$ & $1290$ \\
+        \end{tabular}
+        \caption{\textit{MSE scores} da validação cruzada para o problema 2.
+        Os erros dentro do \textit{threshold} definido estão marcados a azul.}
+        \label{tab:cv2}
+    \end{table}
+    \footnotetext[1]{\textit{Kernel Ridge Regression} com \textit{radial basis function kernel}.}
+    \footnotetext[2]{\textit{Kernel Ridge Regression} com \textit{polynomial kernel}.}
+
+    Das duas parametrizações testadas que apresentam resulados aceitáveis para ambas as funções decidimos utilizar
+    a \textit{Kernel Ridge Regression} com \textit{kernels} do tipo \textit{radial basis function} e parâmetros
+    \{$\gamma = 0.1$,  $\alpha = 0.001$\}. Apresentamos na figura~\ref{fig:reg} alguns dos resultados obtidos,
+    em particular para a regressão escolhida.
+
+    \begin{figure}[ht]
+        \centering
+        \begin{tikzpicture}[trim axis left, trim axis right]
+            \begin{groupplot}[group style={group size= 1 by 2,vertical sep=1.5cm},cycle list name=mycolorlist]
+                \nextgroupplot[title=$g_1()$]
+                    \addplot+ [only marks, mark size=0.6pt] table [x = xp, y = yp, col sep=comma] {p2_0.csv};
+                    \addplot+ [only marks, mark size=3pt, mark=+] table [x = x, y = y, col sep=comma] {p2_0.csv};
+                    \addplot+ [mark=none,thick] table [x = xp, y = ypred1, col sep=comma] {p2_0.csv};
+                    \addplot+ [mark=none,thick] table [x = xp, y = ypred2, col sep=comma] {p2_0.csv};
+                    \addplot+ [mark=none,thick] table [x = xp, y = ypred3, col sep=comma] {p2_0.csv};
+                \nextgroupplot[title=$g_2()$]
+                    \addplot+ [only marks, mark size=0.6pt] table [x = xp, y = yp, col sep=comma] {p2_1.csv};
+                    \addlegendentry{Dados de teste}
+                    \addplot+ [only marks, mark size=3pt, mark=+] table [x = x, y = y, col sep=comma] {p2_1.csv};
+                    \addlegendentry{Dados de treino}
+                    \addplot+ [mark=none,thick] table [x = xp, y = ypred1, col sep=comma] {p2_1.csv};
+                    \addlegendentry{KRR (rbf, $\gamma = 0.1$,  $\alpha = 0.001$)}
+                    \addplot+ [mark=none,thick] table [x = xp, y = ypred2, col sep=comma] {p2_1.csv};
+                    \addlegendentry{KRR (poly, degree $= 3$)}
+                    \addplot+ [mark=none,thick] table [x = xp, y = ypred3, col sep=comma] {p2_1.csv};
+                    \addlegendentry{Linear Regression}
+            \end{groupplot}
+        \end{tikzpicture}
+        \caption{Resultados obtidos para as regressões.}
+        \label{fig:reg}
+    \end{figure}
+
+    \section{Aprendizagem por Reforço}
+    \subsection{Trajetórias Aprendidas}
+    \subsubsection{Ambiente 1}
+    $ 5_0 \xlongrightarrow{0} 6_1 \xlongrightarrow{0} 6_1 \xlongrightarrow{0} 6_1 \xlongrightarrow{0} 6_{(1)} $
+
+    \subsubsection{Ambiente 2}
+    $ 5_0 \xlongrightarrow{0} 6_1 \xlongrightarrow{0} 1_0 \xlongrightarrow{1} 0_1 \xlongrightarrow{1} 0_{(1)} $
+
+
+    \subsection{Modelo do Mundo}
+    \subsubsection{Ambiente 1}
+    Apresentamos na figura~\ref{fig:amb1} um esquema do ambiente 1. Os movimentos são, maioritariamente, sequênciais
+    com exceção da ação 0 no estado 5 que é estocástica. Tentar andar para os estados anterioes/seguintes
+    a partir dos estados 0/6, respetivamente, não tem qualquer efeito.
+
+    \begin{figure}[ht]
+        \centering
+        \begin{tikzpicture}[shorten >=1pt,node distance=1.8cm,on grid,auto]
+            \node[state,accepting] (q_0)   {0};
+            \node[state] (q_1) [right=of q_0] {1};
+            \node[state] (q_2) [right=of q_1]   {2};
+            \node[state] (q_3) [above right=of q_2]   {3};
+            \node[state] (q_4) [above left=of q_3]   {4};
+            \node[state] (q_5) [left =of q_4]   {5};
+            \node[state,accepting] (q_6) [left =of q_5]   {6};
+            \path[->]
+            (q_0) edge [bend left=20] node {0} (q_1)
+                  edge [loop below] node {1} ()
+            (q_1) edge [bend left=20] node {0} (q_2)
+                  edge [bend left=20] node {1} (q_0)
+            (q_2) edge [bend left=20] node {0} (q_3)
+                  edge [bend left=20] node {1} (q_1)
+            (q_3) edge [bend left=20] node {0} (q_4)
+                  edge [bend left=20] node {1} (q_2)
+            (q_4) edge [bend left=20] node {0} (q_5)
+                  edge [bend left=20] node {1} (q_3)
+            (q_5) edge [bend left=20] node {0} (q_6)
+                  edge [bend left=20] node {1} (q_4)
+                  edge [loop below] node {0} (q_5)
+            (q_6) edge [loop below] node {0} (q_6)
+                  edge [bend left=20] node {1} (q_5);
+        \end{tikzpicture}
+        \caption{Ambiente 1. Os nós com duplo contorno são os nós de recompensa.} \label{fig:amb1}
+    \end{figure}
+
+    A função de recompensa é a seguinte:
+    \[
+        r(s) = \left\{
+        \begin{array}{ll}
+              1, & s \in \{0,6\} \\
+              0, & s \notin \{0,6\}
+        \end{array}
+        \right.
+    \]
+
+    Assim, a melhor ação a tomar é sempre dirigirmo-nos o mais rapidamente possível para um dos estados de recompensa,
+    tendo eventualmente cuidado com o não-determinismo do estado 5.
+    Começando nesse mesmo estado, a melhor ação é sem dúvida movermo-nos para o estado 6 e depois mantermo-nos lá.
+
+    \subsubsection{Ambiente 2}
+    O ambiente 2 é muito semelhante ao primeiro com exceção do estado 6. Agora quando
+    tentamos tomar a ação 0 nesse estado voltamos para o estado 1, tal como representado na figura~\ref{fig:amb2}.
+
+    \begin{figure}[ht]
+%        \centering
+        \begin{center}
+            \begin{tikzpicture}[shorten >=1pt,node distance=1.8cm,on grid,auto]
+                \node[state,accepting] (q_0)                {0};
+                \node[state]           (q_1) [right=of q_0] {1};
+                \node[state]           (q_2) [right=of q_1] {2};
+                \node[state]           (q_3) [right=of q_2] {3};
+                \node[state]           (q_4) [above=of q_3] {4};
+                \node[state]           (q_5) [left=of q_4]  {5};
+                \node[state,accepting] (q_6) [left=of q_5]  {6};
+                \path[->]
+                (q_0) edge [bend left=20] node {0} (q_1)
+                      edge [loop above] node {1} ()
+                (q_1) edge [bend left=20] node {0} (q_2)
+                      edge [bend left=20] node {1} (q_0)
+                (q_2) edge [bend left=20] node {0} (q_3)
+                      edge [bend left=20] node {1} (q_1)
+                (q_3) edge [bend left=20] node {0} (q_4)
+                      edge [bend left=20] node {1} (q_2)
+                (q_4) edge [bend left=20] node {0} (q_5)
+                      edge [bend left=20] node {1} (q_3)
+                (q_5) edge [bend left=20] node {0} (q_6)
+                      edge [bend left=20] node {1} (q_4)
+                      edge [loop above] node {0} (q_5)
+                (q_6) edge             node {0} (q_1)
+                      edge [bend left=20] node {1} (q_5);
+            \end{tikzpicture}
+        \end{center}
+        \caption{Ambiente 2. Os nós com duplo contorno são os nós de recompensa.} \label{fig:amb2}
+    \end{figure}
+
+    A função de recompensa mantem-se também inalterada:
+     \[
+        r(s) = \left\{
+        \begin{array}{ll}
+              1, & s \in \{0,6\} \\
+              0, & s \notin \{0,6\}
+        \end{array}
+        \right.
+    \]
+
+    Como tal [quando começamos no estado 5] já não é possível usar a estratégia anterior de ficar parado no estado 6.
+    Assim, o melhor a fazer nesta situação é tentermo-nos dirigir para o estado 0, de modo a maximizar a recompensa a
+    longo prazo, que é exatamente o que obtemos com o algoritmo Q-learning.
+
+\end{document}
