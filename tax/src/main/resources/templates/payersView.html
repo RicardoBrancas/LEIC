@@ -1,0 +1,75 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<title>Item Types</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="stylesheet"
+	th:href="@{/webjars/bootstrap/3.3.7-1/css/bootstrap.min.css}" />
+<script th:src="@{/webjars/jquery/3.1.1/jquery.min.js}"></script>
+<script th:src="@{/webjars/bootstrap/3.3.7-1/js/bootstrap.min.js}"></script>
+</head>
+<body>
+	<div class="container">
+		<h2>Welcome to the Tax Payers Manager</h2>
+		<a class="btn btn-default pull-right" th:href="@{/}">Tax</a> <br />
+		<h3>Create Tax Payer</h3>
+		<p class="text-danger" th:text="${error}">Error</p>
+		<form class="form-inline" th:action="@{/tax/payers}"
+			th:object="${payer}" method="post">
+			<label>Name: </label> <input class="form-control input-sm"
+				type="text" th:field="*{name}" /> <label>Address: </label> <input
+				class="form-control input-sm" type="text" th:field="*{address}" />
+			<label>NIF: </label> <input class="form-control input-sm" type="text"
+				size="9" th:field="*{nif}" /> <label>Type: </label> <select
+				class="form-control" th:field="*{type}">
+				<option
+					th:each="type : ${T(pt.ulisboa.tecnico.softeng.tax.services.local.dataobjects.TaxPayerData.Type).values()}"
+					th:value="${type}" th:text="${type}"></option>
+			</select> <input class="btn btn-primary btn-sm" type="submit" value="Submit" />
+		</form>
+		<br />
+		<h3>List of Tax Payers</h3>
+		<table class="table table-striped">
+			<thead>
+				<tr>
+					<th>Name</th>
+					<th>Address</th>
+					<th>NIF</th>
+					<th>Type</th>
+					<th>Taxes</th>
+					<th>Invoices</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="payer: ${payers}">
+					<td th:text="${payer.name}">João</td>
+					<td th:text="${payer.address}">Av</td>
+					<td th:text="${payer.nif}">1234556789</td>
+					<td th:text="${payer.type}">SELLER</td>
+					<th>
+						<table class="table table-striped">
+							<thead>
+								<tr>
+									<th>Year</th>
+									<th><span th:switch="${payer.type}"> <span
+											th:case="${T(pt.ulisboa.tecnico.softeng.tax.services.local.dataobjects.TaxPayerData.Type).BUYER}">Tax
+												Return</span> <span th:case="*">To Pay</span>
+									</span></th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr th:each="key: ${payer.getTaxes().keySet()}">
+									<td th:text="${key}">2018</td>
+									<td th:text="${payer.getTaxes().get(key)}">567.98</td>
+								</tr>
+							</tbody>
+						</table>
+					</th>
+					<td><a
+						th:href="@{/tax/payers/{nif}/invoices(nif=${payer.nif})}">Invoices</a></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</body>
+</html>
