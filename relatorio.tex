@@ -1,0 +1,193 @@
+\documentclass[a4paper]{article}
+\usepackage[margin=3cm]{geometry}
+\usepackage[portuguese]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{pgfplots}
+\usepackage{pgfplotstable}
+\usepackage{mathtools}
+\usepackage{clrscode3e}
+\pgfplotsset{compat=1.13}
+
+\title{\LARGE \textbf{Relatório ASA}}
+\author{Mihail Brinza \\ \scriptsize 83533 \normalsize \and Ricardo Brancas \\ \scriptsize 83557 \normalsize}
+
+\begin{document}
+\maketitle
+\section{Introdução}
+Este projeto tem como objetivo criar um sistema que permita ao utilizador conhecer
+a forma mais barata de ligar um conjunto de cidades com base numa rede de possíveis
+infra-estruturas.
+O utilizador dá como input ao sistema o número de cidades, o número de possiveis aeroportos,
+o custo de cada um deles, o número de estradas e o custo de cada uma.
+O software indica ainda caso não seja possível interligar todas as cidades.
+No caso de existirem duas formas de interligar as cidades com o mesmo custo,
+é indicada aquela que utiliza menos aeroportos.
+
+\section{Descrição da Solução}
+Para resolver o problema de encontrar a forma mais barata de interligar $c$
+cidades, considerando $a$ possíveis aeroportos e $e$ possíveis estradas,
+considerámos um grafo não dirigido $G = (V, E, w)$ em que:
+\begin{enumerate}
+	\item $|V| = c + 1$
+	\item $|E| = a + e$
+	\item $w$ é a função de pesos que faz corresponder a cada arco o custo
+	de construir a estrada / aeroporto.
+\end{enumerate}
+Neste grafo uma estrada entre as cidades $i$ e $j$ corresponde a um arco
+$(v_i, v_j)$; e existir um aeroporto na cidade $i$ corresponde a existir
+um arco $(v_0, v_i)$, onde $v_0$ é um vértice especial que representa as
+ligações entre todos os aeroportos (como se fosse o céu).
+
+Considerando este grafo, encontrar a solução do problema passa por descobrir
+a MST do grafo, sendo apenas necessário tomar especial atenção ao requerimento
+de que deve ser escolhida a MST que utiliza menos aeroportos (na realidade é
+necessário descobrir duas MST, uma considerando só as estradas e outra considerando
+todos os arcos).
+
+\section{Análise Teórica}
+Para encontrar a(s) MST utilizámos o Algoritmo de Kruskal. Consideramos que
+o algoritmo recebe como input duas priority queues de arcos (estradas num e aeroportos
+no outro) ordenadas segundo: 1) o peso dos arcos; 2) se o arco é um arco de aeroporto.
+
+Nas seguintes complexiades considera-se que $A$ = número de aeroportos, $R$ = número de estradas.
+
+\begin{enumerate}
+	\item Inicialização 1: $O(V)$\\
+	Criamos um vetor de Disjoint-Sets que vai ser utilizado no algortimo.
+	\item Ciclo 1: $O(R\cdot log(V))$\\
+	Executamos o ciclo principal do algoritmo de Kruskal, apenas em relação
+	aos arcos de estradas.
+	Sempre que escolhemos um arco, juntamo-lo à priority queue que contem os arcos de aeroporto.
+	Ao longo da execução vamos computando o custo da MST e contando o número
+	de arcos já selecionados.
+	\item Inicialização 2: $O(V)$\\
+	Re-inicializamos o vetor dos Disjoint-Sets.
+	\item Ciclo 2: $O( (V + A) \cdot log(V))$\\
+	No segundo ciclo executamos novamente o algoritmo de Kruskal, mas apenas considerando
+	os arcos escolhidos durante a ultima execução ($V-1$ no máximo) e os arcos de aeroporto (ainda não considerados).
+	Esta solução funciona porque os restantes arcos já nunca seriam escolhidos.
+	Os arcos que vão sendo escolhidos são colocados num vetor.
+	Ao longo da execução vamos contando, separadamente, o número de estradas
+	e de aeroportos já selecionados.
+	\item Finalização: $O(V)$\\
+	No fim é necessário verficar se todos os vértices fazem parte do mesmo Disjoint-Set.
+	Computamos o custo da MST através dos arcos guardados no vetor (tendo em atenção
+	ao detalhe que podemos ter apenas um arco-aeroporto selecionado).
+	De seguida é necessário verificar se a primeira MST calculada é abrangente ao grafo todo
+	e se o seu custo é inferior ao da segunda, se sim, essa é a solução ótima, se não, a solução
+	ótima é a segunda MST calculada.
+\end{enumerate}
+
+Complexidade total: $O(3V + R\cdot log(V) + (V+A)\cdot log(V)) = O((E+V)\cdot log(V))$
+
+No caso em que o grafo é conexo ($E \geq V-1$): $O(E\cdot log(V))$
+
+\begin{codebox}
+	\Procname{$\proc{Kruskals}(V, R, A)$}
+	\li $MST \gets \{\}$
+	\li $MST_{roads} \gets \{\}$
+	\li \For each vertex $u \in V$ \Do
+	\li 	$\proc{Make-Set}(u)$
+		\End
+	\zi
+	\li \While $R \ne \{\}$ \Do
+	\li 	$e = (u, v) \gets \proc{Heap-Extract}(R)$
+	\li		\If $\proc{Find-Set}(u) \ne \proc{Find-Set}(v)$ \Then
+	\li			$MST_{roads} \gets MST_{roads} \cup \{e\}$
+	\li			$\proc{Heap-Insert}(A, e)$
+	\li			$\proc{Union}(u, v)$
+			\End
+		\End
+	\zi
+	\li \For each vertex $u \in V$ \Do
+	\li 	$\proc{Make-Set}(u)$
+		\End
+	\zi
+	\li \While $A \ne \{\}$ \Do
+	\li 	$e = (u, v) \gets \proc{Heap-Extract}(A)$
+	\li		\If $\proc{Find-Set}(u) \ne \proc{Find-Set}(v)$ \Then
+	\li			$MST \gets MST \cup \{e\}$
+	\li			$\proc{Union}(u, v)$
+			\End
+		\End
+	\zi
+	\li \If $\exists\; u, v \in V \setminus \{v_0\}: \proc{Find-Set}(u) \ne \proc{Find-Set}(v)$ \Then
+	\li \Error ``Graph is not connected''
+		\End
+	\li \If $\proc{Is-Optimal}(MST_{roads})$ \Then
+	\li		\Return $MST_{roads}$
+	\li	\Else
+	\li		\Return $MST$
+		\End
+\end{codebox}
+\newpage
+
+\section{Avaliação Experimental}
+Os gráficos seguintes foram obtidos com recurso ao gerador de inputs.
+Considerámos dois casos:
+\begin{enumerate}
+	\item Um ``caso normal'' em que $|E| = 8|V|$
+	\item Um ``pior caso'' em que $|E| = |V|^2$
+\end{enumerate}
+
+\subsection{Caso normal}
+Concluímos que no ``caso normal'' o algoritmo comporta-se como esperado, tendo comportamento
+$O(x\cdot log(x))$, isto porque a complexidade teórica é $O(E\cdot log(V))$ e $|E| \simeq |V|$
+
+\begin{center}
+	\begin{tikzpicture}
+		\begin{axis}[
+			small,
+			width=7cm,
+			title={Tempo de execução para problemas com solução},
+			xlabel={Número de cidades [c]},
+			ylabel={Tempo [s]},
+			ymajorgrids=true,
+			xmajorgrids=true,
+			grid style=dashed
+			]
+
+			\addplot [smooth, color=blue, mark=x] table [x=c, y=t] {./results1.data};
+			\addplot [no markers, gray] table[y={create col/linear regression={y=t}}] {./results1.data};
+		\end{axis}
+	\end{tikzpicture}%
+	\begin{tikzpicture}
+		\begin{axis}[
+			small,
+			width=7cm,
+			title={Tempo de execução dividido por $log(c)$},
+			xlabel={Número de cidades [c]},
+			ylabel={Tempo / log(c)},
+			ymajorgrids=true,
+			xmajorgrids=true,
+			grid style=dashed
+			]
+
+			\addplot [only marks, color=blue, mark=x] table [x=c, y=tln] {./results1.data};
+			\addplot [no markers, thick, red] table[y={create col/linear regression={y=tln}}] {./results1.data};
+		\end{axis}
+	\end{tikzpicture}
+\end{center}
+
+\subsection{Pior caso}
+No ``pior caso'', verificámos que o algortimo tem comportamento $O(x^2)$, porque a complexidade teórica é
+$O(E\cdot log(V))$ e $|E| = |V|^2 \gg log(|V|)$
+
+\begin{center}
+	\begin{tikzpicture}
+		\begin{axis}[
+			title={Tempo de execução para problemas com solução},
+			xlabel={Número de cidades [c]},
+			ylabel={Tempo [s]},
+			ymajorgrids=true,
+			xmajorgrids=true,
+			grid style=dashed
+			]
+
+			\addplot [only marks, color=blue, mark=x] table [x=c, y=t] {./results2.data};
+		\end{axis}
+	\end{tikzpicture}
+\end{center}
+
+\end{document}

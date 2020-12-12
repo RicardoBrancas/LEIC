@@ -1,0 +1,43 @@
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+*.smod
+
+# Compiled Static libraries
+*.lai
+*.laEu
+*.a
+*.lib
+
+# Executables
+*.exe
+*.app
+
+*.aux
+*.log
+*.md5
+*.auxlock
+*.dpth
+*.1
+*.2
+
+tests/
+profile_tests/
+
+build/
+out/
+results.data
