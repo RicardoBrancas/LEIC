@@ -1,0 +1,15 @@
+session_name: SD
+before_script: ./prepare.sh 
+windows:
+- window_name: servers
+  layout: tiled
+  panes:
+      - cd station-ws; mvn -q -Dws.i=1 exec:java
+      - cd station-ws; mvn -q -Dws.i=2 exec:java
+      - cd station-ws; mvn -q -Dws.i=3 exec:java
+      - cd binas-ws; mvn -q exec:java
+- window_name: client
+  shell_command_before:
+    - cd binas-ws-cli
+  panes:
+      - mvn -q exec:java
