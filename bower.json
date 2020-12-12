@@ -1,0 +1,22 @@
+{
+  "name": "ipm",
+  "description": "",
+  "main": "index.js",
+  "authors": [
+    "Ricardo Brancas <anjomigel@gmail.com>"
+  ],
+  "license": "ISC",
+  "homepage": "https://github.com/RicardoBrancas/IPM",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap": "^4.0",
+    "components-font-awesome": "^4.7.0"
+  }
+}

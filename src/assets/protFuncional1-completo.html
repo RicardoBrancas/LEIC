@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<meta charset="UTF-8">
+
+<link rel="stylesheet" href="css/font-awesome.css">
+<link rel="stylesheet" href="css/bootstrap-table.css">
+<style>
+html {
+  font-size: 85%;
+}
+
+body {
+  background-color: #252c3c;
+}
+
+::-webkit-scrollbar {
+  height: 5px;
+  width: 5px;
+}
+
+::-webkit-scrollbar-button {
+  height: 0;
+  width: 0;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #bdc5d6;
+  border: 0;
+  border-radius: 50px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #f2f4f7;
+}
+
+::-webkit-scrollbar-thumb:active {
+  background: #161b24;
+}
+
+::-webkit-scrollbar-track {
+  background: #2f384c;
+  border: 0 none #F9F9F9;
+  border-radius: 50px;
+}
+
+::-webkit-scrollbar-track:active {
+  background: #333333;
+}
+
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+#header {
+  height: 4rem;
+  width: 100%;
+}
+
+#clock {
+  color: #F9F9F9;
+  font-size: 2em;
+  font-weight: 300;
+  height: 4rem;
+  line-height: 4rem;
+  margin: auto;
+  text-align: center;
+  width: 5em;
+}
+
+#help {
+  float: right;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+#help button {
+  font-size: 1.75em;
+  font-variant: small-caps;
+  font-weight: 500;
+  height: 6rem;
+  padding-left: 2.5rem;
+  padding-right: 2.5rem;
+  white-space: normal;
+  width: 17rem;
+}
+
+#categories .btn {
+  cursor: pointer;
+  font-size: 1.1em;
+  padding: .75rem 1.25rem;
+}
+
+#item-container {
+  margin: auto;
+  max-height: 17rem;
+  overflow-x: scroll;
+  overflow-y: hidden;
+  padding-bottom: .25rem;
+  padding-top: .5rem;
+  width: 61.8034%;
+}
+
+#item-container .card {
+  background-color: #1b202c;
+  cursor: pointer !important;
+  max-width: 15rem;
+  transition: background 200ms;
+}
+
+#item-container .card:hover {
+  background-color: #161b24;
+}
+
+#item-container .card.selected {
+  background-color: #0d0f15;
+}
+
+#item-container .card button {
+  bottom: 0;
+  cursor: pointer;
+  position: absolute;
+  right: 0;
+}
+
+#item-container .card button .fa {
+  vertical-align: middle;
+}
+
+#item-container .card img {
+  height: 10rem;
+  object-fit: contain;
+}
+
+#item-container .card .card-block {
+  padding: .85rem;
+}
+
+#order {
+  background-color: #4c5a7b;
+  border-radius: 0;
+  height: 30em;
+  position: fixed;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 20em;
+}
+
+#order .card {
+  background-color: transparent;
+  border: 0;
+  border-radius: 0;
+}
+
+#order .card .card-header {
+  background-color: #2f384c;
+  border-radius: 0;
+}
+
+#order .card .card-block {
+  padding: 0;
+}
+
+#order .card .list-group-item {
+  background-color: #333c52;
+  border-radius: 0;
+  color: #F9F9F9;
+}
+
+#order .card .list-group-item button {
+  color: #F9F9F9;
+  opacity: 1;
+  padding-left: .5em;
+  text-shadow: none;
+}
+
+#order-inner {
+  max-height: 100%;
+  overflow-y: scroll;
+}
+
+#confirm {
+  bottom: 0;
+  font-size: 1.2em;
+  position: absolute;
+  right: 0;
+  transform: translateY(100%);
+}
+
+#price {
+  bottom: 0;
+  color: #F9F9F9;
+  font-size: 1.2em;
+  position: absolute;
+  transform: translateY(100%);
+}
+
+#selected-item {
+  padding: 2rem;
+  position: absolute;
+  width: 100%;
+}
+
+#selected-item img {
+  max-height: calc(100vh - 4rem - 15rem - 1.5rem - 10rem);
+}
+
+#selected-item .table-wrapper {
+  color: #F5F5F5;
+  left: 5%;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  white-space: pre;
+}
+
+#selected-item .table-wrapper th {
+  padding-right: 1em;
+}
+
+#selected-item button {
+  position: absolute;
+  right: 25%;
+}
+
+#go-back {
+  color: #F9F9F9;
+  cursor: pointer;
+  display: none;
+  font-size: 3em;
+  left: 5%;
+  position: absolute;
+}
+
+/*# sourceMappingURL=table.css.map */
+</style>
+
+<title>Com.ISTo</title>
+
+</head>
+
+<body>
+
+<div id="header">
+  <div id="clock"></div>
+  <div id="help">
+    <button type="button" class="btn btn-secondary">Chamar o Empregado</button>
+  </div>
+</div>
+
+
+<div>
+  <div id="categories" class="d-flex justify-content-center">
+    <div class="btn-group" data-toggle="buttons">
+      <label class="btn btn-primary active">
+        <input type="radio" name="categories" id="btn-destaques" autocomplete="off" checked> Destaques
+      </label>
+      <label class="btn btn-primary">
+        <input type="radio" name="categories" id="btn-entradas" autocomplete="off"> Entradas
+      </label>
+      <label class="btn btn-primary">
+        <input type="radio" name="categories" id="btn-sopas" autocomplete="off"> Sopas
+      </label>
+      <label class="btn btn-primary">
+        <input type="radio" name="categories" id="btn-saladas" autocomplete="off"> Saladas
+      </label>
+      <label class="btn btn-primary">
+        <input type="radio" name="categories" id="btn-pratos-principais" autocomplete="off"> Pratos Principais
+      </label>
+      <label class="btn btn-primary">
+        <input type="radio" name="categories" id="btn-bebidas" autocomplete="off"> Bebidas
+      </label>
+      <label class="btn btn-primary">
+        <input type="radio" name="categories" id="btn-sobremesas" autocomplete="off"> Sobremesas
+      </label>
+    </div>
+  </div>
+
+  <div id="main">
+    <button id="go-back" type="button" class="btn btn-link"><i class="fa fa-arrow-left"></i></button>
+    <div id="item-container" class="card-deck"></div>
+    <div id="selected-item">
+    </div>
+  </div>
+
+  <div id="order">
+    <div id="order-inner" role="tablist">
+      <div class="card">
+        <div class="card-header" role="tab" id="confirmed">
+          <h5 class="mb-0">
+            <a data-toggle="collapse" href="#confirmed-content">Confirmado</a>
+          </h5>
+        </div>
+        <div id="confirmed-content" class="collapse show" role="tabpanel">
+          <div class="card-block">
+            <ul class="list-group"></ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header" role="tab" id="not-confirmed">
+          <h5 class="mb-0">
+            <a data-toggle="collapse" href="#not-confirmed-content">A confirmar</a>
+          </h5>
+        </div>
+        <div id="not-confirmed-content" class="collapse show" role="tabpanel">
+          <div class="card-block">
+            <ul class="list-group"></ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="price">
+      Total: <span></span>
+    </div>
+    <button id="confirm" type="button" class="btn btn-primary">Confirmar</button>
+  </div>
+</div>
+
+<script type="text/javascript" src="js/jquery.js"></script>
+<script type="text/javascript" src="js/tether.js"></script>
+<script type="text/javascript" src="js/bootstrap.js"></script>
+<script type="text/javascript" src="js/menu.js"></script>
+<script type="text/javascript">
+$(document).ready(function() {
+
+  var update_order_common = function(order, $order, removable) {
+    $order.empty();
+
+    let totalPrice = 0;
+    var length = order ? order.length : 0;
+    for(let i = 0; i < length; i++) {
+      item = menu.find(function(x) {return x.id == order[i]});
+
+      totalPrice += item.price;
+
+      $item = $('<li class="list-group-item justify-content-between">' + item.name + '<span><span class="badge badge-default badge-pill">' + (item.price.toFixed(2) + " €") + '</span>' + (removable ? '<button type="button" class="close"><i class="fa fa-times"></i></button>' : '') + '</span></li>');
+
+      $item.find('button.close').click(function(wrappedIndex) {
+        return function() { remove_from_order(wrappedIndex); };
+      }(i));
+
+      $order.append($item);
+    }
+
+    if (removable && (length != 0)) {
+      $('#confirm').show();
+    } else if (removable) {
+      $('#confirm').hide();
+    }
+
+    return totalPrice;
+
+  }
+
+  var update_order_not_confirmed = function() {
+    let order = JSON.parse(sessionStorage.getItem('order'));
+    $order = $('#not-confirmed-content').find('.card-block ul');
+    return update_order_common(order, $order, true);
+  }
+
+  var update_order_confirmed = function() {
+    let order = JSON.parse(sessionStorage.getItem('order_2'));
+    $order = $('#confirmed-content').find('.card-block ul');
+    return update_order_common(order, $order, false);
+  }
+
+  var update_order_total = function() {
+    let price1 = update_order_not_confirmed();
+    let price2 = update_order_confirmed();
+    let totalPrice = price1 + price2;
+
+    $('#price').find('span').empty().text(totalPrice.toFixed(2) + " €");
+  }
+
+  var add_to_order = function(item) {
+    if(!sessionStorage.getItem('order')) {
+      sessionStorage.setItem('order', JSON.stringify([]));
+    }
+
+    let temp = JSON.parse(sessionStorage.getItem('order'));
+    temp.push(item);
+    sessionStorage.setItem('order', JSON.stringify(temp));
+    update_order_total();
+  }
+
+  var remove_from_order = function(index) {
+    if(sessionStorage.getItem('order')) {
+      let temp = JSON.parse(sessionStorage.getItem('order'));
+      temp.splice(index, 1);
+      sessionStorage.setItem('order', JSON.stringify(temp));
+      update_order_total();
+    }
+  }
+
+  var item_clicked = function() {
+    $this = $(this);
+
+    $item_container = $('#item-container');
+    $item_container.find('.card').removeClass('selected');
+    $this.addClass('selected');
+
+    $selected_item = $('#selected-item');
+    $selected_item.empty();
+
+    $img = $('<img>', {class: 'img-fluid mx-auto d-block', src: "img/items/big/" + $this.attr('data-item-id') + ".png"})
+    $selected_item.append($img);
+
+    $button = $('<button type="button" class="btn btn-primary">Adicionar</button>');
+    $selected_item.append($button);
+
+    $button.click(function (wrappedID) {
+      return function() { add_to_order(wrappedID); }
+    }($this.attr('data-item-id')));
+
+    item = menu.find(function(x) {return x.id == $this.attr('data-item-id')});
+
+    $nutrition_table = $('<div class="table-wrapper"><h4 class="mb-3">Informação Nutricional</h4><table class=""><thead><tr><th></th><th></th></tr></thead><tbody></tbody></table></div>');
+    $tbody = $nutrition_table.find('tbody');
+
+    for (var key in item.nutrition) {
+      $trow = $('<tr><th scope="row">' + key + '</th><td>' + item.nutrition[key] + '</td></tr>');
+      $tbody.append($trow);
+    }
+
+    $selected_item.append($nutrition_table);
+  };
+
+
+  //Clock timer
+  let update_clock = function() {
+    let d = new Date();
+    let h = ("00" + d.getHours()).slice(-2)
+    let m = ("00" + d.getMinutes()).slice(-2)
+    $('#clock').html(h + " : " + m);
+  };
+  setInterval(update_clock, 1000);
+
+  let category_changed_inner = function(cat, is_sub_cat = false, parent_cat = undefined) {
+    let $item_container = $("#item-container");
+    $('#selected-item').empty();
+    $item_container.animate({
+      width: 0,
+      opacity: 0
+    }, 400, function() {
+      $item_container.empty();
+      if(cat == "pratos-principais") {
+        $something = $('<div class="card card-inverse" data-cat="pratos-principais-carne"><img class="card-img-top img-fluid" src="img/items/Carne.png"><div class="card-block"><h4 class="card-title">Carne</h4></div></div><div class="card card-inverse" data-cat="pratos-principais-peixe"><img class="card-img-top img-fluid" src="img/items/Peixe.png"><div class="card-block"><h4 class="card-title">Peixe</h4></div></div><div class="card card-inverse" data-cat="pratos-principais-vegetariano"><img class="card-img-top img-fluid" src="img/items/Vegetariano.png" ><div class="card-block"><h4 class="card-title">Vegetariano</h4></div></div>')
+        $item_container.append($something);
+
+        $something.click(function() {
+          $this = $(this);
+          category_changed_inner($this.attr('data-cat'), true, "pratos-principais");
+        });
+      } else if(categories[cat] !== undefined) {
+        for(item of categories[cat]) {
+          $item = $("<div>", {class: "card card-inverse", 'data-item-id': item.id});
+
+          $img = $("<img>", {class: "card-img-top img-fluid", src: "img/items/" + item.name + ".png"});
+          $item.append($img);
+
+          $text = $('<div class="card-block"><h5 class="card-title">' + item.name + '</h5><p class="card-text">' + (item.price.toFixed(2) + " €") + '</p>' + '<button type="button" class="quick-add btn btn-primary btn-sm"><i class="fa fa-plus"></i></button>' + '</div>');
+          $item.append($text);
+
+          $item_container.append($item);
+
+          $item.find('button.quick-add').click(function (wrappedID) {
+            return function() { add_to_order(wrappedID); }
+          }(item.id));
+          $item.click(item_clicked);
+        }
+      }
+      $item_container.animate({
+        width: "61.8034%",
+        opacity: 1
+      }, 400);
+      if (is_sub_cat) {
+        $('#go-back').show();
+        $('#go-back').click(function() {
+          category_changed_inner(parent_cat);
+        });
+      } else {
+        $('#go-back').hide();
+      }
+      $item_container.find('.card button').click(function(e) {
+        e.stopPropagation();
+      });
+    });
+
+  }
+
+  let category_changed = function() {
+    let cat = $('input[name=categories]:checked', '#categories').attr("id").slice(4);
+    category_changed_inner(cat);
+  };
+  $('#categories input').on('change', category_changed);
+
+  $('#confirm').click(function() {
+    if(confirm('Tem a certeza que pretende efetuar o pedido?')) {
+      let currentOrder = JSON.parse(sessionStorage.getItem('order'));
+      let currentOrder2 = JSON.parse(sessionStorage.getItem('order_2'));
+      if(currentOrder2 == null) currentOrder2 = [];
+      sessionStorage.setItem('order_2', JSON.stringify(currentOrder2.concat(currentOrder)));
+      sessionStorage.setItem('order', JSON.stringify([]));
+      update_order_total();
+    }
+  })
+
+  //Init
+  update_clock();
+  category_changed();
+  update_order_total();
+});
+</script>
+</body>
+
+</html>
